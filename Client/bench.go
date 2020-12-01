@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -23,14 +22,14 @@ type Resp struct {
 }
 
 
-func worker(stats chan *Resp, requests int, url string, wg *sync.WaitGroup) {
+func worker(stats chan *Resp, requests int, url string, keepAlive bool, wg *sync.WaitGroup) {
 	defer wg.Done()
 	client := &http.Client{}
 	for i := 0; i < requests; i++ {
 		start := time.Now()
 		resp, err := client.Get(url)
 		if err != nil {
-			log.Fatal(err)
+			
 		}
 		stats <- &Resp{status: resp.StatusCode, elapsedTime: time.Since(start)}
 	}
@@ -39,7 +38,7 @@ func worker(stats chan *Resp, requests int, url string, wg *sync.WaitGroup) {
 func spawnWorkers(stats chan *Resp, conf *Conf, wg *sync.WaitGroup) {
 	for i := 0; i < conf.clients; i++ {
 		wg.Add(1)
-		go worker(stats, conf.requests, conf.url, wg)
+		go worker(stats, conf.requests, conf.url, conf.keepAlive, wg)
 	}
 }
 

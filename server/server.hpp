@@ -7,6 +7,9 @@
 #include <sys/socket.h>
 #include <netinet/ip.h>
 #include <netdb.h>
+#include <cstdlib>
+#include <fstream>
+#include <unistd.h>
 
 class server
 {
@@ -15,11 +18,13 @@ class server
 	const char* _port;
     int	_sockfd;
     struct addrinfo	hints, *_res;
+    void run_();
+	void listen_();
 
-    public:
+public:
     server();
     server(std::string, const char*);
 	~server();
     
-    int start();
+    void start();
 };

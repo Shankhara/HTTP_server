@@ -1,15 +1,22 @@
-# BENCH
+# HTTP CLIENT
 
-## BUILD
+**Install Go**
+
+[golang.org/doc/install](https://golang.org/doc/install)
+
+
+**Build**
+
 ``go build bench.go``
 
-## USAGE
+**Usage**
 
 ``
 ./bench -h
 ``
 
-## EXAMPLE
+**Usage**
+
 ``
 ./bench -c=10 -n=5 -u="http://google.fr/"
 ``
