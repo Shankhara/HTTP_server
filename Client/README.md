@@ -3,7 +3,13 @@
 ## BUILD
 ``go build bench.go``
 
-## RUN
+## USAGE
+
+``
+./bench -h
+``
+
+## EXAMPLE
 ``
 ./bench -c=10 -n=5 -u="http://google.fr/"
 ``
