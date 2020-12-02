@@ -15,8 +15,8 @@
 class server
 {
     private:
-    std::string	_name;
-	const char* _port;
+    std::string		_name;
+	const char*		_port;
     int	_sockfd;
     struct addrinfo	_hints, *_res;
     void run_();

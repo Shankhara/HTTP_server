@@ -94,6 +94,16 @@ void server::run_() {
 						}
 						close(i);
 						FD_CLR(i, &master);
+					}else{
+						if (FD_ISSET(i, &conn_fds)){
+							if (send(i, buf, nbytes, 0) == -1) {
+								std::cerr << "SEND " << strerror(errno) << std::endl;
+							}else{
+								std::cerr << "SENT" << std::endl;
+							}
+						}else{
+							std::cerr << "NOT READY" << std::endl;
+						}
 					}
 				}
 			}
