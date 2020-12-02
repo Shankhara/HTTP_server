@@ -67,7 +67,7 @@ void server::run_() {
 			perror("select");
 			exit(4);
 		}
-
+		std::cerr << "server::run -> select UNLOCK " << std::endl;
 		for (int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &conn_fds)) {
 				if (i == _sockfd) {
@@ -84,7 +84,9 @@ void server::run_() {
 						std::cerr << "server::run -> new conn " << std::endl;
 					}
 				}else {
-					if ((nbytes == recv(i, buf, sizeof(buf), 0)) <= 0) {
+					nbytes = recv(i, buf, sizeof(buf), 0);
+					std::cerr << "server::run -> RECV " << nbytes << std::endl;
+					if (nbytes <= 0) {
 						if (nbytes == 0) {
 							std::cerr << "server::run -> closed" << std::endl;
 						} else {
@@ -95,12 +97,12 @@ void server::run_() {
 					}else{
 						if (FD_ISSET(i, &conn_fds)){
 							if (send(i, buf, nbytes, 0) == -1) {
-								std::cerr << "SEND " << strerror(errno) << std::endl;
+								std::cerr << "server::run -> response sent error: " << strerror(errno) << std::endl;
 							}else{
-								std::cerr << "SENT" << std::endl;
+								std::cerr << "server::run -> response SENT" << std::endl;
 							}
 						}else{
-							std::cerr << "NOT READY" << std::endl;
+							std::cerr << "server::run -> FD NOT READY?" << std::endl;
 						}
 					}
 				}
