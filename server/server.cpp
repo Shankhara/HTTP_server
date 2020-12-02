@@ -2,7 +2,7 @@
 
 server::server(std::string serverName, const char* port = 0) : _name(serverName), _port(port), _sockfd(-1)
 {
-	memset(&hints, 0, sizeof hints);
+	memset(&_hints, 0, sizeof(_hints));
 }
 
 server::~server() {
@@ -12,12 +12,12 @@ void server::listen_()
 {
 	int status;
 	
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_PASSIVE;
+	_hints.ai_family = AF_UNSPEC;
+	_hints.ai_socktype = SOCK_STREAM;
+	_hints.ai_flags = AI_PASSIVE;
 
 	//Pour set une IP, enlever AI_PASSIVE et remplacer NULL
-	if ((status = getaddrinfo(NULL, _port, &hints, &_res)))
+	if ((status = getaddrinfo(NULL, _port, &_hints, &_res)))
 	{
 		std::cerr << "server:start -> error in getaddrinfo(), error code: " << status << std::endl;
 	    exit(8);
@@ -31,7 +31,7 @@ void server::listen_()
 
 	if ((bind(_sockfd, _res->ai_addr, _res->ai_addrlen)) == -1)
 	{
-		std::cerr << "server:start -> error in bind()\n";
+		std::cerr << "server:start -> error in bind() " << strerror(errno) << std::endl;
 	    exit(8);
     }
 

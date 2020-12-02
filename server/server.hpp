@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <unistd.h>
+#include <errno.h>
 
 class server
 {
@@ -17,7 +18,7 @@ class server
     std::string	_name;
 	const char* _port;
     int	_sockfd;
-    struct addrinfo	hints, *_res;
+    struct addrinfo	_hints, *_res;
     void run_();
 	void listen_();
 
