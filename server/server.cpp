@@ -5,8 +5,7 @@ server::server(std::string serverName, const char* port = 0) : _name(serverName)
 	memset(&_hints, 0, sizeof(_hints));
 }
 
-server::~server() {
-}
+server::~server() { }
 
 void server::listen_()
 {
@@ -16,7 +15,6 @@ void server::listen_()
 	_hints.ai_socktype = SOCK_STREAM;
 	_hints.ai_flags = AI_PASSIVE;
 
-	//Pour set une IP, enlever AI_PASSIVE et remplacer NULL
 	if ((status = getaddrinfo(NULL, _port, &_hints, &_res)))
 	{
 		std::cerr << "server:start -> error in getaddrinfo(), error code: " << status << std::endl;
@@ -29,19 +27,19 @@ void server::listen_()
 	    exit(8);
     }
 
-	if ((bind(_sockfd, _res->ai_addr, _res->ai_addrlen)) == -1)
-	{
-		std::cerr << "server:start -> error in bind() " << strerror(errno) << std::endl;
-	    exit(8);
-    }
-
 	int yes = 1;
-	// Pour contrer le "Add_ress already in use" error message
+
 	if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
 	    std::cerr << "server:start -> error in setsockopt()\n";
 	    exit(8);
 	} 
+
+	if ((bind(_sockfd, _res->ai_addr, _res->ai_addrlen)) == -1)
+	{
+		std::cerr << "server:start -> error in bind() " << strerror(errno) << std::endl;
+	    exit(8);
+    }
 
     if (listen(_sockfd, 20) == -1)
 	{
