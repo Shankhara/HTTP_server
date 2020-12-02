@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
+	"net"
 	"sync"
 	"time"
 )
@@ -14,6 +14,7 @@ type Conf struct {
 	keepAlive	bool
 	url 		string
 	verbose 	bool
+	slowmode	bool
 }
 
 type Resp struct {
@@ -22,23 +23,39 @@ type Resp struct {
 }
 
 
-func worker(stats chan *Resp, requests int, url string, keepAlive bool, wg *sync.WaitGroup) {
+func worker(stats chan *Resp, requests int,  host string, keepAlive bool, slowmode bool, wg *sync.WaitGroup) {
 	defer wg.Done()
-	client := &http.Client{}
+
+	strGet := "GET / HTTP/1.0\r\n\r\n"
 	for i := 0; i < requests; i++ {
 		start := time.Now()
+		conn, err := net.Dial("tcp", host)
+		if err != nil {
+			fmt.Println("Unable to connect to ", host)
+			return
+		}
+		for _, c := range strGet {
+			fmt.Fprintf(conn, string(c))
+			if (slowmode) {
+				time.Sleep(100 * time.Millisecond)
+			}
+		}
+		stats <- &Resp{status: 200, elapsedTime: time.Since(start)}
+	}
+	/*client := &http.Client{}
 		resp, err := client.Get(url)
 		if err != nil {
-			
+			stats <- &Resp{status: 0, elapsedTime: time.Since(start)}
+		}else{
+			stats <- &Resp{status: resp.StatusCode, elapsedTime: time.Since(start)}
 		}
-		stats <- &Resp{status: resp.StatusCode, elapsedTime: time.Since(start)}
-	}
+	}*/
 }
 
 func spawnWorkers(stats chan *Resp, conf *Conf, wg *sync.WaitGroup) {
 	for i := 0; i < conf.clients; i++ {
 		wg.Add(1)
-		go worker(stats, conf.requests, conf.url, conf.keepAlive, wg)
+		go worker(stats, conf.requests, conf.url, conf.keepAlive, conf.keepAlive, wg)
 	}
 }
 
@@ -78,6 +95,7 @@ func main(){
 	flag.IntVar(&configuration.requests, "n", 1, "number of requests performed by each client")
 	flag.BoolVar(&configuration.keepAlive, "k", false, "reuse tcp connection")
 	flag.BoolVar(&configuration.verbose, "v", false, "verbose")
+	flag.BoolVar(&configuration.verbose, "s", false, "slowmode")
 	flag.StringVar(&configuration.url, "u", "http://127.0.0.1","URL")
 	flag.Parse()
 	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t)\n",
