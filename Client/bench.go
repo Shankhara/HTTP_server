@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"net"
@@ -14,7 +15,7 @@ type Conf struct {
 	keepAlive	bool
 	url 		string
 	verbose 	bool
-	slowmode	bool
+	slowmode	int
 }
 
 type Resp struct {
@@ -23,22 +24,30 @@ type Resp struct {
 }
 
 
-func worker(stats chan *Resp, requests int,  host string, keepAlive bool, slowmode bool, wg *sync.WaitGroup) {
+func worker(stats chan *Resp, conf Conf, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	strGet := "GET / HTTP/1.0\r\n\r\n"
-	for i := 0; i < requests; i++ {
+	for i := 0; i < conf.requests; i++ {
 		start := time.Now()
-		conn, err := net.Dial("tcp", host)
+		conn, err := net.Dial("tcp", conf.url)
 		if err != nil {
-			fmt.Println("Unable to connect to ", host)
+			fmt.Println("Unable to connect to ", conf.url)
 			return
 		}
-		for _, c := range strGet {
-			fmt.Fprintf(conn, string(c))
-			if (slowmode) {
-				time.Sleep(100 * time.Millisecond)
+		for i, _ := range strGet {
+			conn.Write([]byte{strGet[i]})
+			if conf.slowmode > 0 {
+				//fmt.Println("Writing", string(strGet[i]), time.Since(start))
+				time.Sleep(time.Duration(conf.slowmode) * time.Millisecond)
 			}
+		}
+		status, err := bufio.NewReader(conn).ReadString('\n')
+		if err != nil {
+			fmt.Println("Unable to read")
+		}
+		if conf.verbose {
+			fmt.Println("RECV: ", status)
 		}
 		stats <- &Resp{status: 200, elapsedTime: time.Since(start)}
 	}
@@ -55,7 +64,7 @@ func worker(stats chan *Resp, requests int,  host string, keepAlive bool, slowmo
 func spawnWorkers(stats chan *Resp, conf *Conf, wg *sync.WaitGroup) {
 	for i := 0; i < conf.clients; i++ {
 		wg.Add(1)
-		go worker(stats, conf.requests, conf.url, conf.keepAlive, conf.keepAlive, wg)
+		go worker(stats, *conf, wg)
 	}
 }
 
@@ -95,11 +104,11 @@ func main(){
 	flag.IntVar(&configuration.requests, "n", 1, "number of requests performed by each client")
 	flag.BoolVar(&configuration.keepAlive, "k", false, "reuse tcp connection")
 	flag.BoolVar(&configuration.verbose, "v", false, "verbose")
-	flag.BoolVar(&configuration.verbose, "s", false, "slowmode")
+	flag.IntVar(&configuration.slowmode, "s", 0, "slowmode: every char is sent with <slowmode> in MS delay")
 	flag.StringVar(&configuration.url, "u", "http://127.0.0.1","URL")
 	flag.Parse()
-	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t)\n",
-		configuration.url, configuration.clients, configuration.requests, configuration.keepAlive)
+	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t, slowmode: %t)\n",
+		configuration.url, configuration.clients, configuration.requests, configuration.keepAlive, configuration.slowmode)
 	spawnWorkers(stats, &configuration, &wg)
 	go generateStats(stats, done, configuration.verbose)
 	wg.Wait()
