@@ -1,8 +1,7 @@
 #include "server.hpp"
 
-server::server(std::string serverName, const char* port = 0) : _name(serverName), _port(port), _sockfd(-1)
+server::server(std::string serverName, const char* port = 0) : name_(serverName), port_(port), sockfd_(-1)
 {
-	memset(&_hints, 0, sizeof(_hints));
 }
 
 server::~server() { }
@@ -10,18 +9,20 @@ server::~server() { }
 void server::listen_()
 {
 	int status;
-	
-	_hints.ai_family = AF_UNSPEC;
-	_hints.ai_socktype = SOCK_STREAM;
-	_hints.ai_flags = AI_PASSIVE;
+    struct addrinfo	hints_;
 
-	if ((status = getaddrinfo(NULL, _port, &_hints, &_res)))
+	memset(&hints_, 0, sizeof(hints_));
+	hints_.ai_family = AF_UNSPEC;
+	hints_.ai_socktype = SOCK_STREAM;
+	hints_.ai_flags = AI_PASSIVE;
+
+	if ((status = getaddrinfo(NULL, port_, &hints_, &res_)))
 	{
 		std::cerr << "server:start -> error in getaddrinfo(), error code: " << status << std::endl;
 	    exit(8);
 	}
 
-	if ((_sockfd = socket(_res->ai_family, _res->ai_socktype, _res->ai_protocol)) == -1)
+	if ((sockfd_ = socket(res_->ai_family, res_->ai_socktype, res_->ai_protocol)) == -1)
 	{
 		std::cerr << "server:start -> error in socket()\n";
 	    exit(8);
@@ -29,23 +30,29 @@ void server::listen_()
 
 	int yes = 1;
 
-	if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+	if (setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
 	    std::cerr << "server:start -> error in setsockopt()\n";
 	    exit(8);
 	} 
 
-	if ((bind(_sockfd, _res->ai_addr, _res->ai_addrlen)) == -1)
+	if ((bind(sockfd_, res_->ai_addr, res_->ai_addrlen)) == -1)
 	{
 		std::cerr << "server:start -> error in bind() " << strerror(errno) << std::endl;
 	    exit(8);
     }
 
-    if (listen(_sockfd, 20) == -1)
+    if (listen(sockfd_, 20) == -1)
 	{
 	    std::cerr << "server:start -> error in listen()\n";
 	    exit(8);
 	}
+
+	if (fcntl(sockfd_, F_SETFL, O_NONBLOCK) == -1)
+	{
+	    std::cerr << "server:start -> error in fcntl()\n";
+	    exit(8);
+    }
 }
 
 void server::run_() {
@@ -54,12 +61,12 @@ void server::run_() {
 	struct sockaddr_storage remoteaddr;
 	socklen_t 				addrlen;
 	int						newfd;
-	int 					fdmax = _sockfd;
+	int 					fdmax = sockfd_;
 	int 					nbytes = 0;
 	char					buf[256];
 	FD_ZERO(&master);
 	FD_ZERO(&conn_fds);
-	FD_SET(_sockfd, &master);
+	FD_SET(sockfd_, &master);
 
 	for (;;) {
 		conn_fds = master;
@@ -70,9 +77,9 @@ void server::run_() {
 		std::cerr << "server::run -> select UNLOCK " << std::endl;
 		for (int i = 0; i <= fdmax; i++) {
 			if (FD_ISSET(i, &conn_fds)) {
-				if (i == _sockfd) {
+				if (i == sockfd_) {
 					addrlen = sizeof(remoteaddr);
-					newfd = accept(_sockfd,
+					newfd = accept(sockfd_,
 						(struct sockaddr *)(&remoteaddr), &addrlen);
 					if (newfd == -1) {
 						perror("client accept");
