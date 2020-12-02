@@ -11,18 +11,21 @@
 #include <fstream>
 #include <unistd.h>
 #include <errno.h>
+//#include <sys/unistd.h>
+#include <sys/fcntl.h>
+
 
 class server
 {
     private:
-    std::string		_name;
-	const char*		_port;
-    int	_sockfd;
-    struct addrinfo	_hints, *_res;
+    std::string		name_;
+	const char*		port_;
+    int	sockfd_;
+    struct addrinfo	*res_;
     void run_();
 	void listen_();
 
-public:
+	public:
     server();
     server(std::string, const char*);
 	~server();
