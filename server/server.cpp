@@ -1,8 +1,6 @@
 #include "server.hpp"
 
-server::server(std::string serverName, const char* port = 0) : name_(serverName), port_(port), sockfd_(-1)
-{
-}
+server::server(std::string serverName, const char* port = 0) : name_(serverName), port_(port), sockfd_(-1) { }
 
 server::~server() { }
 
@@ -55,7 +53,8 @@ void server::listen_()
     }
 }
 
-void server::run_() {
+void server::run_()
+{
 	fd_set					master;
 	fd_set					conn_fds;
 	struct sockaddr_storage remoteaddr;
@@ -68,49 +67,57 @@ void server::run_() {
 	FD_ZERO(&conn_fds);
 	FD_SET(sockfd_, &master);
 
-	for (;;) {
+	for (;;) 
+	{
 		conn_fds = master;
-		if (select(fdmax+1, &conn_fds, NULL, NULL, NULL) == -1){
+		if (select(fdmax+1, &conn_fds, NULL, NULL, NULL) == -1)
+		{
 			perror("select");
 			exit(4);
 		}
 		std::cerr << "server::run -> select UNLOCK " << std::endl;
-		for (int i = 0; i <= fdmax; i++) {
-			if (FD_ISSET(i, &conn_fds)) {
-				if (i == sockfd_) {
+		for (int i = 0; i <= fdmax; i++)
+		{
+			if (FD_ISSET(i, &conn_fds))
+			{
+				if (i == sockfd_)
+				{
 					addrlen = sizeof(remoteaddr);
-					newfd = accept(sockfd_,
-						(struct sockaddr *)(&remoteaddr), &addrlen);
-					if (newfd == -1) {
+					newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen);
+					if (newfd == -1)
 						perror("client accept");
-					} else {
+					else
+					{
 						FD_SET(newfd, &master);
-						if (newfd > fdmax) {
+						if (newfd > fdmax) 
 							fdmax = newfd;
-						}
 						std::cerr << "server::run -> new conn " << std::endl;
 					}
-				}else {
+				}
+				else
+				{
 					nbytes = recv(i, buf, sizeof(buf), 0);
 					std::cerr << "server::run -> RECV " << nbytes << std::endl;
-					if (nbytes <= 0) {
-						if (nbytes == 0) {
+					if (nbytes <= 0)
+					{
+						if (nbytes == 0)
 							std::cerr << "server::run -> closed" << std::endl;
-						} else {
+						else
 							perror("client recv");
-						}
 						close(i);
 						FD_CLR(i, &master);
-					}else{
-						if (FD_ISSET(i, &conn_fds)){
-							if (send(i, buf, nbytes, 0) == -1) {
+					}
+					else
+					{
+						if (FD_ISSET(i, &conn_fds))
+						{
+							if (send(i, buf, nbytes, 0) == -1)
 								std::cerr << "server::run -> response sent error: " << strerror(errno) << std::endl;
-							}else{
+							else
 								std::cerr << "server::run -> response SENT" << std::endl;
-							}
-						}else{
-							std::cerr << "server::run -> FD NOT READY?" << std::endl;
 						}
+						else
+							std::cerr << "server::run -> FD NOT READY?" << std::endl;
 					}
 				}
 			}
