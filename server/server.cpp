@@ -26,13 +26,6 @@ void server::listen_()
 	    exit(8);
     }
 
-	int yes = 1;
-
-	if (setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
-	{
-	    std::cerr << "server:start -> error in setsockopt()\n";
-	    exit(8);
-	} 
 
 	if ((bind(sockfd_, res_->ai_addr, res_->ai_addrlen)) == -1)
 	{
@@ -45,12 +38,6 @@ void server::listen_()
 	    std::cerr << "server:start -> error in listen()\n";
 	    exit(8);
 	}
-
-	if (fcntl(sockfd_, F_SETFL, O_NONBLOCK) == -1)
-	{
-	    std::cerr << "server:start -> error in fcntl()\n";
-	    exit(8);
-    }
 }
 
 void server::run_()
@@ -67,7 +54,7 @@ void server::run_()
 	FD_ZERO(&conn_fds);
 	FD_SET(sockfd_, &master);
 
-	for (;;) 
+	while (1)
 	{
 		conn_fds = master;
 		if (select(fdmax+1, &conn_fds, NULL, NULL, NULL) == -1)
@@ -83,16 +70,29 @@ void server::run_()
 				if (i == sockfd_)
 				{
 					addrlen = sizeof(remoteaddr);
-					newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen);
-					if (newfd == -1)
-						perror("client accept");
-					else
+					if ((newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
 					{
-						FD_SET(newfd, &master);
-						if (newfd > fdmax) 
-							fdmax = newfd;
-						std::cerr << "server::run -> new conn " << std::endl;
+						perror("in accept");
+					    exit(8);
 					}
+
+					if (fcntl(sockfd_, F_SETFL, O_NONBLOCK) == -1)
+					{
+					    perror("server:start -> error in fcntl()");
+					    exit(8);
+				    }
+
+					int yes = 1;
+					if (setsockopt(sockfd_, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+					{
+					    perror("in setsockopt()");
+					    exit(8);
+					} 
+
+					FD_SET(newfd, &master);
+					if (newfd > fdmax) 
+						fdmax = newfd;
+					std::cerr << "server::run -> new conn " << std::endl;
 				}
 				else
 				{
@@ -126,7 +126,8 @@ void server::run_()
 }
 
 
-void server::start() {
+void server::start()
+{
 	server::listen_();
 	server::run_();
 }
