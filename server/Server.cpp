@@ -8,8 +8,11 @@ Server::~Server()
 Server::Server(std::string serverName, const char* port = 0):
 		name_(serverName),
 		port_(port), sockfd_(-1) {
-	clients_ = std::vector<Client>();
 	clients_.reserve(FD_SETSIZE);
+	for (int i = 0; i < FD_SETSIZE; i++)
+	{
+		clients_.push_back(Client(i));
+	}
 }
 
 
@@ -88,7 +91,10 @@ void Server::run_()
 					else
 					{
 						if (FD_ISSET(i, &conn_fds))
+						{
 							clients_[i].onDataReceived(buf, nbytes);
+							sendClientResponse(i);
+						}
 						else
 							std::cerr << "server::run -> FD NOT READY?" << std::endl;
 					}
@@ -98,12 +104,23 @@ void Server::run_()
 	}
 }
 
-
 void Server::start()
 {
 	std::cout << "Server: " << name_ << " started on port " << port_ << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
 	Server::listen_();
 	Server::run_();
+}
+
+void Server::sendClientResponse(int client)
+{
+	std::string response = clients_[client].getResponse();
+	if (response.length() == 0)
+		return ;
+
+	if (send(client, response.c_str(), response.length(), 0) == -1)
+		std::cerr << "server::run -> response sent error: " << strerror(errno) << " FD: " << client << std::endl;
+	else
+		std::cerr << "server::run -> response SENT" << std::endl;
 }
 
 void Server::onClientConnect() {
@@ -112,7 +129,6 @@ void Server::onClientConnect() {
 	int						newfd;
 
 	addrlen = sizeof(remoteaddr);
-
 	if ((newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
 	{
 		perror("in accept");
@@ -122,14 +138,13 @@ void Server::onClientConnect() {
 	FD_SET(newfd, &master_);
 	if (newfd > fdmax_)
 		fdmax_ = newfd;
-	clients_[newfd] = Client(newfd);
+	clients_[newfd].setAddr(remoteaddr);
 }
 
 void Server::onClientDisconnect(int fd_) {
 	std::cerr << "ClientDisconnect: " << fd_ << std::endl;
 	close(fd_);
 	FD_CLR(fd_, &master_);
-	clients_[fd_] = Client();
 }
 
 

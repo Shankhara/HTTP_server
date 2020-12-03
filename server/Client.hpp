@@ -8,15 +8,18 @@
 class Client {
 
 private:
-	int		fd_;
+	const int		fd_;
+	struct sockaddr_storage addr_;
+	std::string		response_;
+	bool 			keepAlive_;
 
 public:
 	Client();
 	Client(int);
 	~Client();
-	Client operator=(const Client &);
-	void		onDataReceived(char[], int);
+	void				onDataReceived(char[], int);
+	void 				setAddr(struct sockaddr_storage addr);
+	const std::string	&getResponse() const;
+	bool 				isKeepAlive() const;
 };
-
-
 #endif //WEBSERV_CLIENT_HPP

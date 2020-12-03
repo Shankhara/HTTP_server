@@ -1,29 +1,30 @@
 #include <sys/socket.h>
-#include <cstring>
 #include "Client.hpp"
 
 Client::Client(): fd_(-1) {}
 
-Client::Client(int fd): fd_(fd)
-{
-	std::cerr << "New Client: " << fd_ << std::endl;
-}
+Client::Client(int fd): fd_(fd){}
 
 Client::~Client() {}
 
-Client Client::operator=(const Client &o)
-{
-	fd_ = o.fd_;
-	return *this;
-}
-
 void Client::onDataReceived(char buf[], int nbytes)
 {
-	if (send(fd_, buf, nbytes, 0) == -1)
-		std::cerr << "server::run -> response sent error: " << strerror(errno) << " FD: " << fd_ << std::endl;
-	else
-		std::cerr << "server::run -> response SENT" << std::endl;
+	std::cerr << "RECV" << fd_ << std::endl;
+	response_.append(buf, nbytes);
 }
+
+void Client::setAddr(struct sockaddr_storage addr) {
+	addr_ = addr;
+}
+
+const std::string &Client::getResponse() const {
+	return response_;
+}
+
+bool Client::isKeepAlive() const {
+	return keepAlive_;
+}
+
 
 
 

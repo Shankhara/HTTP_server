@@ -17,6 +17,7 @@
 #include <sys/fcntl.h>
 
 
+
 class Server
 {
 private:
@@ -37,5 +38,6 @@ public:
 
 	void 		onClientConnect();
 	void 		onClientDisconnect(int);
+	void 		sendClientResponse(int clientSocket);
     void 		start();
 };
