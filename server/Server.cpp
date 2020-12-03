@@ -81,9 +81,7 @@ void Server::run_()
 					std::cerr << "server::run -> RECV " << nbytes << std::endl;
 					if (nbytes <= 0)
 					{
-						if (nbytes == 0)
-							std::cerr << "server::run -> closed" << std::endl;
-						else
+						if (nbytes < 0)
 							perror("client recv");
 						onClientDisconnect(i);
 					}
