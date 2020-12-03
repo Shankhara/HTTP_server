@@ -1,7 +1,8 @@
-NAME	= server
-SRCS	= main.cpp
-SRCS	+= Server.cpp
-SRCS	+= Client.cpp
+NAME	= unittests
+SRCS	= unittests.cpp
+SRCS	+= ../Client.cpp
+SRCS	+= testClient.cpp
+
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
@@ -32,9 +33,5 @@ re:		fclean all
 run: all
 	@./server
 
-tests:
-	@make -C ./unittests/
-	@./unittests/unittests
 
-
-.PHONY: all clean fclean re run tests
+.PHONY: all clean fclean re run

@@ -1,4 +1,3 @@
-#include <sys/socket.h>
 #include "Client.hpp"
 
 Client::Client(): fd_(-1) {}
