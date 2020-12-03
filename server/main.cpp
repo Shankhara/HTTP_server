@@ -1,6 +1,7 @@
-#include "server.hpp"
+#include "Server.hpp"
 
 int main() {
-	server local("local", "8080");
+	Server local("local", "8090");
 	local.start();
 }
+
