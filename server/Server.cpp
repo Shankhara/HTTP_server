@@ -55,8 +55,6 @@ void Server::listen_()
 void Server::run_()
 {
 	fd_set					conn_fds;
-	int 					nbytes = 0;
-	char					buf[256];
 
 	FD_ZERO(&master_);
 	FD_ZERO(&conn_fds);
@@ -80,24 +78,8 @@ void Server::run_()
 					onClientConnect();
 				else
 				{
-					nbytes = recv(i, buf, sizeof(buf), 0);
-					std::cerr << "server::run -> RECV " << nbytes << std::endl;
-					if (nbytes <= 0)
-					{
-						if (nbytes < 0)
-							perror("client recv");
+					if (clients_[i].onDataReceived() <= 0)
 						onClientDisconnect(i);
-					}
-					else
-					{
-						if (FD_ISSET(i, &conn_fds))
-						{
-							clients_[i].onDataReceived(buf, nbytes);
-							sendClientResponse(i);
-						}
-						else
-							std::cerr << "server::run -> FD NOT READY?" << std::endl;
-					}
 				}
 			}
 		}
@@ -111,17 +93,6 @@ void Server::start()
 	Server::run_();
 }
 
-void Server::sendClientResponse(int client)
-{
-	std::string response = clients_[client].getResponse();
-	if (response.length() == 0)
-		return ;
-
-	if (send(client, response.c_str(), response.length(), 0) == -1)
-		std::cerr << "server::run -> response sent error: " << strerror(errno) << " FD: " << client << std::endl;
-	else
-		std::cerr << "server::run -> response SENT" << std::endl;
-}
 
 void Server::onClientConnect() {
 	socklen_t 				addrlen;

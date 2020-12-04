@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <errno.h>
+#include <unistd.h>
 #include <sys/socket.h>
 
 class Client {
@@ -13,14 +14,16 @@ private:
 	struct sockaddr_storage addr_;
 	std::string		response_;
 	bool 			keepAlive_;
+	char			buf_[256];
 
 public:
 	Client();
 	Client(int);
 	~Client();
-	void				onDataReceived(char[], int);
+	int					onDataReceived();
+	void 				constructRequest(char [], int);
+	void 				sendResponse();
+	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
-	const std::string	&getResponse() const;
-	bool 				isKeepAlive() const;
 };
 #endif //WEBSERV_CLIENT_HPP
