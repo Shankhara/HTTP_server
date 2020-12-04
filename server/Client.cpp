@@ -8,7 +8,8 @@ Client::~Client() {}
 
 int Client::onDataReceived()
 {
-	int nbytes = recv(fd_, buf_, sizeof(buf_), 0);
+	static char buf[256];
+	int nbytes = recv(fd_, buf, sizeof(buf), 0);
 	Log().Get(logDEBUG) << "client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
 	if (nbytes <= 0)
 	{
@@ -16,7 +17,7 @@ int Client::onDataReceived()
 			Log().Get(logERROR) << "client " << addr_.ss_family << "recv error" << strerror(errno);
 		return (nbytes);
 	}
-	constructRequest(buf_, nbytes);
+	constructRequest(buf, nbytes);
 	if (response_.length() > 0)
 		sendResponse();
 	return (nbytes);

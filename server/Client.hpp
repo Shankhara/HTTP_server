@@ -16,7 +16,6 @@ private:
 	struct sockaddr_storage addr_;
 	std::string		response_;
 	bool 			keepAlive_;
-	char			buf_[256];
 
 public:
 	Client();
