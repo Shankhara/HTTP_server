@@ -2,7 +2,8 @@ NAME	= server
 SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Client.cpp
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+SRCS	+= Request.cpp
+CFLAGS	= -Wall -Wextra -Werror
 CC		= clang++
 
 OBJDIR	= .objs

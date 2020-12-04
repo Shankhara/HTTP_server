@@ -1,6 +1,5 @@
 ## webserv
 
-
 execute webserver:
 
 `make run`
