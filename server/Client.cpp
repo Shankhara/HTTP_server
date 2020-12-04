@@ -29,7 +29,6 @@ void Client::sendResponse()
 		Log().Get(logERROR) << "client " << addr_.ss_family << "send error" << strerror(errno);
 }
 
-
 void Client::setAddr(struct sockaddr_storage addr) {
 	addr_ = addr;
 }

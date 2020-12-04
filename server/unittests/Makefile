@@ -1,6 +1,7 @@
 NAME	= unittests
 SRCS	= unittests.cpp
 SRCS	+= ../Client.cpp
+SRCS	+= ../Logger.cpp
 SRCS	+= testClient.cpp
 
 CFLAGS	= -Wall -Wextra -Werror
