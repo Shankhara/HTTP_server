@@ -2,6 +2,7 @@ NAME	= server
 SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Client.cpp
+SRCS	+= Logger.cpp
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 CC		= clang++
 

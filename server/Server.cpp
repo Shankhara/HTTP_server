@@ -28,26 +28,25 @@ void Server::listen_()
 
 	if ((status = getaddrinfo(NULL, port_, &hints, &res_)))
 	{
-		std::cerr << "server:start -> error in getaddrinfo(), error code: " << status << std::endl;
+		Log().Get(logERROR) << "server::listen -> error in getaddrinfo(), error code: " << strerror(errno);
 	    exit(8);
 	}
 
 	if ((sockfd_ = socket(res_->ai_family, res_->ai_socktype, res_->ai_protocol)) == -1)
 	{
-		std::cerr << "server:start -> error in socket()\n";
+		Log().Get(logERROR) << "server:start -> error in socket()\n";
 	    exit(8);
     }
 
-
 	if ((bind(sockfd_, res_->ai_addr, res_->ai_addrlen)) == -1)
 	{
-		std::cerr << "server:start -> error in bind() " << strerror(errno) << std::endl;
+		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
 	    exit(8);
     }
 
     if (listen(sockfd_, FD_SETSIZE) == -1)
 	{
-	    std::cerr << "server:start -> error in listen()\n";
+    	Log().Get(logERROR) << "server:start -> error in listen() " << strerror(errno);
 	    exit(8);
 	}
 }
@@ -66,10 +65,10 @@ void Server::run_()
 		conn_fds = master_;
 		if (select(fdmax_+1, &conn_fds, NULL, NULL, NULL) == -1)
 		{
-			std::cerr << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
+			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
 			exit(4);
 		}
-		std::cerr << "server::run -> select UNLOCK " << std::endl;
+		Log().Get(logDEBUG) << "server::run -> select UNLOCK " << std::endl;
 		for (int i = 0; i <= fdmax_; i++)
 		{
 			if (FD_ISSET(i, &conn_fds))
@@ -88,7 +87,7 @@ void Server::run_()
 
 void Server::start()
 {
-	std::cout << "Server: " << name_ << " started on port " << port_ << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
+	Log().Get(logINFO) << "Server " << name_ << " started on port " << port_ << " (maxconn: " << FD_SETSIZE << ")";
 	Server::listen_();
 	Server::run_();
 }

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WEBSERV_SERVER_HPP
+#define WEBSERV_SERVER_HPP
 
 #include <string.h>
 #include <string>
@@ -11,9 +12,9 @@
 #include <fstream>
 #include <unistd.h>
 #include <errno.h>
-#include "Client.hpp"
 #include <vector>
-#include <sys/fcntl.h>
+#include "Client.hpp"
+#include "Logger.hpp"
 
 
 
@@ -34,9 +35,9 @@ private:
 public:
     Server(std::string, const char*);
 	~Server();
-
 	void 		onClientConnect();
 	void 		onClientDisconnect(int);
-	void 		sendClientResponse(int clientSocket);
     void 		start();
 };
+
+#endif

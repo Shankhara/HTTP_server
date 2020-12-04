@@ -1,4 +1,3 @@
-#include <cstring>
 #include "Client.hpp"
 
 Client::Client(): fd_(-1), keepAlive_(false) {}

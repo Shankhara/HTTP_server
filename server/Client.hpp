@@ -5,6 +5,7 @@
 #include <iostream>
 #include <errno.h>
 #include <unistd.h>
+#include <cstring>
 #include <sys/socket.h>
 
 class Client {
