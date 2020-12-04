@@ -4,7 +4,7 @@ SRCS	+= Server.cpp
 SRCS	+= Client.cpp
 SRCS	+= Logger.cpp
 SRCS	+= Request.cpp
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror -g3
 CC		= clang++
 
 OBJDIR	= .objs

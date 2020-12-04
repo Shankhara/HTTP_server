@@ -6,7 +6,10 @@
 #include <sstream>
 
 
-enum TLogLevel {logERROR, logWARNING, logINFO, logDEBUG};
+enum TLogLevel {
+	logERROR, logWARNING, logINFO, logDEBUG
+};
+
 class Log
 {
 public:

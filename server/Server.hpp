@@ -16,25 +16,24 @@
 #include "Client.hpp"
 #include "Logger.hpp"
 
-
-
 class Server
 {
 private:
-	Server();
+	static Server		*instance;
 	std::string			name_;
 	const char*			port_;
 	std::vector<Client>	clients_;
     int					sockfd_;
     int 				fdmax_;
 	fd_set				master_;
-    struct addrinfo		*res_;
+	Server();
     void 				run_();
 	void 				listen_();
 
 public:
     Server(std::string, const char*);
 	~Server();
+	static Server		*getInstance();
 	void 		onClientConnect();
 	void 		onClientDisconnect(int);
     void 		start();
