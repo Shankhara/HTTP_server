@@ -8,9 +8,6 @@ Request::~Request() { }
 
 int Request::checkMethod()
 {
-	std::vector<std::string> methods { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTION", "TRACE", "PATCH" };
-	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
-	enum e_RequestLine { METHOD, URL, VERSION };
 	int ret;
 	size_t i = 0;	
 

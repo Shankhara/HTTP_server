@@ -3,7 +3,7 @@ SRCS	= unittests.cpp
 SRCS	+= ../Client.cpp
 SRCS	+= testClient.cpp
 
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+CFLAGS	= -Wall -Wextra -Werror
 CC		= clang++
 
 OBJDIR	= .objs
@@ -23,7 +23,7 @@ ${OBJDIR}/%.o: %.cpp
 		${CC} ${CFLAGS} -c $< -o $@
 
 clean:
-			rm -rf $(OBJDIR)
+			rm -rf $(OBJDIR) *.o
 
 fclean:	clean
 			rm -f $(NAME)

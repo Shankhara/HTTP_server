@@ -20,6 +20,9 @@ class Request
 	~Request();
 	
 	Client client;
+	std::vector<std::string> methods { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTION", "TRACE", "PATCH" };
+	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
+	enum e_RequestLine { METHOD, URL, VERSION };
 
 	int parse();
 	int parseRequestLine();
