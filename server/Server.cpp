@@ -68,18 +68,15 @@ void Server::run_()
 			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
 			exit(4);
 		}
-		Log().Get(logDEBUG) << "server::run -> select UNLOCK ";
+		Log().Get(logDEBUG) << "server::run -> select UNLOCK";
 		for (int i = 0; i <= fdmax_; i++)
 		{
 			if (FD_ISSET(i, &conn_fds))
 			{
 				if (i == sockfd_)
 					onClientConnect();
-				else
-				{
-					if (clients_[i].onDataReceived() <= 0)
+				else if (clients_[i].onDataReceived() <= 0)
 						onClientDisconnect(i);
-				}
 			}
 		}
 	}
