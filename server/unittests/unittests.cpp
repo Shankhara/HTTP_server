@@ -1,5 +1,4 @@
-extern void testClient();
-extern void testRequest();
+#include "unittests.hpp"
 
 int main()
 {

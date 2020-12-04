@@ -1,4 +1,5 @@
 #include "Request.hpp"
+#include "Utils.hpp"
 
 Request::Request() { }
 
@@ -8,15 +9,20 @@ Request::~Request() { }
 
 int Request::checkMethod()
 {
-	int ret;
-	size_t i = 0;	
+	size_t ret, i = 0;	
 
 	while (i < methods.size())
 	{
-		ret = requestLine_[METHOD].find(methods[i]);
+		if ((ret = requestLine_[METHOD].find(methods[i])))
+		{
+			ret += methods[i].size();
+			if (requestLine_[METHOD].at(ret))
+				return (0);
+			break;
+		}
 		i++;
 	}
-	return (ret);
+	return (1);
 }
 
 int Request::parseRequestLine()
@@ -32,6 +38,9 @@ int Request::parseRequestLine()
 	
 	if (checkMethod())
 	    return (1);
+	
+	if (checkURL())
+		return (1);
 
 	return (0);
 }

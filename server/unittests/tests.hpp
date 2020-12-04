@@ -1,5 +1,4 @@
-#ifndef WEBSERV_TESTS_HPP
-#define WEBSERV_TESTS_HPP
+#pragma once
 
 #include <iostream>
 
@@ -39,5 +38,3 @@ bool assertStringEqual(const std::string &s1, const std::string &s2, const std::
 	}
 	return false;
 }
-
-#endif //WEBSERV_TESTS_HPP
