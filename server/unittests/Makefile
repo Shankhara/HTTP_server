@@ -1,6 +1,7 @@
 NAME	= unittests
 SRCS	= unittests.cpp
 SRCS	+= ../Client.cpp
+SRCS	+= ../Request.cpp
 SRCS	+= ../Logger.cpp
 SRCS	+= testClient.cpp
 
