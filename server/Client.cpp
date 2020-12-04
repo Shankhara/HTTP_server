@@ -40,10 +40,3 @@ void Client::constructRequest(char buf[], int nbytes) {
 std::string &Client::getResponse() {
 	return response_;
 }
-
-
-
-
-
-
-
