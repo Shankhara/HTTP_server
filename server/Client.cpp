@@ -9,11 +9,11 @@ Client::~Client() {}
 int Client::onDataReceived()
 {
 	int nbytes = recv(fd_, buf_, sizeof(buf_), 0);
-	std::cerr << "client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_ << std::endl;
+	Log().Get(logDEBUG) << "client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
-			std::cerr << "client " << addr_.ss_family << "recv error" << strerror(errno) << std::endl;
+			Log().Get(logERROR) << "client " << addr_.ss_family << "recv error" << strerror(errno);
 		return (nbytes);
 	}
 	constructRequest(buf_, nbytes);
@@ -25,7 +25,7 @@ int Client::onDataReceived()
 void Client::sendResponse()
 {
 	if (send(fd_, response_.c_str(), response_.length(), 0) == -1)
-		std::cerr << "client " << addr_.ss_family << "send error" << strerror(errno) << std::endl;
+		Log().Get(logERROR) << "client " << addr_.ss_family << "send error" << strerror(errno);
 }
 
 

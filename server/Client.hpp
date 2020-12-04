@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/socket.h>
+#include "Logger.hpp"
 
 class Client {
 

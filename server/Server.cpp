@@ -65,10 +65,10 @@ void Server::run_()
 		conn_fds = master_;
 		if (select(fdmax_+1, &conn_fds, NULL, NULL, NULL) == -1)
 		{
-			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
+			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
 			exit(4);
 		}
-		Log().Get(logDEBUG) << "server::run -> select UNLOCK " << std::endl;
+		Log().Get(logDEBUG) << "server::run -> select UNLOCK ";
 		for (int i = 0; i <= fdmax_; i++)
 		{
 			if (FD_ISSET(i, &conn_fds))
@@ -101,7 +101,7 @@ void Server::onClientConnect() {
 	addrlen = sizeof(remoteaddr);
 	if ((newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
 	{
-		perror("in accept");
+		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
 
@@ -112,7 +112,7 @@ void Server::onClientConnect() {
 }
 
 void Server::onClientDisconnect(int fd_) {
-	std::cerr << "ClientDisconnect: " << fd_ << std::endl;
+	Log().Get(logDEBUG) << "ClientDisconnect: " << fd_;
 	close(fd_);
 	FD_CLR(fd_, &master_);
 }
