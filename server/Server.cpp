@@ -10,9 +10,8 @@ Server::~Server() {
 	}
 }
 
-Server::Server(std::string serverName, const char* port = 0):
-		name_(serverName),
-		port_(port), sockfd_(-1) {
+Server::Server(): name_("webserv"), port_(80)
+{
 	clients_.reserve(FD_SETSIZE);
 	for (int i = 0; i < FD_SETSIZE; i++)
 		clients_.push_back(Client(i));
@@ -107,5 +106,17 @@ void Server::onClientDisconnect(int fd_) {
 }
 
 Server *Server::getInstance() {
+	if (instance == 0)
+	{
+		instance = new Server();
+	}
 	return instance;
+}
+
+void Server::setName(const std::string &name) {
+	name_ = name;
+}
+
+void Server::setPort(int port) {
+	port_ = port;
 }

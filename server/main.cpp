@@ -14,7 +14,9 @@ void signalHandler(int) {
 int main() {
 	signal(SIGINT, signalHandler);
 	//Log::SetLevel(logDEBUG);
-	Server *local = new Server("local", "8080");
-	local->start();
+	Server *webserv = Server::getInstance();
+	webserv->setName("webserv");
+	webserv->setPort(8080);
+	webserv->start();
 }
 
