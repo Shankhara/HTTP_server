@@ -17,12 +17,12 @@ int Request::checkMethod()
 		{
 			ret += methods[i].size();
 			if (requestLine_[METHOD].at(ret))
-				return (0);
+				return (1);
 			break;
 		}
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
 int Request::parseRequestLine()
@@ -34,24 +34,27 @@ int Request::parseRequestLine()
 	requestLine_ = explode(line, ' ');
 	
 	if (requestLine_.size() != 3)
-		return (0);
-	
-	if (checkMethod())
-	    return (1);
-	
-	if (checkURL())
+	{
+		// LOG ERROR REQUESTLINE
 		return (1);
-
+	}
+	if (checkMethod())
+	{
+		// LOG ERROR METHOD
+	    return (1);
+	}
 	return (0);
 }
 
-int Request::parse()
+void Request::parse()
 {
 	int ret = 0;
 	
 	request_ = client.getResponse();
 	
-    if ((ret = parseRequestLine()))
-		return (ret);
+    if (parseRequestLine())
+		return;
+	if (parseHeaders())
+		return;
 	return (ret);
 }
