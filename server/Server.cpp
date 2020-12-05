@@ -29,8 +29,8 @@ void Server::listen_()
     }
 	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = ft_htonl(INADDR_ANY);
-	server.sin_port = ft_htons(port_);
+	server.sin_addr.s_addr = htonl_(INADDR_ANY);
+	server.sin_port = htons_(port_);
 	if ((bind(sockfd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
@@ -113,6 +113,24 @@ Server *Server::getInstance() {
 	return instance;
 }
 
+uint32_t Server::htonl_(uint32_t hostlong) {
+	long ui = 0;
+
+	ui |= (hostlong & 0xFF000000) >> 24;
+	ui |= (hostlong & 0x00FF0000) >> 8;
+	ui |= (hostlong & 0x0000FF00) << 8;
+	ui |= (hostlong & 0x000000FF) << 24;
+	return (ui);
+}
+
+uint16_t Server::htons_(uint16_t hostshort) {
+	long ui = 0;
+
+	ui |= (hostshort & 0xFF) << 8;
+	ui |= (hostshort & 0xFF00) >> 8;
+	return (ui);
+}
+
 void Server::setName(const std::string &name) {
 	name_ = name;
 }
@@ -120,3 +138,5 @@ void Server::setName(const std::string &name) {
 void Server::setPort(int port) {
 	port_ = port;
 }
+
+

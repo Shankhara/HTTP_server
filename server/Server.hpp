@@ -30,6 +30,8 @@ private:
 	Server();
     void 				run_();
 	void 				listen_();
+	uint32_t 			htonl_(uint32_t);
+	uint16_t 			htons_(uint16_t);
 
 public:
 	~Server();
