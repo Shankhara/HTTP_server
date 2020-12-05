@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-Server* Server::instance = 0;
+Server* Server::instance_ = 0;
 
 Server::~Server() {
 	for (int i = 0; i < fdmax_; i++)
@@ -15,7 +15,7 @@ Server::Server()
 	clients_.reserve(FD_SETSIZE);
 	for (int i = 0; i < FD_SETSIZE; i++)
 		clients_.push_back(Client(i));
-	instance = this;
+	instance_ = this;
 }
 
 void Server::listen_(struct s_listener &listener)
@@ -78,7 +78,7 @@ void Server::start()
 {
 	for (unsigned long i = 0; i < listeners_.size(); i++){
 		Server::listen_(listeners_[i]);
-		Log().Get(logINFO) << "Server " << listeners_[i].name << " started on port " << listeners_[i].port << " (maxconn: " << FD_SETSIZE << ")";
+		Log().Get(logINFO) << listeners_[i].name << " started on port " << listeners_[i].port << " (maxconn: " << FD_SETSIZE << ")";
 	}
 	Server::run_();
 }
@@ -95,11 +95,11 @@ void Server::onClientConnect(int listener) {
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-
 	FD_SET(newfd, &master_);
 	if (newfd > fdmax_)
 		fdmax_ = newfd;
 	clients_[newfd].setAddr(remoteaddr);
+	clients_[newfd].setListenerId(listener);
 }
 
 void Server::onClientDisconnect(int fd_) {
@@ -110,9 +110,9 @@ void Server::onClientDisconnect(int fd_) {
 
 Server *Server::getInstance()
 {
-	if (instance == 0)
-		instance = new Server();
-	return instance;
+	if (instance_ == 0)
+		instance_ = new Server();
+	return instance_;
 }
 
 uint32_t Server::htonl_(uint32_t hostlong)
@@ -150,6 +150,7 @@ void Server::addListener(const std::string &name, const std::string &ip, int por
 	struct s_listener listener;
 	listener.name = name;
 	listener.port = port;
+	// TODO: ip
 	std::string ip_ = ip;
 	listeners_.push_back(listener);
 }

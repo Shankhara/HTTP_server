@@ -4,24 +4,28 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
+#include <sys/time.h>
 
 
 enum TLogLevel {
-	logERROR, logWARNING, logINFO, logDEBUG
+	logDEBUG, logINFO, logWARNING, logERROR
 };
 
 class Log
 {
-public:
-	Log();
-	virtual ~Log();
-	std::ostringstream& Get(TLogLevel level = logINFO);
-	//static void SetLevel(TLogLevel level);
 private:
+	static TLogLevel level_;
 	std::ostringstream os;
 	Log(const Log&);
 	Log& operator =(const Log&);
 	TLogLevel messageLevel_;
+
+public:
+	Log();
+	virtual ~Log();
+	std::ostringstream& Get(TLogLevel level = logINFO);
+	static void setLevel(TLogLevel level);
+
 };
 
 

@@ -35,6 +35,10 @@ run: all
 	@./webserver
 	@rm -f ./webserver
 
+debug: all
+	@./webserver -v
+	@rm -f ./webserver
+
 tests:
 	@make -C ./unittests/
 	@./unittests/unittests

@@ -26,17 +26,17 @@ struct s_listener {
 class Server
 {
 private:
-	static Server					*instance;
+	static Server					*instance_;
 	std::vector<Client>				clients_;
     std::vector<struct s_listener>	listeners_;
     int 							fdmax_;
 	fd_set							master_;
 	Server();
-    void 				run_();
-	void 				listen_(struct s_listener &);
-	bool        		isListener_(int fd);
-	uint32_t 			htonl_(uint32_t);
-	uint16_t 			htons_(uint16_t);
+    void 							run_();
+	void			 				listen_(struct s_listener &);
+	bool        					isListener_(int fd);
+	uint32_t 						htonl_(uint32_t);
+	uint16_t 						htons_(uint16_t);
 
 public:
 	~Server();

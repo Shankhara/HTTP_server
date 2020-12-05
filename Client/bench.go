@@ -107,7 +107,7 @@ func main(){
 	flag.IntVar(&configuration.slowmode, "s", 0, "slowmode: every char is sent with <slowmode> in MS delay")
 	flag.StringVar(&configuration.url, "u", "http://127.0.0.1","URL")
 	flag.Parse()
-	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t, slowmode: %t)\n",
+	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t, slowmode: %d)\n",
 		configuration.url, configuration.clients, configuration.requests, configuration.keepAlive, configuration.slowmode)
 	spawnWorkers(stats, &configuration, &wg)
 	go generateStats(stats, done, configuration.verbose)

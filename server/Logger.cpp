@@ -1,5 +1,7 @@
 #include "Logger.hpp"
 
+TLogLevel Log::level_ = logINFO;
+
 static std::string timeStamp() {
 	std::time_t		stamp;
 	struct tm		*timeinfo;
@@ -24,18 +26,15 @@ static std::string printCurrentLevel(TLogLevel level) {
 std::ostringstream& Log::Get(TLogLevel level)
 {
 	messageLevel_ = level;
-	os << "- " << timeStamp();
-	os << " " << printCurrentLevel(level) << ": ";
+	os << "[" << timeStamp();
+	os << "] " << printCurrentLevel(level) << ": ";
 	return os;
 }
 Log::~Log()
 {
 	os << std::endl;
-	std::cerr << os.str().c_str();
-	/*if (messageLevel_ > logDEBUG)
-	{
+	if (messageLevel_ >= level_)
 		std::cout << os.str().c_str();
-	}*/
 }
 
 Log::Log() {}
@@ -44,6 +43,10 @@ Log::Log(const Log &) {}
 
 Log &Log::operator=(const Log &) {
 	return *this;
+}
+
+void Log::setLevel(TLogLevel level) {
+	level_ = level;
 }
 
 /*void Log::SetLevel(TLogLevel level) {

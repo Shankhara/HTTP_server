@@ -10,7 +10,7 @@ int Client::onDataReceived()
 {
 	static char buf[256];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
-	Log().Get(logDEBUG) << "client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
+	Log().Get(logDEBUG) << "Server" << listenerId_ << " client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
@@ -26,7 +26,7 @@ int Client::onDataReceived()
 void Client::sendResponse()
 {
 	if (send(fd_, response_.c_str(), response_.length(), 0) == -1)
-		Log().Get(logERROR) << "client " << addr_.ss_family << "send error" << strerror(errno);
+		Log().Get(logERROR) << "Server" << listenerId_ << " client " << addr_.ss_family << "send error" << strerror(errno);
 }
 
 void Client::setAddr(struct sockaddr_storage addr) {
@@ -39,4 +39,8 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 std::string &Client::getResponse() {
 	return response_;
+}
+
+void Client::setListenerId(int listenerId) {
+	listenerId_ = listenerId;
 }
