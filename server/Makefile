@@ -3,7 +3,7 @@ SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Client.cpp
 SRCS	+= Logger.cpp
-SRCS	+= Request.cpp
+#SRCS	+= Request.cpp
 CFLAGS	= -Wall -Wextra -Werror -g3
 CC		= clang++
 

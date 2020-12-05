@@ -29,8 +29,8 @@ void Server::listen_()
     }
 	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = htonl(INADDR_ANY); // htonl isnt authorized by subject
-	server.sin_port = htons(8080); // same
+	server.sin_addr.s_addr = ft_htonl(INADDR_ANY);
+	server.sin_port = ft_htons(port_);
 	if ((bind(sockfd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
