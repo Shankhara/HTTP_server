@@ -10,7 +10,7 @@ Server::~Server() {
 	}
 }
 
-Server::Server(): name_("webserv"), port_(80)
+Server::Server()
 {
 	clients_.reserve(FD_SETSIZE);
 	for (int i = 0; i < FD_SETSIZE; i++)
@@ -18,28 +18,28 @@ Server::Server(): name_("webserv"), port_(80)
 	instance = this;
 }
 
-void Server::listen_()
+void Server::listen_(struct s_listener &listener)
 {
 	struct sockaddr_in server;
 
-	if ((sockfd_ = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	if ((listener.fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in socket()\n";
-	    exit(8);
+	    exit(EXIT_FAILURE);
     }
 	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = htonl_(INADDR_ANY);
-	server.sin_port = htons_(port_);
-	if ((bind(sockfd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
+	server.sin_port = htons_(listener.port);
+	if ((bind(listener.fd, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
-	    exit(8);
+	    exit(EXIT_FAILURE);
     }
-    if (listen(sockfd_, FD_SETSIZE) == -1)
+    if (listen(listener.fd, FD_SETSIZE) == -1)
 	{
     	Log().Get(logERROR) << "server:start -> error in listen() " << strerror(errno);
-	    exit(8);
+	    exit(EXIT_FAILURE);
 	}
 }
 
@@ -49,23 +49,24 @@ void Server::run_()
 
 	FD_ZERO(&master_);
 	FD_ZERO(&conn_fds);
-	FD_SET(sockfd_, &master_);
-	fdmax_ = sockfd_;
+	for (unsigned long i = 0; i < listeners_.size(); i++)
+		FD_SET(listeners_[i].fd, &master_);
+	fdmax_ = listeners_[listeners_.size() - 1].fd;
 	for (;;)
 	{
 		conn_fds = master_;
 		if (select(fdmax_+1, &conn_fds, NULL, NULL, NULL) == -1)
 		{
 			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
-			exit(4);
+			exit(EXIT_FAILURE);
 		}
 		Log().Get(logDEBUG) << "server::run -> select UNLOCK";
 		for (int i = 0; i <= fdmax_; i++)
 		{
 			if (FD_ISSET(i, &conn_fds))
 			{
-				if (i == sockfd_)
-					onClientConnect();
+				if (isListener_(i))
+					onClientConnect(i);
 				else if (clients_[i].onDataReceived() <= 0)
 						onClientDisconnect(i);
 			}
@@ -75,19 +76,21 @@ void Server::run_()
 
 void Server::start()
 {
-	Log().Get(logINFO) << "Server " << name_ << " started on port " << port_ << " (maxconn: " << FD_SETSIZE << ")";
-	Server::listen_();
+	for (unsigned long i = 0; i < listeners_.size(); i++){
+		Server::listen_(listeners_[i]);
+		Log().Get(logINFO) << "Server " << listeners_[i].name << " started on port " << listeners_[i].port << " (maxconn: " << FD_SETSIZE << ")";
+	}
 	Server::run_();
 }
 
 
-void Server::onClientConnect() {
+void Server::onClientConnect(int listener) {
 	socklen_t 				addrlen;
 	struct sockaddr_storage remoteaddr;
 	int						newfd;
 
 	addrlen = sizeof(remoteaddr);
-	if ((newfd = accept(sockfd_, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
+	if ((newfd = accept(listener, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
 	{
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
@@ -105,15 +108,15 @@ void Server::onClientDisconnect(int fd_) {
 	FD_CLR(fd_, &master_);
 }
 
-Server *Server::getInstance() {
+Server *Server::getInstance()
+{
 	if (instance == 0)
-	{
 		instance = new Server();
-	}
 	return instance;
 }
 
-uint32_t Server::htonl_(uint32_t hostlong) {
+uint32_t Server::htonl_(uint32_t hostlong)
+{
 	long ui = 0;
 
 	ui |= (hostlong & 0xFF000000) >> 24;
@@ -123,7 +126,8 @@ uint32_t Server::htonl_(uint32_t hostlong) {
 	return (ui);
 }
 
-uint16_t Server::htons_(uint16_t hostshort) {
+uint16_t Server::htons_(uint16_t hostshort)
+{
 	long ui = 0;
 
 	ui |= (hostshort & 0xFF) << 8;
@@ -131,12 +135,22 @@ uint16_t Server::htons_(uint16_t hostshort) {
 	return (ui);
 }
 
-void Server::setName(const std::string &name) {
-	name_ = name;
+bool Server::isListener_(int fd)
+{
+	for (unsigned long i = 0; i < listeners_.size(); i++)
+	{
+		if (listeners_[i].fd == fd)
+			return true;
+	}
+	return false;
 }
 
-void Server::setPort(int port) {
-	port_ = port;
+void Server::addListener(const std::string &name, const std::string &ip, int port)
+{
+	struct s_listener listener;
+	listener.name = name;
+	listener.port = port;
+	std::string ip_ = ip;
+	listeners_.push_back(listener);
 }
-
 

@@ -15,32 +15,36 @@
 #include <vector>
 #include "Client.hpp"
 #include "Logger.hpp"
-#include "hton.hpp"
+
+struct s_listener {
+	int			port;
+	int			fd;
+	std::string name;
+	uint32_t	ipv4;
+};
 
 class Server
 {
 private:
-	static Server		*instance;
-	std::string			name_;
-	int					port_;
-	std::vector<Client>	clients_;
-    int					sockfd_;
-    int 				fdmax_;
-	fd_set				master_;
+	static Server					*instance;
+	std::vector<Client>				clients_;
+    std::vector<struct s_listener>	listeners_;
+    int 							fdmax_;
+	fd_set							master_;
 	Server();
     void 				run_();
-	void 				listen_();
+	void 				listen_(struct s_listener &);
+	bool        		isListener_(int fd);
 	uint32_t 			htonl_(uint32_t);
 	uint16_t 			htons_(uint16_t);
 
 public:
 	~Server();
 	static Server		*getInstance();
-	void 		onClientConnect();
+	void 		onClientConnect(int);
 	void 		onClientDisconnect(int);
     void 		start();
-	void		setName(const std::string &name);
-	void 		setPort(int port);
+	void		addListener(const std::string &name, const std::string &ip, int port);
 };
 
 #endif

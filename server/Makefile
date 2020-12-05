@@ -1,4 +1,4 @@
-NAME	= server
+NAME	= webserver
 SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Client.cpp
@@ -32,7 +32,8 @@ fclean:	clean
 re:		fclean all
 
 run: all
-	@./server
+	@./webserver
+	@rm -f ./webserver
 
 tests:
 	@make -C ./unittests/

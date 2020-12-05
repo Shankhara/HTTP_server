@@ -15,8 +15,9 @@ int main() {
 	signal(SIGINT, signalHandler);
 	//Log::SetLevel(logDEBUG);
 	Server *webserv = Server::getInstance();
-	webserv->setName("webserv");
-	webserv->setPort(8080);
+	webserv->addListener("webserver 0", "notUsed", 8080);
+	webserv->addListener("webserver 1", "notUsed", 8081);
+	webserv->addListener("webserver 2", "notUsed", 8082);
 	webserv->start();
 }
 
