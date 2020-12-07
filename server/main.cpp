@@ -14,9 +14,9 @@ int main(int argc, char *argv[]) {
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0)
 		Log::setLevel(logDEBUG);
 	Server *webserv = Server::getInstance();
-	webserv->addListener("Webserver 0", "notUsed", 8080);
-	webserv->addListener("Webserver 1", "notUsed", 8081);
-	webserv->addListener("Webserver 2", "notUsed", 8082);
+	webserv->addListener("Webserver 0", "127.0.0.1", 8080);
+	webserv->addListener("Webserver 1", "127.0.0.1", 8081);
+	webserv->addListener("Webserver 2", "0.0.0.0", 8082);
 	webserv->start();
 }
 

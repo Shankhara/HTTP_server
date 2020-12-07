@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <vector>
+#include <arpa/inet.h>
 #include "Client.hpp"
 #include "Logger.hpp"
 
@@ -35,16 +36,15 @@ private:
     void 							run_();
 	void			 				listen_(struct s_listener &);
 	bool        					isListener_(int fd);
-	uint32_t 						htonl_(uint32_t);
 	uint16_t 						htons_(uint16_t);
 
 public:
 	~Server();
 	static Server		*getInstance();
-	void 		onClientConnect(int);
-	void 		onClientDisconnect(int);
-    void 		start();
-	void		addListener(const std::string &name, const std::string &ip, int port);
+	void 				onClientConnect(int);
+	void				onClientDisconnect(int);
+    void 				start();
+	void				addListener(const std::string &, const std::string &, int);
 };
 
 #endif
