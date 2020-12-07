@@ -29,7 +29,7 @@ void Server::listen_(struct s_listener &listener)
     }
 	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = htonl_(INADDR_ANY);
+	server.sin_addr.s_addr = listener.ipv4;
 	server.sin_port = htons_(listener.port);
 	if ((bind(listener.fd, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
@@ -78,7 +78,6 @@ void Server::start()
 {
 	for (unsigned long i = 0; i < listeners_.size(); i++){
 		Server::listen_(listeners_[i]);
-		Log().Get(logINFO) << listeners_[i].name << " started on port " << listeners_[i].port << " (maxconn: " << FD_SETSIZE << ")";
 	}
 	Server::run_();
 }
@@ -115,17 +114,6 @@ Server *Server::getInstance()
 	return instance_;
 }
 
-uint32_t Server::htonl_(uint32_t hostlong)
-{
-	long ui = 0;
-
-	ui |= (hostlong & 0xFF000000) >> 24;
-	ui |= (hostlong & 0x00FF0000) >> 8;
-	ui |= (hostlong & 0x0000FF00) << 8;
-	ui |= (hostlong & 0x000000FF) << 24;
-	return (ui);
-}
-
 uint16_t Server::htons_(uint16_t hostshort)
 {
 	long ui = 0;
@@ -150,8 +138,8 @@ void Server::addListener(const std::string &name, const std::string &ip, int por
 	struct s_listener listener;
 	listener.name = name;
 	listener.port = port;
-	// TODO: ip
-	std::string ip_ = ip;
+	listener.ipv4 = inet_addr(ip.c_str());
 	listeners_.push_back(listener);
+	Log().Get(logINFO) << name << " started on port " << ip << ":" << port << " (maxconn: " << FD_SETSIZE << ")";
 }
 

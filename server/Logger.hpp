@@ -25,7 +25,6 @@ public:
 	virtual ~Log();
 	std::ostringstream& Get(TLogLevel level = logINFO);
 	static void setLevel(TLogLevel level);
-
 };
 
 
