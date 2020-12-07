@@ -1,11 +1,33 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
-Request::Request() { }
+Request::Request()
+{
+	headers_.resize(18);
+}
 
-Request::Request(Client c) : client(c) { }
+Request::Request(Client c) : client(c)
+{
+	headers_.resize(18);
+}
 
-Request::~Request() { }
+Request::~Request()
+{
+
+}
+
+std::vector<std::string> Request::workNextLine(std::string & line, const char & c)
+{
+	std::vector<std::string> res;
+
+	getNextLine(request_, line);
+	if (!line.empty())
+	{
+		line.erase(line.find('\r'));
+		res = explode(line, c);
+	}
+	return (res);
+}
 
 int Request::checkMethod()
 {
@@ -15,24 +37,19 @@ int Request::checkMethod()
 	{
 		if ((ret = requestLine_[METHOD].find(methods[i])))
 		{
-			ret += methods[i].size();
-			if (requestLine_[METHOD].at(ret))
-				return (1);
-			break;
+			if (requestLine_[METHOD].size() == methods[i].size())
+				return (0);
 		}
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 int Request::parseRequestLine()
 {
 	std::string line;
-
-	getNextLine(request_, line);
-	line.erase(line.find('\r'));
-	requestLine_ = explode(line, ' ');
 	
+	requestLine_ = workNextLine(line, ' ');
 	if (requestLine_.size() != 3)
 	{
 		// LOG ERROR REQUESTLINE
@@ -46,15 +63,38 @@ int Request::parseRequestLine()
 	return (0);
 }
 
-void Request::parse()
+int Request::parseHeaders()
 {
-	int ret = 0;
-	
+	int dist;
+	std::string line;
+	std::vector<std::string> headerLine;
+	std::vector<std::string>::iterator it = headersName.begin();
+	std::vector<std::string>::iterator ite = headersName.end();
+	std::vector<std::string>::iterator itx;
+
+	while (!(headerLine = workNextLine(line, ':')).empty())
+	{
+  		std::string::iterator st = headerLine[HEADERTITLE].begin();
+  		std::string::iterator ste = headerLine[HEADERTITLE].end();
+
+  		std::transform(st, ste, st, [](unsigned char c)-> unsigned char { return std::tolower(c); });
+		itx = std::find(it, ite, headerLine[HEADERTITLE]);
+		if (itx == ite)
+			return (1); // En cas de flag non conforme
+		dist = std::distance(it, itx);
+		headers_[dist] = headerLine[HEADERCONTENT];
+		//LOG FLAG PARSE SUCCESS
+	}
+	return (0);
+}
+
+int Request::parse()
+{
 	request_ = client.getResponse();
 	
     if (parseRequestLine())
-		return;
+		return (1);
 	if (parseHeaders())
-		return;
-	return (ret);
+		return (1);
+	return (0);
 }
