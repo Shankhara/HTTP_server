@@ -3,14 +3,15 @@
 #include <iostream>
 
 template <typename T>
-bool assertEqual(const T &t2,const T &t1, const std::string &testName)
+bool assertEqual(const T &t2, const T &t1, const std::string &testName)
 {
 	if (t1 == t2)
 	{
 		std::cout << "\033[1;32mSuccess\033[0m > " << testName << " > assertEqual" << std::endl;
 		return true;
 	}
-	std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting (" << t1 << ") got (" << t2 << ")" << std::endl;
+	std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting (" << t1 \
+	<< ") got (" << t2 << ")" << std::endl;
 	return false;
 }
 
