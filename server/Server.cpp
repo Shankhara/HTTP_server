@@ -76,9 +76,8 @@ void Server::run_()
 
 void Server::start()
 {
-	for (unsigned long i = 0; i < listeners_.size(); i++){
+	for (unsigned long i = 0; i < listeners_.size(); i++)
 		Server::listen_(listeners_[i]);
-	}
 	Server::run_();
 }
 
