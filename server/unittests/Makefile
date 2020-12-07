@@ -3,9 +3,9 @@ SRCS	= unittests.cpp
 SRCS	+= ../Client.cpp
 SRCS	+= ../Request.cpp
 SRCS	+= ../Logger.cpp
-SRCS	+= ../CommonGatewayInterfaceRequest.cpp
+SRCS	+= ../CGIExec.cpp
 
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+CFLAGS	= -Wall -Wextra -Werror
 CC		= clang++
 
 OBJDIR	= .objs

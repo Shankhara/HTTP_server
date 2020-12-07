@@ -1,8 +1,7 @@
-#include "CommonGatewayInterfaceRequest.hpp"
+#include "CGIExec.hpp"
 
-CommonGatewayInterfaceRequest::CommonGatewayInterfaceRequest(const std::string &scriptPath): cgiScript_(scriptPath)
+CGIExec::CGIExec(const std::string &scriptPath): cgiScript_(scriptPath)
 {
-	envs_.push_back(const_cast<char *>(scriptPath.c_str()));
 	envs_.push_back(const_cast<char*>("AUTH_TYPE="));
 	envs_.push_back(const_cast<char*>("CONTENT_LENGTH=0"));
 	envs_.push_back(const_cast<char*>("CONTENT_TYPE="));
@@ -24,11 +23,11 @@ CommonGatewayInterfaceRequest::CommonGatewayInterfaceRequest(const std::string &
 	envs_.push_back(NULL);
 }
 
-CommonGatewayInterfaceRequest::~CommonGatewayInterfaceRequest() {
+CGIExec::~CGIExec() {
 
 }
 
-void CommonGatewayInterfaceRequest::run() throw() {
+void CGIExec::run() {
 	pid_t cpid = fork();
 	int status;
 
@@ -41,7 +40,7 @@ void CommonGatewayInterfaceRequest::run() throw() {
 		exec_();
 	else
 	{
-		if (waitpid(cpid, &status, NULL) == -1)
+		if (waitpid(cpid, &status, 0) == -1)
 		{
 			Log().Get(logERROR) << "waitpid: " << strerror(errno);
 			throw ("waitpid");
@@ -49,8 +48,9 @@ void CommonGatewayInterfaceRequest::run() throw() {
 	}
 }
 
-void CommonGatewayInterfaceRequest::exec_() {
-	int ret = execve(envs_.data()[0], NULL, &envs_.data()[0]);
+void CGIExec::exec_() {
+	char * const cmd[] = { const_cast<char *>(cgiScript_.c_str()), NULL};
+	int ret = execve(cgiScript_.c_str(), cmd, &envs_.data()[0]);
 	if (ret == -1)
 	{
 		Log().Get(logERROR) << "execve " << strerror(errno);

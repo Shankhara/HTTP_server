@@ -2,11 +2,11 @@
 #define WEBSERV_CGI_HPP
 
 #include "tests.hpp"
-#include "../CommonGatewayInterfaceRequest.hpp"
+#include "../CGIExec.hpp"
 
 void testCGI()
 {
-	CommonGatewayInterfaceRequest("./test.sh").run();
+	CGIExec("./test.sh").run();
 }
 
 #endif //WEBSERV_CGI_HPP
