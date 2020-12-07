@@ -8,7 +8,7 @@ void testRequest()
 {
 	Client c(0);
 
-	std::string get = "GET /http://localhost:8080 HTTP/1.1\r\nUser-Agent: 1\r\nReferer: 2\r\nContent-Type: 3\r\n\r\n";
+	std::string get = "GET /qwe HTTP/1.1\r\nUser-Agent: 1\r\nReferer: 2\r\nContent-Type: 3\r\n\r\n";
 //FAIL	std::string get = "GET /http://localhost:8080 HTTP/1.1\r\nUser-Agent: 1\r\nReferer: 2\r\nContent-Type: 3\r\nBonjour\r\n";
 //FAIL	std::string get = "GETGET /http://localhost:8080 HTTP/1.1\r\n";
 //FAIL	std::string get = "GET GET /http://localhost:8080 HTTP/1.1\r\n";

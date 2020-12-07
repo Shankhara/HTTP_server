@@ -82,7 +82,8 @@ void Server::start()
 }
 
 
-void Server::onClientConnect(int listener) {
+void Server::onClientConnect(int listener)
+{
 	socklen_t 				addrlen;
 	struct sockaddr_storage remoteaddr;
 	int						newfd;

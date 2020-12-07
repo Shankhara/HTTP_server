@@ -1,9 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "Client.hpp"
 #include <algorithm>
-#include <locale>
+#include "Client.hpp"
 
 #define LEN 100
 #define CRLF "\r\n\r\n"
@@ -42,5 +41,6 @@ class Request
 	int parseRequestLine();
 	int parseHeaders();
 	int checkMethod();
+	int checkCRLF();
 	std::vector<std::string> workNextLine(std::string &, const char &);
 };

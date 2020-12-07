@@ -88,10 +88,19 @@ int Request::parseHeaders()
 	return (0);
 }
 
+int Request::checkCRLF()
+{
+	if (request_.find(CRLF) == std::string::npos)
+		return (1);
+	return (0);
+}
+
 int Request::parse()
 {
 	request_ = client.getResponse();
 	
+	if (checkCRLF())
+		return (1);
     if (parseRequestLine())
 		return (1);
 	if (parseHeaders())
