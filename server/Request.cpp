@@ -22,11 +22,12 @@ std::vector<std::string> Request::workNextLine(std::string & line, const char & 
 	size_t i;
 
 	getNextLine(request_, line);
+
 	if (!line.empty())
 	{
-		if ((i = line.find('\r') == std::string::npos))
-			return (res); // Pas de CRLF en fin de ligne
-		line.erase(i);
+		if ((i = line.find('\r')) == std::string::npos)
+			return (res); // Pas de CR
+		line.erase(line.begin() + i);
 		res = explode(line, c);
 	}
 	return (res);
