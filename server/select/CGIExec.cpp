@@ -1,7 +1,5 @@
 #include "CGIExec.hpp"
 
-CGIExec* CGIExec::instance_ = 0;
-
 const std::string CGIExec::vars_[] = {
 								  "AUTH_TYPE=",
 								  "CONTENT_LENGTH=",
@@ -21,12 +19,10 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::CGIExec() {};
-
 CGIExec::~CGIExec() {}
 
-void CGIExec::build(const Request &request)
-{
+CGIExec::CGIExec(const Request &r): request_(r) {
+	envs_.reserve(16);
 	setEnv_(AUTH_TYPE, "");
 	setEnv_(CONTENT_LENGTH, "0");
 	setEnv_(GATEWAY_INTERFACE, "");
@@ -50,9 +46,9 @@ void CGIExec::run()
 {
 	int pfd[2];
 	pid_t cpid = fork();
-	int status;
 
-	if (pipe(pfd)){
+	if (pipe(pfd))
+	{
 		Log().Get(logERROR) << "Unable to pipe: " << strerror(errno);
 		throw ;
 	}
@@ -64,18 +60,15 @@ void CGIExec::run()
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
+		Server::getInstance()->addFileDescriptor(*this);
 		exec_();
+		//TODO: remove FD from master set
 	}
 	else
 	{
+		// Since pfd[1] is going to be monitored by select lets not wait for a response from our CGI
 		close(pfd[0]);
 		close(pfd[1]);
-		// FOR NOW LETS WAIT
-		if (waitpid(cpid, &status, 0) == -1)
-		{
-			Log().Get(logERROR) << "waitpid: " << strerror(errno);
-			throw ;
-		}
 	}
 }
 
@@ -85,7 +78,7 @@ void CGIExec::exec_()
 	int ret = execve(cgiScript_.c_str(), cmd, &envs_.data()[0]);
 	if (ret == -1)
 	{
-		Log().Get(logERROR) << "execve " << strerror(errno);
+		Log().Get(logERROR) << "Unable to execve " << strerror(errno);
 		throw;
 	}
 }
@@ -108,6 +101,7 @@ void	CGIExec::pipeStdout(int pfd[2])
 		Log().Get(logERROR) << "Unable to close " << strerror(errno);
 		throw ;
 	}
+	fd_ = STDOUT_FILENO;
 }
 
 void CGIExec::setEnv_(int name, std::string c)
@@ -116,9 +110,7 @@ void CGIExec::setEnv_(int name, std::string c)
 	envs_[name] = const_cast<char *>(buf.c_str());
 }
 
-CGIExec *CGIExec::getInstance()
-{
-	if (instance_ == 0)
-		instance_ = new CGIExec();
-	return instance_;
+
+void CGIExec::onEvent() {
+	//clientSendResponse
 }

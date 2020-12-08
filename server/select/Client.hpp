@@ -7,9 +7,10 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/socket.h>
-#include "Logger.hpp"
+#include "../Logger.hpp"
+#include "FileDescriptor.hpp"
 
-class Client {
+class Client: public FileDescriptor {
 
 private:
 	int 			listenerId_;
@@ -22,11 +23,11 @@ public:
 	Client();
 	Client(int);
 	~Client();
-	int					onDataReceived();
 	void 				constructRequest(char [], int);
 	void 				sendResponse();
 	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
 	void				setListenerId(int listenerId);
+	void 				onEvent();
 };
 #endif //WEBSERV_CLIENT_HPP

@@ -1,16 +1,19 @@
 #ifndef WEBSERV_CGIEXEC_HPP
 #define WEBSERV_CGIEXEC_HPP
 
-#include "Logger.hpp"
+#include "../Logger.hpp"
 #include <unistd.h>
 #include <errno.h>
 #include <cstring>
 #include <wait.h>
 #include <vector>
-#include "Request.hpp"
+#include "../Request.hpp"
+#include "../Server.hpp"
+#include "FileDescriptor.hpp"
 
-class CGIExec {
+class CGIExec: public FileDescriptor {
 private:
+	int							fd_;
 	const Request				request_;
 	static const std::string	vars_[];
 	std::vector<char *>	envs_;
@@ -34,15 +37,14 @@ private:
 		SERVER_PROTOCOL,
 		SERVER_SOFTWARE
 	};
-	void							exec_();
+	void						exec_();
 	void 						setEnv_(int name, std::string c);
 	void 						pipeStdout(int pfd[2]);
-	CGIExec();
 
 public:
-	void 						build(const Request &);
-	static CGIExec				*getInstance();
+	CGIExec(const Request &);
 	void 						run();
+	void 						onEvent();
 	~CGIExec();
 };
 

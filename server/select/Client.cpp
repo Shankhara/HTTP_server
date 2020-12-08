@@ -6,21 +6,19 @@ Client::Client(int fd): fd_(fd), keepAlive_(false){}
 
 Client::~Client() {}
 
-int Client::onDataReceived()
+void Client::onEvent()
 {
 	static char buf[256];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
-	Log().Get(logDEBUG) << "Server" << listenerId_ << " client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
+	Log().Get(logDEBUG) << "Client" << listenerId_ << " client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
-			Log().Get(logERROR) << "client " << addr_.ss_family << "recv error" << strerror(errno);
-		return (nbytes);
+			Log().Get(logERROR) << "Client " << addr_.ss_family << "recv error" << strerror(errno);
 	}
 	constructRequest(buf, nbytes);
 	if (response_.length() > 0)
 		sendResponse();
-	return (nbytes);
 }
 
 void Client::sendResponse()
@@ -44,3 +42,4 @@ std::string &Client::getResponse() {
 void Client::setListenerId(int listenerId) {
 	listenerId_ = listenerId;
 }
+
