@@ -5,7 +5,7 @@
 #include "Client.hpp"
 
 #define LEN 100
-#define CRLF "\r\n\r\n"
+#define CRLF "\r\n"
 
 class Client;
 
@@ -15,6 +15,7 @@ class Request
 	std::string request_;
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headers_;
+	std::string msgBody_;
 
 	public:
 	Request();
@@ -41,6 +42,7 @@ class Request
 	int parseRequestLine();
 	int parseHeaders();
 	int checkMethod();
-	int checkCRLF();
+	int checkHeadersEnd();
+	int getBody();
 	std::vector<std::string> workNextLine(std::string &, const char &);
 };
