@@ -19,11 +19,14 @@ Request::~Request()
 std::vector<std::string> Request::workNextLine(std::string & line, const char & c)
 {
 	std::vector<std::string> res;
+	size_t i;
 
 	getNextLine(request_, line);
 	if (!line.empty())
 	{
-		line.erase(line.find('\r'));
+		if ((i = line.find('\r') == std::string::npos))
+			return (res); // Pas de CRLF en fin de ligne
+		line.erase(i);
 		res = explode(line, c);
 	}
 	return (res);
@@ -36,10 +39,8 @@ int Request::checkMethod()
 	while (i < methods.size())
 	{
 		if ((ret = requestLine_[METHOD].find(methods[i])))
-		{
 			if (requestLine_[METHOD].size() == methods[i].size())
 				return (0);
-		}
 		i++;
 	}
 	return (1);
@@ -88,22 +89,41 @@ int Request::parseHeaders()
 	return (0);
 }
 
-int Request::checkCRLF()
+int Request::checkHeadersEnd()
 {
-	if (request_.find(CRLF) == std::string::npos)
+	if (request_.find("\r\n\r\n") == std::string::npos)
 		return (1);
 	return (0);
+}
+
+int Request::getBody()
+{
+	std::string line;
+
+	if (request_.empty())
+	{
+		if (!headers_[CONTENT_LENGTH].empty() || !headers_[TRANSFER_ENCODING].empty())
+			return (1); // Ces deux headers impliquent un body
+	}
+	else
+	{
+		getNextLine(request_, line);
+		msgBody_ = line;
+	}
+	return (0);	
 }
 
 int Request::parse()
 {
 	request_ = client.getResponse();
 	
-	if (checkCRLF())
+	if (checkHeadersEnd())
 		return (1);
     if (parseRequestLine())
 		return (1);
 	if (parseHeaders())
+		return (1);
+	if (getBody())
 		return (1);
 	return (0);
 }

@@ -4,24 +4,17 @@
 #include <vector>
 #include <string>
 
-const std::vector<std::string> explode(const std::string & str, const char & delim)
+std::vector<std::string> explode(const std::string & str, const char & delim)
 {
-	std::string buf;
+	size_t start, end = 0;
 	std::vector<std::string> res;
-	
-	for (char i:str)
+
+	while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
 	{
-		if (i != delim)
-			buf += i;
-		else if (i == delim && !buf.empty())
-		{
-			res.push_back(buf);
-			buf.clear();
-		}
+		end = str.find(delim, start);
+		res.push_back(str.substr(start, end - start));
 	}
-	if (!buf.empty())
-		res.push_back(buf);
-	return res;
+	return (res);
 }
 
 int getNextLine(std::string & buf, std::string & line)
