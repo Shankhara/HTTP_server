@@ -1,31 +1,48 @@
 #include "CGIExec.hpp"
 
-CGIExec::CGIExec(const std::string &scriptPath): cgiScript_(scriptPath)
+std::vector<char *> envs_(16);
+
+const std::string CGIExec::vars_[] = {
+								  "AUTH_TYPE=",
+								  "CONTENT_LENGTH=",
+								  "GATEWAY_INTERFACE=",
+								  "PATH_INFO=",
+								  "PATH_TRANSLATED=",
+								  "QUERY_STRING=",
+								  "REMOTE_ADDR=",
+								  "REMOTE_IDENT=",
+								  "REMOTE_USER=",
+								  "REQUEST_METHOD=",
+								  "REQUEST_URI=",
+								  "SCRIPT_NAME=",
+								  "SERVER_NAME=",
+								  "SERVER_PORT=",
+								  "SERVER_PROTOCOL=",
+								  "SERVER_SOFTWARE="
+};
+
+CGIExec::CGIExec(const Request &request): request_(request)
 {
-	envs_.push_back(const_cast<char*>("AUTH_TYPE="));
-	envs_.push_back(const_cast<char*>("CONTENT_LENGTH=0"));
-	envs_.push_back(const_cast<char*>("CONTENT_TYPE="));
-	envs_.push_back(const_cast<char*>("GATEWAY_INTERFACE="));
-	envs_.push_back(const_cast<char*>("PATH_INFO=/"));
-	envs_.push_back(const_cast<char*>("PATH_TRANSLATED=/"));
-	envs_.push_back(const_cast<char*>("QUERY_STRING="));
-	envs_.push_back(const_cast<char*>("PATH_TRANSLATED=/"));
-	envs_.push_back(const_cast<char*>("REMOTE_ADDR=127.0.0.1"));
-	envs_.push_back(const_cast<char*>("REMOTE_IDENT="));
-	envs_.push_back(const_cast<char*>("REMOTE_USER="));
-	envs_.push_back(const_cast<char*>("REQUEST_METHOD=GET"));
-	envs_.push_back(const_cast<char*>("REQUEST_URI="));
-	envs_.push_back(const_cast<char*>("SCRIPT_NAME=/cgi/test.cgi"));
-	envs_.push_back(const_cast<char*>("SERVER_NAME=webserver"));
-	envs_.push_back(const_cast<char*>("SERVER_PORT=8080"));
-	envs_.push_back(const_cast<char*>("SERVER_PROTOCOL=HTTP1.1"));
-	envs_.push_back(const_cast<char*>("SERVER_SOFTWARE=Webserver/0.0.0"));
-	envs_.push_back(NULL);
+	setEnv_(AUTH_TYPE, "");
+	setEnv_(CONTENT_LENGTH, "");
+	setEnv_(GATEWAY_INTERFACE, "");
+	setEnv_(PATH_INFO, "");
+	setEnv_(PATH_TRANSLATED, "");
+	setEnv_(QUERY_STRING, "");
+	setEnv_(REMOTE_ADDR, "");
+	setEnv_(REMOTE_IDENT, "");
+	setEnv_(REMOTE_USER, "");
+	setEnv_(REQUEST_METHOD, "");
+	setEnv_(REQUEST_URI, "");
+	setEnv_(SCRIPT_NAME, "");
+	setEnv_(SERVER_NAME, "");
+	setEnv_(SERVER_PORT, "");
+	setEnv_(SERVER_PROTOCOL, "");
+	setEnv_(SERVER_SOFTWARE, "webserver");
+	envs_[15] = NULL;
 }
 
-CGIExec::~CGIExec() {
-
-}
+CGIExec::~CGIExec() {}
 
 void CGIExec::run() {
 	pid_t cpid = fork();
@@ -56,4 +73,10 @@ void CGIExec::exec_() {
 		Log().Get(logERROR) << "execve " << strerror(errno);
 		return ;
 	}
+}
+
+
+void CGIExec::setEnv_(int name, std::string c) {
+	std::string buf = vars_[name] + c;
+	envs_[name] = const_cast<char *>(buf.c_str());
 }

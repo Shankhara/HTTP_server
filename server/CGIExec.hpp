@@ -7,15 +7,37 @@
 #include <cstring>
 #include <wait.h>
 #include <vector>
+#include "Request.hpp"
 
 class CGIExec {
 private:
+	const Request				request_;
+	static const std::string	vars_[];
+	static std::vector<char *>	envs_;
 	std::string 				cgiScript_;
-	std::vector<char *>			envs_;
+	enum e_envs {
+		AUTH_TYPE,
+		CONTENT_LENGTH,
+		GATEWAY_INTERFACE,
+		PATH_INFO,
+		QUERY_STRING,
+		PATH_TRANSLATED,
+		REMOTE_ADDR,
+		REMOTE_IDENT,
+		REMOTE_USER,
+		REQUEST_METHOD,
+		REQUEST_URI,
+		SCRIPT_NAME,
+		SERVER_NAME,
+		SERVER_PORT,
+		SERVER_PROTOCOL,
+		SERVER_SOFTWARE
+	};
 	void						exec_();
+	void 						setEnv_(int name, std::string c);
 
 public:
-	CGIExec(const std::string &);
+	CGIExec(const Request &);
 	~CGIExec();
 	void run();
 };
