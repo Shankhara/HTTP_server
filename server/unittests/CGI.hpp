@@ -6,7 +6,7 @@
 
 void testCGI()
 {
-	CGIExec("./test.sh").run();
+	//CGIExec("./test.sh").run();
 }
 
 #endif //WEBSERV_CGI_HPP

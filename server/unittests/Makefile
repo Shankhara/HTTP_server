@@ -3,7 +3,7 @@ SRCS	= unittests.cpp
 SRCS	+= ../Client.cpp
 SRCS	+= ../Request.cpp
 SRCS	+= ../Logger.cpp
-SRCS	+= ../CGIExec.cpp
+#SRCS	+= ../CGIExec.cpp
 
 CFLAGS	= -Wall -Wextra -Werror
 CC		= clang++

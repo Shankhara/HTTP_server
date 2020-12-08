@@ -13,7 +13,8 @@ class CGIExec {
 private:
 	const Request				request_;
 	static const std::string	vars_[];
-	static std::vector<char *>	envs_;
+	std::vector<char *>	envs_;
+	static CGIExec				*instance_;
 	std::string 				cgiScript_;
 	enum e_envs {
 		AUTH_TYPE,
@@ -33,13 +34,16 @@ private:
 		SERVER_PROTOCOL,
 		SERVER_SOFTWARE
 	};
-	void						exec_();
+	void							exec_();
 	void 						setEnv_(int name, std::string c);
+	void 						pipeStdout(int pfd[2]);
+	CGIExec();
 
 public:
-	CGIExec(const Request &);
+	void 						build(const Request &);
+	static CGIExec				*getInstance();
+	void 						run();
 	~CGIExec();
-	void run();
 };
 
 
