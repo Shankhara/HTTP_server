@@ -1,12 +1,12 @@
 #pragma once
 
 #include "tests.hpp"
-#include "../fileDescriptors/Client.hpp"
+#include "../fds/Client.hpp"
 #include "../Request.hpp"
 
 void testRequest()
 {
-	Client c(0);
+	Client c(0, 0);
 
 	std::string get = "GET /qwe HTTP/1.1\r\nContent-length: 1\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 //FAIL	std::string get = "GET /qwe HTTP/1.1\nUser-Agent: 1\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body\r\n";
@@ -22,7 +22,7 @@ void testRequest()
 
 void testClient()
 {
-	Client c(0);
+	Client c(0, 0);
 
 	std::string get = "HTTP 1.1 GET /\r\n\r\n";
 	c.constructRequest(const_cast<char *>(get.c_str()), get.size());

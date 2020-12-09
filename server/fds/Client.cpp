@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd): keepAlive_(false){
+Client::Client(int fd, FileDescriptor *f): listener_(f), keepAlive_(false){
 	fd_ = fd;
 	Server::getInstance()->addFileDescriptor(this);
 }
@@ -49,10 +49,5 @@ void Client::constructRequest(char buf[], int nbytes) {
 std::string &Client::getResponse()
 {
 	return response_;
-}
-
-void Client::setListener(FileDescriptor &l)
-{
-	listener_ = &l;
 }
 

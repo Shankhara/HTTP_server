@@ -14,19 +14,18 @@
 class Client: public FileDescriptor {
 
 private:
-	FileDescriptor 		*listener_;
+	FileDescriptor 			*listener_;
 	struct sockaddr_storage addr_;
-	std::string		response_;
-	bool 			keepAlive_;
+	std::string				response_;
+	bool 					keepAlive_;
 
 public:
-	Client(int);
+	Client(int, FileDescriptor *);
 	virtual ~Client();
 	void 				constructRequest(char [], int);
 	void 				sendResponse();
 	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
-	void				setListener(FileDescriptor &);
 	void 				onEvent();
 };
 #endif //WEBSERV_CLIENT_HPP

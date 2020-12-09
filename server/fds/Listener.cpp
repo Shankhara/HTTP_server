@@ -22,10 +22,8 @@ void Listener::onNewClient()
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-	Client *client = new Client(newfd);
-	//TODO change constructor
+	Client *client = new Client(newfd, this);
 	client->setAddr(remoteaddr);
-	client->setListener(*this);
 }
 
 void Listener::bind_() {
@@ -36,14 +34,14 @@ void Listener::bind_() {
 		Log().Get(logERROR) << "server:start -> error in socket()\n";
 		exit(EXIT_FAILURE);
 	}
-	memset(&server, -1, sizeof(sockaddr_in));
+	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = ip_;
 	server.sin_port = htons_(port_);
 	if ((bind(fd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
-		exit(EXIT_FAILURE);
+		Server::getInstance()->stop();
 	}
 	if (listen(fd_, FD_SETSIZE) == -1)
 	{
@@ -62,7 +60,4 @@ uint16_t Listener::htons_(uint16_t hostshort)
 	return (ui);
 }
 
-Listener::~Listener()
-{
-	Log().Get(logDEBUG) << "Listener deleted" << fd_;
-}
+Listener::~Listener(){}

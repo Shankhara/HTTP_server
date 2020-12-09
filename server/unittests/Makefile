@@ -1,6 +1,6 @@
 NAME	= unittests
 SRCS	= unittests.cpp
-SRCS	+= ../Client.cpp
+SRCS	+= ../fds/Client.cpp
 SRCS	+= ../Request.cpp
 SRCS	+= ../Logger.cpp
 #SRCS	+= ../CGIExec.cpp
@@ -20,6 +20,7 @@ $(OBJS): | $(OBJDIR)
 
 $(OBJDIR):
 		@mkdir $(OBJDIR)
+		@mkdir -p fds
 
 ${OBJDIR}/%.o: %.cpp
 		${CC} ${CFLAGS} -c $< -o $@

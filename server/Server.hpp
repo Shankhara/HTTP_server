@@ -15,7 +15,7 @@
 #include <vector>
 #include <arpa/inet.h>
 #include "Logger.hpp"
-#include "select/FileDescriptor.hpp"
+#include "fds/FileDescriptor.hpp"
 
 class Server
 {
@@ -32,6 +32,7 @@ public:
 	static Server		*getInstance();
     void 				start();
     void 				addFileDescriptor(FileDescriptor *);
+    void 				stop();
 	void 				deleteFileDescriptor(int);
 };
 
