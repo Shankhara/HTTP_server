@@ -9,7 +9,6 @@ std::vector<std::string> explode(const std::string & str, const char & delim)
 	size_t start, end = 0;
 	std::vector<std::string> res;
 
-	std::cout << str << std::endl;
 	while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
 	{
 		end = str.find(delim, start);
