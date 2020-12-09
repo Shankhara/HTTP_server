@@ -6,7 +6,7 @@ Client::Client(int fd, FileDescriptor *f): listener_(f), keepAlive_(false){
 }
 
 Client::~Client() {
-	Log().Get(logDEBUG) << "Client deleted" << fd_;
+	Log().Get(logDEBUG) << "Client deleted " << fd_;
 }
 
 void Client::onEvent()

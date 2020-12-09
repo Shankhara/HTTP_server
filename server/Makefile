@@ -39,7 +39,7 @@ run: all
 	@rm -f ./webserver
 
 debug: all
-	@./webserver -v
+	@valgrind --track-fds=yes --leak-check=full ./webserver -v
 	@rm -f ./webserver
 
 tests:

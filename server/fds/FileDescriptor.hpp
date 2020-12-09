@@ -9,7 +9,7 @@ protected:
 public:
 	virtual void	onEvent() = 0;
 	virtual ~FileDescriptor(){
-		Log().Get(logDEBUG) << "Filedescriptor deleted" << fd_;
+		Log().Get(logDEBUG) << "Filedescriptor deleted " << fd_;
 	};
 	int getFd() const {
 		return fd_;
