@@ -7,8 +7,6 @@
 #define LEN 100
 #define CRLF "\r\n"
 
-class Client;
-
 class Request
 {
 	private:
@@ -31,8 +29,7 @@ class Request
 	std::vector<std::string> headerContentType_;
 
 	public:
-	Request();
-	Request(Client);
+	Request(Client &);
 	~Request();
 	
 	Client client;

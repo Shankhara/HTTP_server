@@ -14,7 +14,6 @@ void testRequest()
 //FAIL	std::string get = "GETGET /http://localhost:8080 HTTP/1.1\r\n";
 //FAIL	std::string get = "GET GET /http://localhost:8080 HTTP/1.1\r\n";
 	c.constructRequest(const_cast<char *>(get.c_str()), get.size());
-
 	Request r(c);
 
 	assertEqual(r.parse(), 0, "Parsing Request");
@@ -22,9 +21,9 @@ void testRequest()
 
 void testClient()
 {
-	Client c(0, 0);
-
-	std::string get = "HTTP 1.1 GET /\r\n\r\n";
-	c.constructRequest(const_cast<char *>(get.c_str()), get.size());
-	assertStringEqual(c.getResponse(), get, "Client GET");
+//	Client c(0, 0);
+//
+//	std::string get = "HTTP 1.1 GET /\r\n\r\n";
+//	c.constructRequest(const_cast<char *>(get.c_str()), get.size());
+//	assertStringEqual(c.getResponse(), get, "Client GET");
 }

@@ -1,14 +1,9 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
-Request::Request()
+Request::Request(Client & c) : client(c)
 {
-	headersRaw_.resize(18);
-}
-
-Request::Request(Client c) : client(c)
-{
-	headersRaw_.resize(18);
+	headersRaw_.resize(11);
 }
 
 Request::~Request()
