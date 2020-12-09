@@ -3,12 +3,12 @@
 
 Request::Request()
 {
-	headers_.resize(18);
+	headersRaw_.resize(18);
 }
 
 Request::Request(Client c) : client(c)
 {
-	headers_.resize(18);
+	headersRaw_.resize(18);
 }
 
 Request::~Request()
@@ -84,7 +84,7 @@ int Request::parseHeaders()
 		if (itx == ite)
 			return (1); // En cas de flag non conforme
 		dist = std::distance(it, itx);
-		headers_[dist] = headerLine[HEADERCONTENT];
+		headersRaw_[dist] = headerLine[HEADERCONTENT];
 		//LOG FLAG PARSE SUCCESS
 	}
 	return (0);
@@ -103,8 +103,8 @@ int Request::getBody()
 
 	if (request_.empty())
 	{
-		if (!headers_[CONTENT_LENGTH].empty() || !headers_[TRANSFER_ENCODING].empty())
-			return (1); // Ces deux headers impliquent un body
+		if (!headersRaw_[CONTENT_LENGTH].empty())
+			return (1); // Ce header implique un body
 	}
 	else
 	{
@@ -128,3 +128,99 @@ int Request::parse()
 		return (1);
 	return (0);
 }
+
+std::string Request::decodeBase64(std::string & str)
+{
+	int val = 0;
+	int valb = -8;
+	unsigned char c;
+	std::string res;
+	std::vector<int> tab(256, -1);
+	std::string::iterator it = str.begin();
+
+	for (int i = 0; i < 64; i++)
+		tab["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i; 
+	while (it != str.end())
+	{
+		c = *it;
+		if (tab[c] == -1)
+			break;
+		val = (val << 6) + tab[c];
+		valb += 6;
+		if (valb >= 0)
+		{
+			res.push_back(char((val >> valb) & 0xFF));
+			valb -= 8;
+		}
+		it++;
+	}
+	return res;
+}
+
+std::string Request::decode_authorization()
+{
+	std::vector<std::string> res;
+
+	res = explode(headersRaw_[AUTHORIZATION], ' ');
+	if (res[0] == "Basic")
+		res[1] = decodeBase64(res[1]);
+	//else
+		//Print ERROR : type unknown
+	return (res[1]);
+}
+
+void Request::parseHeadersContent()
+{
+	//GENERAL HEADERS
+	headerDate_ = headersRaw_[DATE];
+
+	//REQUEST HEADERS
+	headerAcceptCharset_ = explode(headersRaw_[ACCEPT_CHARSETS], ',');
+	headerAcceptLanguage_ = explode(headersRaw_[ACCEPT_LANGUAGE], ',');
+	headerAuth_ = decode_authorization();
+	headerHost_ = headersRaw_[HOST];//DNS:PORT (Error 400 BadRequest if not present)
+	headerReferer_ = headersRaw_[REFERER];//URL
+
+	//ENTITY HEADERS
+	headerAllow_ = explode(headersRaw_[ALLOW], ',');
+	headerContentLanguage_ = explode(headersRaw_[CONTENT_LANGUAGE], ',');
+	headerContentLength_ = headersRaw_[CONTENT_LENGTH];//decimal
+	headerContentLocation_ = headersRaw_[CONTENT_LOCATION];//URL
+	headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
+}
+
+std::vector<std::string> Request::getRequestLine()
+{ return (requestLine_); }
+
+std::string Request::getHeaderDate()
+{ return (headerDate_); }
+
+std::string Request::getHeaderAuth()
+{ return (headerAuth_); }
+
+std::string Request::getHeaderHost()
+{ return (headerHost_); }
+
+std::string Request::getHeaderReferer()
+{ return (headerReferer_); }
+
+std::string Request::getHeaderContentLength()
+{ return (headerContentLength_); }
+
+std::string Request::getHeaderContentLocation()
+{ return (headerContentLocation_); }
+
+std::vector<std::string> Request::getHeaderAcceptCharset()
+{ return (headerAcceptCharset_); }
+
+std::vector<std::string> Request::getHeaderAcceptLanguage()
+{ return (headerAcceptLanguage_); }
+
+std::vector<std::string> Request::getHeaderAllow()
+{ return (headerAllow_); }
+
+std::vector<std::string> Request::getHeaderContentLanguage()
+{ return (headerContentLanguage_); }
+
+std::vector<std::string> Request::getHeaderContentType()
+{ return (headerContentType_); }
