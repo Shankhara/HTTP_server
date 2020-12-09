@@ -45,7 +45,7 @@ public:
 	CGIExec(const Request &);
 	void 						run();
 	void 						onEvent();
-	~CGIExec();
+	virtual ~CGIExec();
 };
 
 

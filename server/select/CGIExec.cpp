@@ -60,7 +60,7 @@ void CGIExec::run()
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
-		Server::getInstance()->addFileDescriptor(*this);
+		Server::getInstance()->addFileDescriptor(this);
 		exec_();
 		//TODO: remove FD from master set
 	}

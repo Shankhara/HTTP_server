@@ -6,12 +6,17 @@ Server::~Server() {
 	for (int i = 0; i < fdmax_; i++)
 	{
 		if (FD_ISSET(i, &master_))
+		{
+			Log().Get(logDEBUG) << "deleting " << i;
+			delete fds_[i];
 			close(i);
+		}
 	}
 }
 
 Server::Server()
 {
+	fdmax_ = 0;
 	FD_ZERO(&master_);
 	fds_.reserve(FD_SETSIZE);
 	instance_ = this;
@@ -35,7 +40,6 @@ void Server::run_()
 			if (FD_ISSET(i, &conn_fds))
 			{
 				Log().Get(logDEBUG) << "server::run -> select got an event on fd " <<  i;
-				Log().Get(logERROR) << "server::run ->  FD" <<  fds_[4]->getFd();
 				fds_[i]->onEvent();
 			}
 		}
@@ -53,12 +57,16 @@ void Server::addFileDescriptor(FileDescriptor *fd) {
 		fdmax_ = fd->getFd();
 	Log().Get(logDEBUG) << "server: add " << fd->getFd() << " MAX_FD " << fdmax_;
 	fds_[fd->getFd()] = fd;
+
 }
 
 void Server::deleteFileDescriptor(int fd) {
-	Log().Get(logDEBUG) << "server: delete " << fd;
+	Log().Get(logDEBUG) << "server: deleting " << fd;
 	close(fd);
 	FD_CLR(fd, &master_);
+	delete fds_[fd];
+	fds_[fd] = 0;
+
 }
 
 Server *Server::getInstance()

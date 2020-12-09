@@ -1,15 +1,12 @@
 #include "Client.hpp"
 
-Client::Client(): fd_(-1), keepAlive_(false) {
-	Server::getInstance()->addFileDescriptor(this);
-}
-
-Client::Client(int fd): fd_(fd), keepAlive_(false){
+Client::Client(int fd): keepAlive_(false){
+	fd_ = fd;
 	Server::getInstance()->addFileDescriptor(this);
 }
 
 Client::~Client() {
-	Server::getInstance()->deleteFileDescriptor(fd_);
+	Log().Get(logDEBUG) << "Client deleted" << fd_;
 }
 
 void Client::onEvent()
@@ -20,15 +17,23 @@ void Client::onEvent()
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
+		{
 			Log().Get(logERROR) << "Client " << addr_.ss_family << "recv error" << strerror(errno);
+			Server::getInstance()->deleteFileDescriptor(fd_);
+			return ;
+		}
 	}
 	constructRequest(buf, nbytes);
 	if (response_.length() > 0)
+	{
 		sendResponse();
+		Server::getInstance()->deleteFileDescriptor(fd_);
+	}
 }
 
 void Client::sendResponse()
 {
+	Log().Get(logDEBUG) << "Client" << listener_->getFd() << " client " << addr_.ss_family << " -> sent " <<  response_;
 	if (send(fd_, response_.c_str(), response_.length(), 0) == -1)
 		Log().Get(logERROR) << "Listener" << listener_->getFd() << " client " << addr_.ss_family << "send error" << strerror(errno);
 }

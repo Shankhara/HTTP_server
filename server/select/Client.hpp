@@ -15,15 +15,13 @@ class Client: public FileDescriptor {
 
 private:
 	FileDescriptor 		*listener_;
-	const int		fd_;
 	struct sockaddr_storage addr_;
 	std::string		response_;
 	bool 			keepAlive_;
 
 public:
-	Client();
 	Client(int);
-	~Client();
+	virtual ~Client();
 	void 				constructRequest(char [], int);
 	void 				sendResponse();
 	std::string 		&getResponse();

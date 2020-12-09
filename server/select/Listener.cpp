@@ -62,4 +62,7 @@ uint16_t Listener::htons_(uint16_t hostshort)
 	return (ui);
 }
 
-Listener::~Listener() {}
+Listener::~Listener()
+{
+	Log().Get(logDEBUG) << "Listener deleted" << fd_;
+}
