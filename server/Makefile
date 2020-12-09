@@ -1,9 +1,11 @@
 NAME	= webserver
 SRCS	= main.cpp
 SRCS	+= Server.cpp
-SRCS	+= Client.cpp
 SRCS	+= Logger.cpp
+SRCS	+= select/Listener.cpp
 #SRCS	+= Request.cpp
+#SRCS	+= select/CGIExec.cpp
+SRCS	+= select/Client.cpp
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++
 
@@ -19,6 +21,7 @@ $(OBJS): | $(OBJDIR)
 
 $(OBJDIR):
 		@mkdir $(OBJDIR)
+		@mkdir -p $(OBJDIR)/select
 
 ${OBJDIR}/%.o: %.cpp
 		${CC} ${CFLAGS} -c $< -o $@

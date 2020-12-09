@@ -14,8 +14,6 @@
 #include <errno.h>
 #include <vector>
 #include <arpa/inet.h>
-#include "select/Client.hpp"
-#include "select/Listener.hpp"
 #include "Logger.hpp"
 #include "select/FileDescriptor.hpp"
 
@@ -23,7 +21,7 @@ class Server
 {
 private:
 	static Server					*instance_;
-    std::vector<FileDescriptor>		fds_;
+    std::vector<FileDescriptor*>	fds_;
 	int 							fdmax_;
 	fd_set							master_;
     void 							run_();
@@ -32,10 +30,9 @@ private:
 public:
 	~Server();
 	static Server		*getInstance();
-	void 				onClientConnect(int);
-	void				onClientDisconnect(int);
     void 				start();
-    void 				addFileDescriptor(const FileDescriptor &);
+    void 				addFileDescriptor(FileDescriptor *);
+	void 				deleteFileDescriptor(int);
 };
 
 #endif
