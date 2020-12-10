@@ -1,40 +1,29 @@
-NAME	= unittests
-SRCS	= unittests.cpp
-SRCS	+= ../fds/Client.cpp
-SRCS	+= ../Request.cpp
-SRCS	+= ../Logger.cpp
-#SRCS	+= ../CGIExec.cpp
+NAME		= unittests
+OBJS		= unittests.o Client.o Request.o Logger.o Server.o
 
-CFLAGS	= -Wall -Wextra -Werror
-CC		= clang++
+CXX			= clang++
+CXXFLAGS	= -Wall -Wextra -Werror
+RM			= rm -f
 
-OBJDIR	= .objs
-OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
+$(NAME):	$(OBJS)
+			$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
-$(NAME): $(OBJS)
-		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
-
-all:		$(NAME)
-
-$(OBJS): | $(OBJDIR)
-
-$(OBJDIR):
-		@mkdir $(OBJDIR)
-		@mkdir -p fds
-
-${OBJDIR}/%.o: %.cpp
-		${CC} ${CFLAGS} -c $< -o $@
-
+unittests.o : unittests.cpp unittests.hpp
+			$(CXX)  -c unittests.cpp
+Client.o : ../fds/Client.cpp ../fds/Client.hpp
+			$(CXX) -c ../fds/Client.cpp
+Request.o : ../Request.cpp ../Request.hpp 
+			$(CXX) -c ../Request.cpp
+Logger.o : ../Logger.cpp ../Logger.hpp
+			$(CXX) -c ../Logger.cpp
+Server.o : ../Server.cpp ../Server.hpp
+			$(CXX) -c ../Server.cpp
 clean:
-			rm -rf $(OBJDIR) *.o
+			$(RM) $(OBJS) $(RM) *.gch ../*.gch ../fds/*.gch
 
-fclean:	clean
-			rm -f $(NAME)
+fclean: 	clean
+			$(RM) $(NAME)
 
-re:		fclean all
+re:			fclean $(NAME)
 
-run: all
-	@./server
-
-
-.PHONY: all clean fclean re run
+.PHONY: all clean fclean re

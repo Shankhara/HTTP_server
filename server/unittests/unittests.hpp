@@ -2,7 +2,9 @@
 
 #include "tests.hpp"
 #include "../fds/Client.hpp"
+#include "../Server.hpp"
 #include "../Request.hpp"
+//#include "CGI.hpp"
 
 void testRequest()
 {

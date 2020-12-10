@@ -1,11 +1,9 @@
 #include "unittests.hpp"
-#include "CGI.hpp"
-
 
 int main()
 {
 	testClient();
 	testRequest();
-	testCGI();
+//	testCGI();
 	return 0;
 }

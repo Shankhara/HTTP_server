@@ -1,7 +1,7 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
-Request::Request(Client & c) : client(c)
+Request::Request(Client & c) : client(c), request_(c.getResponse())
 {
 	headersRaw_.resize(11);
 }
@@ -111,16 +111,18 @@ int Request::getBody()
 
 int Request::parse()
 {
-	request_ = client.getResponse();
-	
-	if (checkHeadersEnd())
-		return (1);
-    if (parseRequestLine())
-		return (1);
-	if (parseHeaders())
-		return (1);
-	if (getBody())
-		return (1);
+	static size_t len = request_.size();
+
+	while (!checkHeadersEnd())
+	{
+		if (request_.size() != len)
+    	if (parseRequestLine())
+			return (1);
+		if (parseHeaders())
+			return (1);
+		if (getBody())
+			return (1);
+	}
 	return (0);
 }
 
