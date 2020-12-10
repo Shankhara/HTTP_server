@@ -9,6 +9,7 @@
 #include <vector>
 #include "RequestMock.hpp"
 #include "Server.hpp"
+#include "fds/CGIResponse.hpp"
 
 class CGIExec {
 private:
@@ -43,7 +44,7 @@ private:
 
 public:
 	CGIExec();
-	void 						run(const std::string &, RequestMock &);
+	CGIResponse					*run(const std::string &, RequestMock &);
 	virtual						~CGIExec();
 };
 

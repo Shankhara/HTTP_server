@@ -7,7 +7,7 @@
 #include "../../fds/Client.hpp"
 #include "../../fds/Listener.hpp"
 
-void testCGI()
+void assertCGIFailed(const std::string &cgiScript, const std::string &name)
 {
 	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
 	Client *client = new Client(12, *listener);
@@ -15,12 +15,18 @@ void testCGI()
 	CGIExec cgi;
 	request.setRequestMethod("GET");
 	request.setContentLength("0");
-	try {
-		cgi.run("/tmp/test.sh", request);
-	} catch (std::exception &e) {
-		std::cout << "Exception: " << e.what() << std::endl;
-	}
+	CGIResponse *resp = cgi.run(cgiScript, request);
+	resp->readPipe();
+	std::cerr << client->getResponse() << std::endl;
+	assertStringEqual(client->getResponse(),"", name);
 	delete Server::getInstance();
+}
+
+
+void testCGI()
+{
+	//assertCGIFailed("./test.sh", "test shell script");
+	assertCGIFailed("/usr/bin/php-cgi", "php-cgi");
 }
 
 #endif //WEBSERV_CGI_HPP

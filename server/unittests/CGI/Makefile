@@ -35,6 +35,14 @@ fclean:	clean
 
 re:		fclean all
 
+debug: re
+		@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./tests -v
+			
+
+run: re
+		./tests
+
+
 
 
 

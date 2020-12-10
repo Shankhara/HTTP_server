@@ -6,13 +6,20 @@ CGIResponse::CGIResponse(int fd, Client &client): client_(client) {
 
 CGIResponse::~CGIResponse() {}
 
-void CGIResponse::onEvent() {
+int CGIResponse::readPipe() {
 	char 	buf[256];
 	int		nbytes;
 
 	while ((nbytes = read(fd_, buf, 255)) > 0)
+	{
+		Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
 		client_.appendResponse(buf, nbytes);
-	if (nbytes < 0)
+	}
+	return nbytes;
+}
+
+void CGIResponse::onEvent() {
+	if (readPipe() <= 0)
 	{
 		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 		client_.sendResponse();

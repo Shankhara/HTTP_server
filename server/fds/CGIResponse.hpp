@@ -14,7 +14,8 @@ private:
 public:
 	CGIResponse(int, Client &);
 	virtual ~CGIResponse();
-	void onEvent();
+	void		onEvent();
+	int			readPipe();
 };
 
 

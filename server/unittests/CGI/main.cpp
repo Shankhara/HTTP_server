@@ -2,6 +2,6 @@
 #include "CGI.hpp"
 
 int main(){
-	Log().setLevel(logDEBUG);
+	//Log().setLevel(logDEBUG);
 	testCGI();
 }
