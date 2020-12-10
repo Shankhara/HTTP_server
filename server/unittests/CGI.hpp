@@ -2,7 +2,7 @@
 #define WEBSERV_CGI_HPP
 
 #include "tests.hpp"
-#include "../fds/CGIExec.hpp"
+#include "../CGIExec.hpp"
 
 void testCGI()
 {

@@ -2,10 +2,12 @@ NAME	= webserver
 SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Logger.cpp
+SRCS	+= CGIExec.cpp
 SRCS	+= fds/Listener.cpp
 #SRCS	+= Request.cpp
 #SRCS	+= fds/CGIExec.cpp
 SRCS	+= fds/Client.cpp
+SRCS	+= fds/CGIResponse.cpp
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++
 
@@ -39,7 +41,7 @@ run: all
 	@rm -f ./webserver
 
 debug: all
-	@valgrind --track-fds=yes --leak-check=full ./webserver -v
+	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserver -v
 	@rm -f ./webserver
 
 tests:

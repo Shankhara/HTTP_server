@@ -14,16 +14,17 @@
 class Client: public FileDescriptor {
 
 private:
-	FileDescriptor 			*listener_;
+	FileDescriptor 			&listener_;
 	struct sockaddr_storage addr_;
 	std::string				response_;
 	bool 					keepAlive_;
 
 public:
-	Client(int, FileDescriptor *);
+	Client(int, FileDescriptor &);
 	virtual ~Client();
 	void 				constructRequest(char [], int);
-	void 				sendResponse();
+	void 				sendResponse() const;
+	void 				appendResponse(char [], int);
 	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();

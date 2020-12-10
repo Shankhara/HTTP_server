@@ -8,9 +8,7 @@ protected:
 	int fd_;
 public:
 	virtual void	onEvent() = 0;
-	virtual ~FileDescriptor(){
-		Log().Get(logDEBUG) << "Filedescriptor deleted " << fd_;
-	};
+	virtual ~FileDescriptor(){};
 	int getFd() const {
 		return fd_;
 	}

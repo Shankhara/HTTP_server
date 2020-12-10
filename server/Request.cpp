@@ -1,7 +1,7 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
-Request::Request(Client & c) : client(c), request_(c.getResponse())
+Request::Request(Client & c) : client_(c), request_(c.getResponse())
 {
 	headersRaw_.resize(11);
 }
@@ -217,3 +217,7 @@ std::vector<std::string> Request::getHeaderContentLanguage()
 
 std::vector<std::string> Request::getHeaderContentType()
 { return (headerContentType_); }
+
+Client &Request::getClient() {
+	return client_;
+}
