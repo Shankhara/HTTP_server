@@ -10,7 +10,7 @@
 class Request
 {
 	private:
-	Client client;
+	Client &client_;
 	std::string & request_;
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
@@ -52,6 +52,7 @@ class Request
 	int checkHeadersEnd();
 	int getBody();
 	void parseHeadersContent();
+	Client &getClient();
 	std::vector<std::string> workNextLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();

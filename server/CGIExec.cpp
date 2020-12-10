@@ -31,7 +31,7 @@ CGIExec::CGIExec() {
 
 void CGIExec::build_(const Request &request) {
 	setEnv_(AUTH_TYPE, "");
-	setEnv_(CONTENT_LENGTH, "0");
+	setEnv_(CONTENT_LENGTH, "");
 	setEnv_(GATEWAY_INTERFACE, "");
 	setEnv_(PATH_INFO, "");
 	setEnv_(PATH_TRANSLATED, "");
@@ -42,7 +42,7 @@ void CGIExec::build_(const Request &request) {
 	setEnv_(REQUEST_METHOD, "");
 	setEnv_(REQUEST_URI, "");
 	setEnv_(SCRIPT_NAME, "");
-	setEnv_(SERVER_NAME, "");
+	setEnv_(SERVER_NAME, const_cast<Request&>(request).getHeaderHost());
 	setEnv_(SERVER_PORT, "");
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
@@ -67,7 +67,7 @@ void CGIExec::run(Request &request)
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
-		CGIResponse *response = new CGIResponse(stdoutFD_, request.client);
+		CGIResponse *response = new CGIResponse(stdoutFD_, request.getClient());
 		Server::getInstance()->addFileDescriptor(response);
 		exec_();
 		close(STDOUT_FILENO);
