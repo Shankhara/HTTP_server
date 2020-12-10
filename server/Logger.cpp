@@ -34,7 +34,7 @@ Log::~Log()
 {
 	os << std::endl;
 	if (messageLevel_ >= level_)
-		std::cout << os.str().c_str();
+		std::cerr << os.str().c_str();
 }
 
 Log::Log() {

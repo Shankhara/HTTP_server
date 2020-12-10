@@ -49,24 +49,25 @@ void CGIExec::build_(const RequestMock &request) {
 void CGIExec::run(const std::string &script, RequestMock &request)
 {
 	int pfd[2];
-	pid_t cpid = fork();
 
 	if (pipe(pfd))
 	{
 		Log().Get(logERROR) << "Unable to pipe: " << strerror(errno);
-		throw ;
+		return ;
 	}
+	CGIResponse *response = new CGIResponse(pfd[1], request.getClient());
+	Server::getInstance()->addFileDescriptor(response);
+	pid_t cpid = fork();
 	if (cpid < 0)
 	{
+		delete response;
 		Log().Get(logERROR) << "Unable to fork: " << strerror(errno);
-		throw ;
+		return ;
 	}
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
 		build_(request);
-		CGIResponse *response = new CGIResponse(stdoutFD_, request.getClient());
-		Server::getInstance()->addFileDescriptor(response);
 		exec_(script);
 		close(STDOUT_FILENO);
 	}
@@ -126,7 +127,6 @@ void CGIExec::setEnv_(int name, std::string c)
 		envs_[name][i] = buf[i];
 	}
 	envs_[name][i] = '\0';
-	Log().Get(logDEBUG) << "ENV: " << name << " : " << envs_[name];
 }
 
 void CGIExec::freeEnvs_()
