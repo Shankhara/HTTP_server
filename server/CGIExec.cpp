@@ -1,8 +1,6 @@
 #include "CGIExec.hpp"
 #include "fds/CGIResponse.hpp"
 
-CGIExec* CGIExec::instance_ = 0;
-
 const std::string CGIExec::vars_[] = {
 								  "AUTH_TYPE=",
 								  "CONTENT_LENGTH=",
@@ -22,10 +20,10 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::~CGIExec() {}
+CGIExec::~CGIExec() {
+}
 
 CGIExec::CGIExec() {
-	envs_.reserve(17);
 	envs_[16] = 0;
 }
 
@@ -50,7 +48,6 @@ void CGIExec::build_(const RequestMock &request) {
 
 void CGIExec::run(const std::string &script, RequestMock &request)
 {
-	build_(request);
 	int pfd[2];
 	pid_t cpid = fork();
 
@@ -67,6 +64,7 @@ void CGIExec::run(const std::string &script, RequestMock &request)
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
+		build_(request);
 		CGIResponse *response = new CGIResponse(stdoutFD_, request.getClient());
 		Server::getInstance()->addFileDescriptor(response);
 		exec_(script);
@@ -84,8 +82,8 @@ void CGIExec::exec_(const std::string &script)
 	std::vector<char *> cmd;
 	cmd.push_back(const_cast<char *>(script.c_str()));
 	cmd.push_back(0);
-	int ret = execve(cmd[0], &cmd.data()[0], &envs_.data()[0]);
-	Log().Get(logDEBUG) << "ENVS :" << envs_[15] << std::endl;
+	int ret = execve(cmd[0], &cmd.data()[0], envs_);
+	Log().Get(logDEBUG) << "ENVS: " << envs_[15] << std::endl;
 	Log().Get(logDEBUG) << "RET: " << cmd[0] << " >> " << strerror(errno);
 	freeEnvs_();
 	if (ret == -1)
@@ -135,11 +133,5 @@ void CGIExec::freeEnvs_()
 {
 	for (int i = 0; i < 16; i++)
 		free(envs_[i]);
-}
-
-CGIExec *CGIExec::getInstance() {
-	if (instance_ == 0)
-		instance_ = new CGIExec();
-	return instance_;
 }
 

@@ -37,7 +37,9 @@ Log::~Log()
 		std::cout << os.str().c_str();
 }
 
-Log::Log() {}
+Log::Log() {
+	messageLevel_ = logDEBUG;
+}
 
 Log::Log(const Log &) {}
 

@@ -9,16 +9,18 @@
 
 void testCGI()
 {
-	Listener listener(inet_addr("127.0.0.1"), 8080, "testCGI");
-	Client client(12, listener);
-	RequestMock  request(client);
+	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
+	Client *client = new Client(12, *listener);
+	RequestMock  request(*client);
+	CGIExec cgi;
 	request.setRequestMethod("GET");
 	request.setContentLength("0");
 	try {
-		CGIExec::getInstance()->run("/tmp/test.sh", request);
+		cgi.run("/tmp/test.sh", request);
 	} catch (std::exception &e) {
 		std::cout << "Exception: " << e.what() << std::endl;
 	}
+	Server::releaseInstance();
 }
 
 #endif //WEBSERV_CGI_HPP

@@ -78,3 +78,12 @@ void Server::stop() {
 	exit(0);
 }
 
+void Server::releaseInstance()
+{
+	if (instance_ != 0)
+	{
+		delete instance_;
+		instance_ = 0;
+	}
+}
+
