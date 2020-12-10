@@ -21,7 +21,8 @@ int getNextLine(std::string & buf, std::string & line)
 {
 	size_t pos;
 
-	pos = buf.find("\n");
+	if ((pos = buf.find("\n") == std::string::npos))
+		return (-1);
 	line = std::string(buf, 0, pos++);
 	buf = buf.substr(pos);
 	if (pos != std::string::npos)
