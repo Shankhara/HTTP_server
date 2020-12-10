@@ -14,19 +14,19 @@ void testRequest()
 	Request r(c);
 	int len = 0;
 	int getLen = get.size();
-	while (len < getLen)
-	{
+//	while (len < getLen)
+//	{
 		len += 5;
 		c.constructRequest(const_cast<char *>(get.c_str()), len);
 		assertEqual(r.parse(), 0, "Parsing Request");
 		get.erase(0, len);
 		std::cout << get << std::endl;
-	}
+//	}
 }
 
 void testClient()
 {
-	Client c(0, 0);
+//	Client c;
 
 	std::string get = "GET / HTTP/1.1\r\n\r\n";
 	c.constructRequest(const_cast<char *>(get.c_str()), get.size());

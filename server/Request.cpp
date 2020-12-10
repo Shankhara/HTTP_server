@@ -4,6 +4,10 @@
 Request::Request(Client & c) : client_(c), request_(c.getResponse())
 {
 	headersRaw_.resize(11);
+	methods = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
+	headersName = { "accept-charsets", "accept-language", "allow", \
+	"authorization", "content-language", "content-length", "content-location", \
+	"content-type", "date", "host", "referer", };
 }
 
 Request::~Request()

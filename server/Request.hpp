@@ -33,14 +33,11 @@ class Request
 	Request(Client &);
 	~Request();
 	
-	std::vector<std::string> methods { "GET", "HEAD", "POST", "PUT", \
-		"DELETE", "OPTIONS", "TRACE", "PATCH" };
+	std::vector<std::string> methods;
 	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
 
-	std::vector<std::string> headersName { "accept-charsets", "accept-language", "allow", \
-		"authorization", "content-language", "content-length", "content-location", \
-		"content-type", "date", "host", "referer", };
+	std::vector<std::string> headersName;
 	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, REFERER };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
