@@ -20,7 +20,8 @@ void testCGI()
 	} catch (std::exception &e) {
 		std::cout << "Exception: " << e.what() << std::endl;
 	}
-	Server::releaseInstance();
+	delete client;
+	delete Server::getInstance();
 }
 
 #endif //WEBSERV_CGI_HPP
