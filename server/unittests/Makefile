@@ -1,3 +1,5 @@
+VPATH		= ../:../fds/
+
 NAME		= unittests
 OBJS		= unittests.o Client.o Request.o Logger.o Server.o
 
@@ -8,18 +10,14 @@ RM			= rm -f
 $(NAME):	$(OBJS)
 			$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
-unittests.o : unittests.cpp unittests.hpp
-			$(CXX)  -c unittests.cpp
-Client.o : ../fds/Client.cpp ../fds/Client.hpp
-			$(CXX) -c ../fds/Client.cpp
-Request.o : ../Request.cpp ../Request.hpp 
-			$(CXX) -c ../Request.cpp
-Logger.o : ../Logger.cpp ../Logger.hpp
-			$(CXX) -c ../Logger.cpp
-Server.o : ../Server.cpp ../Server.hpp
-			$(CXX) -c ../Server.cpp
+unittests.o : unittests.hpp
+Client.o : ../fds/Client.hpp
+Request.o : ../Request.hpp 
+Logger.o : ../Logger.hpp
+Server.o : ../Server.hpp
+
 clean:
-			$(RM) $(OBJS) $(RM) *.gch ../*.gch ../fds/*.gch
+			$(RM) $(OBJS)
 
 fclean: 	clean
 			$(RM) $(NAME)
