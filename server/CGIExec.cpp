@@ -70,6 +70,7 @@ void CGIExec::run(Request &request)
 		CGIResponse *response = new CGIResponse(stdoutFD_, request.client);
 		Server::getInstance()->addFileDescriptor(response);
 		exec_();
+		close(STDOUT_FILENO);
 	}
 	else
 	{

@@ -12,9 +12,11 @@ void CGIResponse::onEvent() {
 
 	while ((nbytes = read(fd_, buf, 255)) > 0)
 		client_.appendResponse(buf, nbytes);
-	client_.sendResponse();
 	if (nbytes < 0)
-		Log().Get(logERROR) << "CGIResponse > read error " << strerror(errno);
-	// TODO: delete this :<
-	delete this;
+	{
+		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
+		client_.sendResponse();
+		// TODO: improv deleteFileDescriptor will close on already close fd, maybe send on EOF is good enough?
+		Server::getInstance()->deleteFileDescriptor(fd_);
+	}
 }
