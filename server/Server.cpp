@@ -66,7 +66,8 @@ Server *Server::getInstance()
 }
 
 void Server::stop() {
-	for (int i = 0; i < fdmax_; i++)
+	Log().Get(logDEBUG) << "Server::stop()";
+	for (int i = 0; i <= fdmax_; i++)
 	{
 		if (FD_ISSET(i, &master_))
 		{
@@ -75,6 +76,14 @@ void Server::stop() {
 			close(i);
 		}
 	}
-	exit(0);
+}
+
+void Server::releaseInstance()
+{
+	if (instance_ != 0)
+	{
+		delete instance_;
+		instance_ = 0;
+	}
 }
 

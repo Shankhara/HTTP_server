@@ -11,9 +11,9 @@ private:
 	const uint32_t ip_;
 	const int port_;
 	const std::string name_;
+
 public:
 	Listener(uint32_t ip, int port, const std::string &name);
-	Listener(int);
 	virtual ~Listener();
 	void	onEvent();
 	void 	bind_();

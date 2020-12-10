@@ -30,6 +30,7 @@ private:
 public:
 	~Server();
 	static Server		*getInstance();
+	static void 		releaseInstance();
     void 				start();
     void 				addFileDescriptor(FileDescriptor *);
     void 				stop();

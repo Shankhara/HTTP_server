@@ -22,7 +22,7 @@ void Listener::onNewClient()
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-	Client *client = new Client(newfd, this);
+	Client *client = new Client(newfd, *this);
 	client->setAddr(remoteaddr);
 }
 

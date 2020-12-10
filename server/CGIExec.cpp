@@ -1,8 +1,6 @@
 #include "CGIExec.hpp"
 #include "fds/CGIResponse.hpp"
 
-CGIExec* CGIExec::instance_ = 0;
-
 const std::string CGIExec::vars_[] = {
 								  "AUTH_TYPE=",
 								  "CONTENT_LENGTH=",
@@ -22,16 +20,16 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::~CGIExec() {}
-
-CGIExec::CGIExec() {
-	envs_.reserve(16);
-	envs_[15] = 0;
+CGIExec::~CGIExec() {
 }
 
-void CGIExec::build_(const Request &request) {
+CGIExec::CGIExec() {
+	envs_[16] = 0;
+}
+
+void CGIExec::build_(const RequestMock &request) {
 	setEnv_(AUTH_TYPE, "");
-	setEnv_(CONTENT_LENGTH, "");
+	setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
 	setEnv_(GATEWAY_INTERFACE, "");
 	setEnv_(PATH_INFO, "");
 	setEnv_(PATH_TRANSLATED, "");
@@ -39,18 +37,17 @@ void CGIExec::build_(const Request &request) {
 	setEnv_(REMOTE_ADDR, "");
 	setEnv_(REMOTE_IDENT, "");
 	setEnv_(REMOTE_USER, "");
-	setEnv_(REQUEST_METHOD, "");
+	setEnv_(REQUEST_METHOD, request.getRequestMethod());
 	setEnv_(REQUEST_URI, "");
 	setEnv_(SCRIPT_NAME, "");
-	setEnv_(SERVER_NAME, const_cast<Request&>(request).getHeaderHost());
+	setEnv_(SERVER_NAME, "");
 	setEnv_(SERVER_PORT, "");
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
 
-void CGIExec::run(Request &request)
+void CGIExec::run(const std::string &script, RequestMock &request)
 {
-	build_(request);
 	int pfd[2];
 	pid_t cpid = fork();
 
@@ -67,9 +64,10 @@ void CGIExec::run(Request &request)
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
+		build_(request);
 		CGIResponse *response = new CGIResponse(stdoutFD_, request.getClient());
 		Server::getInstance()->addFileDescriptor(response);
-		exec_();
+		exec_(script);
 		close(STDOUT_FILENO);
 	}
 	else
@@ -79,14 +77,18 @@ void CGIExec::run(Request &request)
 	}
 }
 
-void CGIExec::exec_()
+void CGIExec::exec_(const std::string &script)
 {
-	char * const cmd[] = { const_cast<char *>(cgiScript_.c_str()), NULL};
-	int ret = execve(cgiScript_.c_str(), cmd, &envs_.data()[0]);
+	std::vector<char *> cmd;
+	cmd.push_back(const_cast<char *>(script.c_str()));
+	cmd.push_back(0);
+	int ret = execve(cmd[0], &cmd.data()[0], envs_);
+	Log().Get(logDEBUG) << "ENVS: " << envs_[15] << std::endl;
+	Log().Get(logDEBUG) << "RET: " << cmd[0] << " >> " << strerror(errno);
+	freeEnvs_();
 	if (ret == -1)
 	{
 		Log().Get(logERROR) << "Unable to execve " << strerror(errno);
-		throw;
 	}
 }
 
@@ -113,13 +115,23 @@ void	CGIExec::pipeStdout(int pfd[2])
 
 void CGIExec::setEnv_(int name, std::string c)
 {
+	//TODO: concat instead allocating tmp buf
 	std::string buf = vars_[name] + c;
-	envs_[name] = const_cast<char *>(buf.c_str());
+	envs_[name] = (char*)malloc((buf.length() + 1) * sizeof(char));
+	if (envs_[name] == 0)
+		return ;
+	unsigned long i;
+	for (i = 0; i < buf.length(); i++)
+	{
+		envs_[name][i] = buf[i];
+	}
+	envs_[name][i] = '\0';
+	Log().Get(logDEBUG) << "ENV: " << name << " : " << envs_[name];
 }
 
-CGIExec *CGIExec::getInstance() {
-	if (instance_ == 0)
-		instance_ = new CGIExec();
-	return instance_;
+void CGIExec::freeEnvs_()
+{
+	for (int i = 0; i < 16; i++)
+		free(envs_[i]);
 }
 
