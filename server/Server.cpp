@@ -67,7 +67,7 @@ Server *Server::getInstance()
 
 void Server::stop() {
 	Log().Get(logDEBUG) << "Server::stop()";
-	for (int i = 0; i < fdmax_; i++)
+	for (int i = 0; i <= fdmax_; i++)
 	{
 		if (FD_ISSET(i, &master_))
 		{
