@@ -111,18 +111,14 @@ int Request::getBody()
 
 int Request::parse()
 {
-	static size_t len = request_.size();
+	std::cout << request_ << std::endl;
 
-	while (!checkHeadersEnd())
-	{
-		if (request_.size() != len)
-    	if (parseRequestLine())
-			return (1);
-		if (parseHeaders())
-			return (1);
-		if (getBody())
-			return (1);
-	}
+    if (parseRequestLine())
+		return (1);
+	if (parseHeaders())
+		return (1);
+	if (getBody())
+		return (1);
 	return (0);
 }
 

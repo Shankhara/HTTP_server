@@ -2,7 +2,7 @@
 
 int main()
 {
-	testClient();
+//	testClient();
 	testRequest();
 //	testCGI();
 	return 0;
