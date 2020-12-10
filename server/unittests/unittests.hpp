@@ -8,10 +8,19 @@
 
 void testRequest()
 {
-	std::string get = "GET /qwe HTTP/1.1\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
+//	size_t start = 0;
+//	size_t len = 5;
+	std::string str = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
+	std::string get;
 
 	Request r(get);
-	assertEqual(r.parse(), 0, "Parsing Request");
+//	while ((start + len) < str.size())
+//	{
+		get.append(str);//, start, len);
+//		std::cout << "h: " << get << std::endl;
+		assertEqual(r.parse(), 4, "Parsing Request");
+//		start += len;
+//	}
 }
 
 //void testClient()

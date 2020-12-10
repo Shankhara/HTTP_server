@@ -24,19 +24,16 @@ Request::~Request()
 
 }
 
-//int Request::getQueryStr()
+//int Request::getQueryString()
 //{
 //    int i = 0;
-//	
 //
-//	while (tmp[i] && tmp[i] != '?')
-//		i++;
-//	if (tmp[i] == '?') {
-//		uriQueries = uri.substr(i + 1, tmp.size());
-//		uri = tmp.substr(0, i);
+//	i = requestLine_[REQTARGET].find('?');
+//	if (i != std::string::npos)
+//	{
+//		queryString_ = requestLine_[REQTARGET].substr(i);
+//		requestLine_[REQTARGET].erase(i);
 //	}
-//	if (uriQueries.size() > 1024 && client != nullptr)
-//		client->res.setErrorParameters(Response::ERROR, REQUEST_URI_TOO_LONG_414);
 //}
 
 std::string Request::decodeBase64(std::string & str)
@@ -80,18 +77,20 @@ std::string Request::decode_authorization()
 	return (res);
 }
 
-std::vector<std::string> Request::workNextLine(std::string & line, const char & c)
+std::vector<std::string> Request::workLine(std::string & line, const char & c)
 {
 	std::vector<std::string> res;
 	size_t i;
 
-	if (getNextLine(request_, line) == -1)
+	i = line.find(c);
+	if (i == std::string::npos)
 		return (res);
-
+	
 	if (!line.empty())
 	{
-		if ((i = line.find('\r')) == std::string::npos)
-			return (res); // Pas de CR
+		i = line.find('\r');
+		if (i == std::string::npos)
+			return (res);
 		line.erase(line.begin() + i);
 		res = explode(line, c);
 	}
@@ -129,69 +128,94 @@ int Request::checkHeadersEnd()
 int Request::getBody()
 {
 	std::string line;
-
-	if (request_.empty())
+	
+	if (!headersRaw_[CONTENT_LENGTH].empty())
 	{
-		if (!headersRaw_[CONTENT_LENGTH].empty())
-			return (1); // Ce header implique un body
+		msgBody_ = request_;
+		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
+		if (msgBody_.size() == len)
+			return (0);
 	}
-	else
-	{
-		getNextLine(request_, line);
-		msgBody_ = line;
-	}
-	return (0);	
+	return (1);	
 }
 
 int Request::parseHeaders()
 {
-	int dist;
+	int dist, ret;
 	std::string line;
 	std::vector<std::string> headerLine;
 	std::vector<std::string>::iterator it = headersName.begin();
 	std::vector<std::string>::iterator ite = headersName.end();
 	std::vector<std::string>::iterator itx;
-
-	while (!(headerLine = workNextLine(line, ':')).empty())
+	
+	while ((ret = getNextLine(request_, line)) > -1)
 	{
-		//std::cout << headerLine[0] << std::endl; TODO : reperer le saut a ligne (sep avec body ou EOF)
+		headerLine = workLine(line, ':');
+		if (headerLine.empty())
+		{
+			if (line == "\r")
+				return (0);
+			else
+				return (2);
+		}
+
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
   		std::string::iterator ste = headerLine[HEADERTITLE].end();
 
   		std::transform(st, ste, st, [](unsigned char c)-> unsigned char { return std::tolower(c); });
 		itx = std::find(it, ite, headerLine[HEADERTITLE]);
 		if (itx == ite)
-			return (1); // En cas de flag non conforme
+			return (1);
 		dist = std::distance(it, itx);
 		headersRaw_[dist] = headerLine[HEADERCONTENT];
-		//LOG FLAG PARSE SUCCESS
 	}
-	return (0);
+	return (1);
 }
 
 int Request::parseRequestLine()
 {
 	std::string line;
 
-	if (requestLine_.empty() && !((requestLine_ = workNextLine(line, ' ')).empty()))
-	{
-		if (requestLine_.size() != 3)
-			return (1);
-		if (checkMethod())
-		    return (1);
-		if (checkVersion())
-			return (1);
-	}
+	getNextLine(request_, line);
+	requestLine_ = workLine(line, ' ');
+
+	if (requestLine_.size() != 3)
+		return (1);
+	if (checkMethod())
+	    return (2);
+	if (checkVersion())
+		return (3);
 	return (0);
 }
 
 int Request::parse()
 {
-    if (!parseRequestLine() && !parseHeaders() && !getBody())
+	static int i = 0;
+    if (!i && !parseRequestLine())
+	{
+		std::cout << requestLine_[METHOD] << std::endl;
+		std::cout << requestLine_[REQTARGET] << std::endl;
+		std::cout << requestLine_[VERSION] << std::endl;
+		i++;
+	}
+	if ((i == 1) && !parseHeaders())
+	{
+		std::cout << headersRaw_[REFERER] << std::endl;
+		std::cout << headersRaw_[CONTENT_TYPE] << std::endl;
+		std::cout << headersRaw_[CONTENT_LENGTH] << std::endl;
+		i++;
+	}
+	if ((i == 2) && !getBody())
+	{
+		std::cout << msgBody_ << std::endl;
+		i++;
+	}
+	if (i > 1)
 	{
 		parseHeadersContent();
+		i++;
 	}
-	return (0);
+	return (i);
 }
 
 void Request::parseHeadersContent()
@@ -218,7 +242,7 @@ void Request::parseHeadersContent()
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
 		headerContentLanguage_ = explode(headersRaw_[CONTENT_LANGUAGE], ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = headersRaw_[CONTENT_LENGTH];
+		headerContentLength_ = atoi(headersRaw_[CONTENT_LENGTH].c_str());
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
 	if (!headersRaw_[CONTENT_TYPE].empty())

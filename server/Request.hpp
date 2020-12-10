@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stdlib.h>
 #include <algorithm>
 #include "fds/Client.hpp"
 
@@ -52,7 +53,7 @@ class Request
 	int getBody();
 	void parseHeadersContent();
 	//Client &getClient();
-	std::vector<std::string> workNextLine(std::string &, const char &);
+	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
 	
