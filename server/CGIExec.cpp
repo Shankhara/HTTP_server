@@ -1,4 +1,7 @@
 #include "CGIExec.hpp"
+#include "fds/CGIResponse.hpp"
+
+CGIExec* CGIExec::instance_ = 0;
 
 const std::string CGIExec::vars_[] = {
 								  "AUTH_TYPE=",
@@ -21,8 +24,12 @@ const std::string CGIExec::vars_[] = {
 
 CGIExec::~CGIExec() {}
 
-CGIExec::CGIExec(const Request &r): request_(r) {
+CGIExec::CGIExec() {
 	envs_.reserve(16);
+	envs_[15] = 0;
+}
+
+void CGIExec::build_(const Request &request) {
 	setEnv_(AUTH_TYPE, "");
 	setEnv_(CONTENT_LENGTH, "0");
 	setEnv_(GATEWAY_INTERFACE, "");
@@ -39,11 +46,11 @@ CGIExec::CGIExec(const Request &r): request_(r) {
 	setEnv_(SERVER_PORT, "");
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
-	envs_[15] = 0;
 }
 
-void CGIExec::run()
+void CGIExec::run(Request &request)
 {
+	build_(request);
 	int pfd[2];
 	pid_t cpid = fork();
 
@@ -60,13 +67,12 @@ void CGIExec::run()
 	if (cpid == 0)
 	{
 		pipeStdout(pfd);
-		Server::getInstance()->addFileDescriptor(this);
+		CGIResponse *response = new CGIResponse(stdoutFD_, request.client);
+		Server::getInstance()->addFileDescriptor(response);
 		exec_();
-		//TODO: remove FD from master set
 	}
 	else
 	{
-		// Since pfd[1] is going to be monitored by select lets not wait for a response from our CGI
 		close(pfd[0]);
 		close(pfd[1]);
 	}
@@ -101,7 +107,7 @@ void	CGIExec::pipeStdout(int pfd[2])
 		Log().Get(logERROR) << "Unable to close " << strerror(errno);
 		throw ;
 	}
-	fd_ = STDOUT_FILENO;
+	stdoutFD_ = STDOUT_FILENO;
 }
 
 void CGIExec::setEnv_(int name, std::string c)
@@ -110,7 +116,9 @@ void CGIExec::setEnv_(int name, std::string c)
 	envs_[name] = const_cast<char *>(buf.c_str());
 }
 
-
-void CGIExec::onEvent() {
-	//clientSendResponse
+CGIExec *CGIExec::getInstance() {
+	if (instance_ == 0)
+		instance_ = new CGIExec();
+	return instance_;
 }
+
