@@ -7,14 +7,14 @@
 #include <cstring>
 #include <wait.h>
 #include <vector>
-#include "Request.hpp"
+#include "RequestMock.hpp"
 #include "Server.hpp"
 
 class CGIExec {
 private:
 	int							stdoutFD_;
 	static const std::string	vars_[];
-	std::vector<char *>	envs_;
+	std::vector<char *>			envs_;
 	static CGIExec				*instance_;
 	std::string 				cgiScript_;
 	enum e_envs {
@@ -35,15 +35,16 @@ private:
 		SERVER_PROTOCOL,
 		SERVER_SOFTWARE
 	};
-	void						exec_();
+	void						exec_(const std::string &);
 	void 						setEnv_(int name, std::string c);
 	void 						pipeStdout(int pfd[2]);
-	void 						build_(const Request &);
+	void 						build_(const RequestMock &);
+	void						freeEnvs_();
 	CGIExec();
 
 public:
 	static CGIExec 				*getInstance();
-	void 						run(Request &);
+	void 						run(const std::string &, RequestMock &);
 	virtual						~CGIExec();
 };
 
