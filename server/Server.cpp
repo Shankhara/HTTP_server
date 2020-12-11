@@ -4,7 +4,6 @@ Server* Server::instance_ = 0;
 
 Server::~Server() {
 	stop();
-	fdmax_ = 0;
 }
 
 Server::Server()
@@ -48,13 +47,14 @@ void Server::addFileDescriptor(FileDescriptor *fd) {
 	FD_SET(fd->getFd(), &master_);
 	if (fd->getFd() > fdmax_)
 		fdmax_ = fd->getFd();
-	Log().Get(logDEBUG) << __PRETTY_FUNCTION__ << " " <<  fd->getFd() << " MAX_FD " << fdmax_;
+	Log().Get(logDEBUG) << __FUNCTION__ << " " <<  fd->getFd() << " MAX_FD " << fdmax_;
 	fds_[fd->getFd()] = fd;
 }
 
 void Server::deleteFileDescriptor(int fd) {
 	Log().Get(logDEBUG) << __PRETTY_FUNCTION__  << " " << fd;
-	close(fd);
+	if (close(fd) == -1)
+		Log().Get(logERROR) << __PRETTY_FUNCTION__  << " unable to close " << strerror(errno);
 	FD_CLR(fd, &master_);
 	delete fds_[fd];
 }

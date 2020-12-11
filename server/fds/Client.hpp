@@ -20,18 +20,17 @@ private:
 	struct sockaddr_storage addr_;
 	std::string				response_;
 	bool 					keepAlive_;
-	class CGIResponse		*CGIResponse_;
 
 public:
 	Client(int, FileDescriptor &);
 	virtual ~Client();
-	void				setCgiResponse(CGIResponse *cgiResponse);
 	void 				constructRequest(char [], int);
 	void 				sendResponse() const;
 	void 				appendResponse(char [], int);
 	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();
+	FileDescriptor 		&getListener() const;
 };
 
 

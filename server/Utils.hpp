@@ -32,3 +32,4 @@ int getNextLine(std::string & buf, std::string & line)
 		return (1);
 	return (0);
 }
+

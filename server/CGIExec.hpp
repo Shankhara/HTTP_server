@@ -11,6 +11,7 @@
 #include "Server.hpp"
 #include "fds/Client.hpp"
 #include "fds/CGIResponse.hpp"
+#include "fds/Listener.hpp"
 
 class CGIExec {
 private:
@@ -42,6 +43,7 @@ private:
 	void 						pipeStdout(int pfd[2]);
 	void 						build_(const RequestMock &);
 	void						freeEnvs_();
+	std::string					itoa_(int nb);
 
 public:
 	CGIExec();

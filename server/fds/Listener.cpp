@@ -58,3 +58,7 @@ uint16_t Listener::htons_(uint16_t hostshort)
 }
 
 Listener::~Listener(){}
+
+int Listener::getPort() const {
+	return port_;
+}

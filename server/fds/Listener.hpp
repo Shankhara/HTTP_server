@@ -19,6 +19,7 @@ public:
 	void 	ListenAndServe();
 	uint16_t htons_(uint16_t hostshort);
 	void	onNewClient();
+	int getPort() const;
 };
 
 

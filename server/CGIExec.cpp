@@ -31,8 +31,8 @@ CGIExec::CGIExec() {
 void CGIExec::build_(const RequestMock &request) {
 	setEnv_(AUTH_TYPE, "");
 	setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
-	setEnv_(GATEWAY_INTERFACE, "");
-	setEnv_(PATH_INFO, "");
+	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
+	setEnv_(PATH_INFO, "/");
 	setEnv_(PATH_TRANSLATED, "");
 	setEnv_(QUERY_STRING, "");
 	setEnv_(REMOTE_ADDR, "");
@@ -42,7 +42,7 @@ void CGIExec::build_(const RequestMock &request) {
 	setEnv_(REQUEST_URI, "");
 	setEnv_(SCRIPT_NAME, "");
 	setEnv_(SERVER_NAME, "");
-	setEnv_(SERVER_PORT, "");
+	setEnv_(SERVER_PORT, itoa_(dynamic_cast<Listener &>(request.getClient().getListener()).getPort()));
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
@@ -133,5 +133,17 @@ void CGIExec::freeEnvs_()
 {
 	for (int i = 0; i < 16; i++)
 		free(envs_[i]);
+}
+
+std::string CGIExec::itoa_(int nb)
+{
+	std::string ss;
+	while(nb)
+	{
+		int x = nb%10;
+		nb /= 10;
+		ss+= 48 + x;
+	}
+	return ss;
 }
 

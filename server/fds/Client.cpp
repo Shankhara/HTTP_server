@@ -54,4 +54,8 @@ void Client::appendResponse(char buf[], int nbytes) {
 	response_.append(buf, nbytes);
 }
 
+FileDescriptor &Client::getListener() const {
+	return listener_;
+}
+
 
