@@ -12,7 +12,6 @@ class Request
 {
 	private:
 	//Client &client_;
-	std::string & request_;
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
 	std::string msgBody_;
@@ -35,6 +34,11 @@ class Request
 	Request(std::string &);
 	~Request();
 	
+	std::string & request_;
+	bool requestLine_parsed;
+	bool headers_parsed;
+	bool body_parsed;
+
 	std::vector<std::string> methods;
 	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
@@ -52,11 +56,13 @@ class Request
 	int checkHeadersEnd();
 	int getBody();
 	void parseHeadersContent();
-	//Client &getClient();
+	void reset();
+
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
 	
+	//Client &getClient();
 	std::vector<std::string> getRequestLine();
 	std::string getHeaderDate();
 	std::string getHeaderAuth();

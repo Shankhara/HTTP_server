@@ -4,6 +4,10 @@
 Request::Request(std::string & request) : request_(request)
 {
 	headersRaw_.resize(11);
+	requestLine_parsed = false;
+	headers_parsed = false;
+	body_parsed = false;
+
 	methods = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
 	headersName = { "accept-charsets", "accept-language", "allow", \
 	"authorization", "content-language", "content-length", "content-location", \
@@ -35,6 +39,31 @@ Request::~Request()
 //		requestLine_[REQTARGET].erase(i);
 //	}
 //}
+
+void Request::reset()
+{
+	requestLine_parsed = false;
+	headers_parsed = false;
+	body_parsed = false;
+
+	request_.clear();
+	requestLine_.clear();
+	headersRaw_.clear();
+	msgBody_.clear();
+
+	headerDate_.clear();
+	headerAuth_.clear();
+	headerHost_.clear();
+	headerReferer_.clear();
+	headerContentLength_.clear();
+	headerContentLocation_.clear();
+
+	headerAcceptCharset_.clear();
+	headerAcceptLanguage_.clear();
+	headerAllow_.clear();
+	headerContentLanguage_.clear();
+	headerContentType_.clear();
+}
 
 std::string Request::decodeBase64(std::string & str)
 {
@@ -129,12 +158,15 @@ int Request::getBody()
 {
 	std::string line;
 	
-	if (!headersRaw_[CONTENT_LENGTH].empty())
+	if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
 	{
 		msgBody_ = request_;
 		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
 		if (msgBody_.size() == len)
+		{
+			body_parsed = 0;
 			return (0);
+		}
 	}
 	return (1);	
 }
@@ -154,9 +186,12 @@ int Request::parseHeaders()
 		if (headerLine.empty())
 		{
 			if (line == "\r")
+			{
+				headers_parsed = 1;
 				return (0);
+			}
 			else
-				return (2);
+				return (1);
 		}
 
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
@@ -182,40 +217,32 @@ int Request::parseRequestLine()
 	if (requestLine_.size() != 3)
 		return (1);
 	if (checkMethod())
-	    return (2);
+	    return (1);
 	if (checkVersion())
-		return (3);
+		return (1);
+
+	requestLine_parsed = 1;
 	return (0);
 }
 
 int Request::parse()
 {
-	static int i = 0;
-    if (!i && !parseRequestLine())
-	{
-		std::cout << requestLine_[METHOD] << std::endl;
-		std::cout << requestLine_[REQTARGET] << std::endl;
-		std::cout << requestLine_[VERSION] << std::endl;
-		i++;
-	}
-	if ((i == 1) && !parseHeaders())
-	{
-		std::cout << headersRaw_[REFERER] << std::endl;
-		std::cout << headersRaw_[CONTENT_TYPE] << std::endl;
-		std::cout << headersRaw_[CONTENT_LENGTH] << std::endl;
-		i++;
-	}
-	if ((i == 2) && !getBody())
-	{
-		std::cout << msgBody_ << std::endl;
-		i++;
-	}
-	if (i > 1)
-	{
+    if (request_.size() && !requestLine_parsed)
+		if (parseRequestLine())
+			return (1);
+
+	if (request_.size() && !headers_parsed)
+		if (parseHeaders())
+			return (1);
+
+	if (request_.size() && !body_parsed)
+		if (getBody())
+			return (1);
+
+	if (headers_parsed)
 		parseHeadersContent();
-		i++;
-	}
-	return (i);
+
+	return (0);
 }
 
 void Request::parseHeadersContent()
