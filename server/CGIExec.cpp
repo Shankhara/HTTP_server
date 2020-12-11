@@ -20,10 +20,12 @@ const std::string CGIExec::vars_[] = {
 };
 
 CGIExec::~CGIExec() {
+	free(envs_[16]);
 }
 
 CGIExec::CGIExec() {
-	envs_[16] = 0;
+	setEnv_(16, "REDIRECT_STATUS=200");
+	envs_[17] = 0;
 }
 
 void CGIExec::build_(const RequestMock &request) {
@@ -45,7 +47,7 @@ void CGIExec::build_(const RequestMock &request) {
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
 
-CGIResponse *CGIExec::run(const std::string &script, RequestMock &request)
+CGIResponse *CGIExec::run(const std::string &bin, const std::string &filename, RequestMock &request)
 {
 	int pfd[2];
 
@@ -55,7 +57,6 @@ CGIResponse *CGIExec::run(const std::string &script, RequestMock &request)
 		return (0);
 	}
 	CGIResponse *response = new CGIResponse(pfd[0], request.getClient());
-	Server::getInstance()->addFileDescriptor(response);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -67,7 +68,7 @@ CGIResponse *CGIExec::run(const std::string &script, RequestMock &request)
 	{
 		pipeStdout(pfd);
 		build_(request);
-		exec_(script);
+		exec_(bin, filename);
 		close(STDOUT_FILENO);
 	}
 	else
@@ -78,14 +79,13 @@ CGIResponse *CGIExec::run(const std::string &script, RequestMock &request)
 	return (response);
 }
 
-void CGIExec::exec_(const std::string &script)
+void CGIExec::exec_(const std::string &bin, const std::string &filename)
 {
-	std::vector<char *> cmd;
-	cmd.push_back(const_cast<char *>(script.c_str()));
-	cmd.push_back(0);
-	int ret = execve(cmd[0], &cmd.data()[0], envs_);
-	Log().Get(logDEBUG) << "ENVS: " << envs_[15] << std::endl;
-	Log().Get(logDEBUG) << "RET: " << cmd[0] << " >> " << strerror(errno);
+	static char * cmd[3];
+	cmd[0] = const_cast<char *>(bin.c_str());
+	cmd[1] = const_cast<char *>(filename.c_str());
+	cmd[2] = 0;
+	int ret = execve(cmd[0], cmd, envs_);
 	freeEnvs_();
 	if (ret == -1)
 	{

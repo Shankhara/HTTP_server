@@ -16,7 +16,7 @@ class CGIExec {
 private:
 	int							stdoutFD_;
 	static const std::string	vars_[];
-	char *						envs_[17];
+	char *						envs_[18];
 	static CGIExec				*instance_;
 	std::string 				cgiScript_;
 	enum e_envs {
@@ -35,9 +35,9 @@ private:
 		SERVER_NAME,
 		SERVER_PORT,
 		SERVER_PROTOCOL,
-		SERVER_SOFTWARE
+		SERVER_SOFTWARE,
 	};
-	void						exec_(const std::string &);
+	void						exec_(const std::string &, const std::string &);
 	void 						setEnv_(int name, std::string c);
 	void 						pipeStdout(int pfd[2]);
 	void 						build_(const RequestMock &);
@@ -45,7 +45,7 @@ private:
 
 public:
 	CGIExec();
-	CGIResponse					*run(const std::string &, RequestMock &);
+	CGIResponse					*run(const std::string &,const std::string &, RequestMock &);
 	virtual						~CGIExec();
 };
 

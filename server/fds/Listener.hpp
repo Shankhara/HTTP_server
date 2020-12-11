@@ -16,7 +16,7 @@ public:
 	Listener(uint32_t ip, int port, const std::string &name);
 	virtual ~Listener();
 	void	onEvent();
-	void 	bind_();
+	void 	ListenAndServe();
 	uint16_t htons_(uint16_t hostshort);
 	void	onNewClient();
 };

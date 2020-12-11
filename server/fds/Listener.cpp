@@ -1,9 +1,6 @@
 #include "Listener.hpp"
 
-Listener::Listener(uint32_t ip, int port, const std::string &name): ip_(ip), port_(port), name_(name)
-{
-	bind_();
-}
+Listener::Listener(uint32_t ip, int port, const std::string &name): ip_(ip), port_(port), name_(name) {}
 
 void Listener::onEvent()
 {
@@ -24,9 +21,10 @@ void Listener::onNewClient()
 	}
 	Client *client = new Client(newfd, *this);
 	client->setAddr(remoteaddr);
+	Server::getInstance()->addFileDescriptor(client);
 }
 
-void Listener::bind_() {
+void Listener::ListenAndServe() {
 	struct sockaddr_in server;
 	fd_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd_ == -1)
@@ -41,14 +39,13 @@ void Listener::bind_() {
 	if ((bind(fd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
-		Server::getInstance()->stop();
+		exit(EXIT_FAILURE);
 	}
 	if (listen(fd_, FD_SETSIZE) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in listen() " << strerror(errno);
 		exit(EXIT_FAILURE);
 	}
-	Server::getInstance()->addFileDescriptor(this);
 }
 
 uint16_t Listener::htons_(uint16_t hostshort)

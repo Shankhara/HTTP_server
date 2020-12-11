@@ -2,7 +2,6 @@
 
 Client::Client(int fd, FileDescriptor &f): listener_(f), keepAlive_(false){
 	fd_ = fd;
-	Server::getInstance()->addFileDescriptor(this);
 }
 
 Client::~Client() {

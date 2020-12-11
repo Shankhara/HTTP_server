@@ -12,10 +12,12 @@ void signalHandler(int) {
 
 void addListener(const std::string &name, const std::string &ip, int port)
 {
-	new Listener(inet_addr(ip.c_str()),
+	Listener *l = new Listener(inet_addr(ip.c_str()),
 						   port,
 						   name);
 	Log().Get(logINFO) << name << " started on port " << ip << ":" << port << " (maxconn: " << FD_SETSIZE << ")";
+	l->ListenAndServe();
+	Server::getInstance()->addFileDescriptor(l);
 }
 
 int main(int argc, char *argv[]) {
