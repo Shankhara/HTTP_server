@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+char ft_tolower(char i) { return std::tolower(i); }
+
 std::vector<std::string> explode(const std::string & str, const char & delim)
 {
 	size_t start, end = 0;

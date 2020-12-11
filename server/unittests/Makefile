@@ -4,7 +4,7 @@ NAME		= unittests
 OBJS		= unittests.o Client.o Request.o Logger.o Server.o
 
 CXX			= clang++
-CXXFLAGS	= -Wall -Wextra -Werror
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM			= rm -f
 
 $(NAME):	$(OBJS)

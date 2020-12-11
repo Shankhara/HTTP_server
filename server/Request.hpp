@@ -8,6 +8,14 @@
 #define LEN 100
 #define CRLF "\r\n"
 
+#define BADREQUEST 1
+#define BADMETHOD 2
+#define BADVERSION 3
+#define PARSEHEADER_INLOOP 4
+#define BADHEADERNAME 5
+#define PARSEHEADER_OUTLOOP 6
+#define BADBODY 7
+
 class Request
 {
 	private:
