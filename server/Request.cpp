@@ -4,9 +4,10 @@
 Request::Request(std::string & request) : request_(request)
 {
 	headersRaw_.resize(11);
-	requestLine_parsed = false;
-	headers_parsed = false;
-	body_parsed = false;
+	requestLine_parsed = 0;
+	headers_parsed = 0;
+	body_parsed = 0;
+	queryString_parsed = 0;
 
 	std::string str_list[9] = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
 	std::vector<std::string> tmp(str_list, str_list + 9);
@@ -34,18 +35,6 @@ Request::~Request()
 
 }
 
-//int Request::getQueryString()
-//{
-//    int i = 0;
-//
-//	i = requestLine_[REQTARGET].find('?');
-//	if (i != std::string::npos)
-//	{
-//		queryString_ = requestLine_[REQTARGET].substr(i);
-//		requestLine_[REQTARGET].erase(i);
-//	}
-//}
-
 void Request::reset()
 {
 	requestLine_parsed = false;
@@ -56,6 +45,7 @@ void Request::reset()
 	requestLine_.clear();
 	headersRaw_.clear();
 	msgBody_.clear();
+	queryString_.clear();
 
 	headerDate_.clear();
 	headerAuth_.clear();
@@ -107,8 +97,6 @@ std::string Request::decode_authorization()
 	tmp = explode(headersRaw_[AUTHORIZATION], ' ');
 	if (tmp[0] == "Basic")
 		res = decodeBase64(tmp[1]);
-	//else
-		//Print ERROR : type unknown
 	return (res);
 }
 
@@ -126,6 +114,7 @@ std::vector<std::string> Request::workLine(std::string & line, const char & c)
 		i = line.find('\r');
 		if (i == std::string::npos)
 			return (res);
+
 		line.erase(line.begin() + i);
 		res = explode(line, c);
 	}
@@ -142,16 +131,10 @@ int Request::checkMethod()
 	return (1);
 }
 
+
 int Request::checkVersion()
 {
 	if (requestLine_[VERSION] != "HTTP/1.1")
-		return (1);
-	return (0);
-}
-
-int Request::checkHeadersEnd()
-{
-	if (request_ == "\r\n")
 		return (1);
 	return (0);
 }
@@ -171,6 +154,19 @@ int Request::getBody()
 		}
 	}
 	return (BADBODY);	
+}
+
+void Request::parseQueryString()
+{
+    size_t i = 0;
+
+	i = requestLine_[REQTARGET].find('?');
+	if (i != std::string::npos)
+	{
+		queryString_ = requestLine_[REQTARGET].substr(i);
+		requestLine_[REQTARGET].erase(i, std::string::npos);
+		queryString_parsed = 1;
+	}
 }
 
 int Request::parseHeaders()
@@ -231,9 +227,13 @@ int Request::parse()
 	int ret = 0;
 
     if (request_.size() && !requestLine_parsed)
+	{
 		if ((ret = parseRequestLine()))
 			return (ret);
-
+		if (!queryString_parsed)
+			parseQueryString();
+	}
+	
 	if (request_.size() && !headers_parsed)
 		if ((ret = parseHeaders()))
 			return (ret);

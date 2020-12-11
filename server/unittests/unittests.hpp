@@ -93,6 +93,11 @@ void testParsingRequestReceivedAtOnce()
 	r.reset();
 	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	assertEqual(r.parse(), BADHEADERNAME, "no newline bet headers and body");
+
+	r.reset();
+	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+	r.parse();
+	assertEqual(r.queryString_parsed, true, "parsing query_string");
 }
 
 //void testClient()
