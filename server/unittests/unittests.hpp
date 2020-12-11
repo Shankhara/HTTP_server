@@ -6,29 +6,43 @@
 #include "../Request.hpp"
 //#include "CGI.hpp"
 
+#define BADREQUEST 1
+#define BADMETHOD 2
+#define BADVERSION 3
+#define PARSEHEADER_INLOOP 4
+#define BADHEADERNAME 5
+#define PARSEHEADER_OUTLOOP 6
+#define BADBODY 7
+
 void testParsingRequestLine()
 {
-	std::cout << std::endl << __FUNCTION__ << std::endl;
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	
 	std::string str = "GET /qwe HTTP/1.1\r\n";
 	Request r(str);
 	assertEqual(r.parse(), 0, "correct line");
 
-	str = "GETGET /qwe HTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), 1, "method written twice");
+	r.reset();
+	r.request_ = "GETGET /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(r.parse(), BADMETHOD, "method written twice");
 	
-	str = "GET GET /qwe HTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), 1, "4 spaces");
+	r.reset();
+	r.request_ = "GET GET /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(r.parse(), BADREQUEST, "4 spaces");
 
-	str = "GET /qweHTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), 1, "only one space");
+	r.reset();
+	r.request_ = "GET /qweHTTP/1.1\r\n\r\n";
+	assertEqual(r.parse(), BADREQUEST, "only one space");
 
-	str = "GET /qwe HTTP1.1\r\n\r\n";
-	assertEqual(r.parse(), 1, "version badly written");
+	r.reset();
+	r.request_ = "GET /qwe HTTP1.1\r\n\r\n";
+	assertEqual(r.parse(), BADVERSION, "version badly written");
 }
 
 void testParsingRequestSequence()
 {
-	std::cout << std::endl << __FUNCTION__ << std::endl;
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
 	size_t start = 0;
 	size_t len = 5;
 	std::string str = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
@@ -46,7 +60,8 @@ void testParsingRequestSequence()
 
 void testParsingRequestReceivedAtOnce()
 {
-	std::cout << std::endl << __FUNCTION__ << std::endl;
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
 	std::string str = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 	Request r(str);
 
@@ -54,15 +69,31 @@ void testParsingRequestReceivedAtOnce()
 
 	r.reset();
 	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), 1, "wrong content-length header");
+	assertEqual(r.parse(), BADBODY, "wrong content-length header");
 
 	r.reset();
-	r.request_ = "get /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), 1, "non content-length header");
+	r.request_ = "GET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+	assertEqual(r.parse(), BADBODY, "no content-length header");
 
 	r.reset();
-	r.request_ = "get /qwe http/1.1\r\nget /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), 1, "2 request line");
+	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+	assertEqual(r.parse(), BADHEADERNAME, "2 correct request line");
+
+	r.reset();
+	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+	assertEqual(r.parse(), BADMETHOD, "lowercase method");
+
+	r.reset();
+	r.request_ = "GET /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+	assertEqual(r.parse(), BADVERSION, "lowercase version");
+
+	r.reset();
+	r.request_ = "GET /qwe http/1.1\r\n\r\nmessage";
+	assertEqual(r.parse(), BADHEADERNAME, "1 body no headers");
+
+	r.reset();
+	r.request_ = "GET /qwe http/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+	assertEqual(r.parse(), BADHEADERNAME, "no newline bet headers and body");
 }
 
 //void testClient()

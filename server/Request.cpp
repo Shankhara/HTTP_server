@@ -8,10 +8,16 @@ Request::Request(std::string & request) : request_(request)
 	headers_parsed = false;
 	body_parsed = false;
 
-	methods = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
-	headersName = { "accept-charsets", "accept-language", "allow", \
+	std::string str_list[9] = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
+	std::vector<std::string> tmp(str_list, str_list + 9);
+	methods = tmp;
+
+	std::string str_list2[12] = { "accept-charsets", "accept-language", "allow", \
 	"authorization", "content-language", "content-length", "content-location", \
 	"content-type", "date", "host", "referer", };
+	std::vector<std::string> tmp2(str_list2, str_list2 + 12);
+	headersName = tmp2;
+
 }
 
 //Request::Request(Client & c) : client_(c), request_(c.getResponse())
@@ -128,14 +134,10 @@ std::vector<std::string> Request::workLine(std::string & line, const char & c)
 
 int Request::checkMethod()
 {
-	size_t ret, i = 0;	
-
-	while (i < methods.size())
+	for (size_t i = 0; i < methods.size(); i++)
 	{
-		if ((ret = requestLine_[METHOD].find(methods[i])))
-			if (requestLine_[METHOD].size() == methods[i].size())
+		if (methods[i] == requestLine_[METHOD])
 				return (0);
-		i++;
 	}
 	return (1);
 }
@@ -168,7 +170,7 @@ int Request::getBody()
 			return (0);
 		}
 	}
-	return (1);	
+	return (BADBODY);	
 }
 
 int Request::parseHeaders()
@@ -191,20 +193,20 @@ int Request::parseHeaders()
 				return (0);
 			}
 			else
-				return (1);
+				return (PARSEHEADER_INLOOP);
 		}
 
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
   		std::string::iterator ste = headerLine[HEADERTITLE].end();
 
-  		std::transform(st, ste, st, [](unsigned char c)-> unsigned char { return std::tolower(c); });
+  		std::transform(st, ste, st, ft_tolower);
 		itx = std::find(it, ite, headerLine[HEADERTITLE]);
 		if (itx == ite)
-			return (1);
+			return (BADHEADERNAME);
 		dist = std::distance(it, itx);
 		headersRaw_[dist] = headerLine[HEADERCONTENT];
 	}
-	return (1);
+	return (PARSEHEADER_OUTLOOP);
 }
 
 int Request::parseRequestLine()
@@ -215,11 +217,11 @@ int Request::parseRequestLine()
 	requestLine_ = workLine(line, ' ');
 
 	if (requestLine_.size() != 3)
-		return (1);
+		return (BADREQUEST);
 	if (checkMethod())
-	    return (1);
+	    return (BADMETHOD);
 	if (checkVersion())
-		return (1);
+		return (BADVERSION);
 
 	requestLine_parsed = 1;
 	return (0);
@@ -227,22 +229,24 @@ int Request::parseRequestLine()
 
 int Request::parse()
 {
+	int ret = 0;
+
     if (request_.size() && !requestLine_parsed)
-		if (parseRequestLine())
-			return (1);
+		if ((ret = parseRequestLine()))
+			return (ret);
 
 	if (request_.size() && !headers_parsed)
-		if (parseHeaders())
-			return (1);
+		if ((ret = parseHeaders()))
+			return (ret);
 
 	if (request_.size() && !body_parsed)
-		if (getBody())
-			return (1);
+		if ((ret = getBody()))
+			return (ret);
 
 	if (headers_parsed)
 		parseHeadersContent();
 
-	return (0);
+	return (ret);
 }
 
 void Request::parseHeadersContent()
