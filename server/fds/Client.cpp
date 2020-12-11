@@ -1,3 +1,4 @@
+#include <signal.h>
 #include "Client.hpp"
 
 Client::Client(int fd, FileDescriptor &f): listener_(f), keepAlive_(false){
@@ -7,6 +8,11 @@ Client::Client(int fd, FileDescriptor &f): listener_(f), keepAlive_(false){
 
 Client::~Client() {
 	Log().Get(logDEBUG) << "Client deleted " << fd_;
+	if (CGIResponse_ != 0)
+	{
+		Log().Get(logDEBUG) << "Client killing CGI " << CGIResponse_->getPid();
+		kill(CGIResponse_->getPid(), 9);
+	}
 }
 
 void Client::onEvent()
@@ -53,5 +59,9 @@ std::string &Client::getResponse()
 
 void Client::appendResponse(char buf[], int nbytes) {
 	response_.append(buf, nbytes);
+}
+
+void Client::setCgiResponse(CGIResponse *cgiResponse) {
+	CGIResponse_ = cgiResponse;
 }
 

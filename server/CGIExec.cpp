@@ -72,7 +72,10 @@ CGIResponse *CGIExec::run(const std::string &script, RequestMock &request)
 		close(STDOUT_FILENO);
 	}
 	else
+	{
+		response->setPid(cpid);
 		close(pfd[1]);
+	}
 	return (response);
 }
 

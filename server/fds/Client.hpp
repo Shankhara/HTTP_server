@@ -11,6 +11,8 @@
 #include "../Server.hpp"
 #include "FileDescriptor.hpp"
 
+class CGIResponse;
+
 class Client: public FileDescriptor {
 
 private:
@@ -18,6 +20,9 @@ private:
 	struct sockaddr_storage addr_;
 	std::string				response_;
 	bool 					keepAlive_;
+	CGIResponse				*CGIResponse_;
+public:
+	void setCgiResponse(CGIResponse *cgiResponse);
 
 public:
 	Client(int, FileDescriptor &);

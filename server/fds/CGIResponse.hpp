@@ -2,21 +2,25 @@
 #define WEBSERV_CGIRESPONSE_HPP
 
 #include "FileDescriptor.hpp"
-#include "Client.hpp"
 #include <errno.h>
 #include <unistd.h>
 #include <cstring>
+#include "../Server.hpp"
 #include "../Logger.hpp"
+#include "Client.hpp"
 
 class CGIResponse: public FileDescriptor {
 private:
 	Client &client_;
+	pid_t  pid_;
+
 public:
 	CGIResponse(int, Client &);
-	virtual ~CGIResponse();
+	virtual		~CGIResponse();
 	void		onEvent();
 	int			readPipe();
+	pid_t		getPid() const;
+	void		setPid(pid_t pid);
 };
 
-
-#endif //WEBSERV_CGIRESPONSE_HPP
+#endif

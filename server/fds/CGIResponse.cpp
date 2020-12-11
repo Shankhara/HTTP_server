@@ -2,9 +2,12 @@
 
 CGIResponse::CGIResponse(int fd, Client &client): client_(client) {
 	fd_ = fd;
+	client_.setCgiResponse(this);
 }
 
-CGIResponse::~CGIResponse() {}
+CGIResponse::~CGIResponse() {
+	client_.setCgiResponse(0);
+}
 
 int CGIResponse::readPipe() {
 	char 	buf[256];
@@ -23,7 +26,15 @@ void CGIResponse::onEvent() {
 	{
 		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 		client_.sendResponse();
-		// TODO: improv deleteFileDescriptor will close on already close fd, maybe send on EOF is good enough?
+		// TODO: improv deleteFileDescriptor will close an already close fd, maybe send on EOF is good enough?
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
+}
+
+pid_t CGIResponse::getPid() const {
+	return pid_;
+}
+
+void CGIResponse::setPid(pid_t pid) {
+	pid_ = pid;
 }
