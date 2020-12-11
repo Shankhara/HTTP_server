@@ -2,11 +2,14 @@
 
 CGIResponse::CGIResponse(int fd, Client &client): client_(client) {
 	fd_ = fd;
-	client_.setCgiResponse(this);
 }
 
 CGIResponse::~CGIResponse() {
-	client_.setCgiResponse(0);
+	int status;
+
+	pid_t result = waitpid(pid_, &status, WNOHANG);
+	if (result == 0)
+		kill(pid_, 9);
 }
 
 int CGIResponse::readPipe() {

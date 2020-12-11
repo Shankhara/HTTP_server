@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <cstring>
+#include <wait.h>
 #include "../Server.hpp"
 #include "../Logger.hpp"
 #include "Client.hpp"

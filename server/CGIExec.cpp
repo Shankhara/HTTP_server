@@ -1,5 +1,4 @@
 #include "CGIExec.hpp"
-#include "fds/CGIResponse.hpp"
 
 const std::string CGIExec::vars_[] = {
 								  "AUTH_TYPE=",

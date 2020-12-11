@@ -9,6 +9,7 @@
 #include <vector>
 #include "RequestMock.hpp"
 #include "Server.hpp"
+#include "fds/Client.hpp"
 #include "fds/CGIResponse.hpp"
 
 class CGIExec {

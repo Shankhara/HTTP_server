@@ -9,9 +9,9 @@
 #include <sys/socket.h>
 #include "../Logger.hpp"
 #include "../Server.hpp"
+#include <signal.h>
 #include "FileDescriptor.hpp"
 
-class CGIResponse;
 
 class Client: public FileDescriptor {
 
@@ -20,13 +20,12 @@ private:
 	struct sockaddr_storage addr_;
 	std::string				response_;
 	bool 					keepAlive_;
-	CGIResponse				*CGIResponse_;
-public:
-	void setCgiResponse(CGIResponse *cgiResponse);
+	class CGIResponse		*CGIResponse_;
 
 public:
 	Client(int, FileDescriptor &);
 	virtual ~Client();
+	void				setCgiResponse(CGIResponse *cgiResponse);
 	void 				constructRequest(char [], int);
 	void 				sendResponse() const;
 	void 				appendResponse(char [], int);
@@ -34,4 +33,6 @@ public:
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();
 };
+
+
 #endif //WEBSERV_CLIENT_HPP
