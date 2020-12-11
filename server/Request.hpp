@@ -11,10 +11,9 @@
 #define BADREQUEST 1
 #define BADMETHOD 2
 #define BADVERSION 3
-#define PARSEHEADER_INLOOP 4
-#define BADHEADERNAME 5
-#define PARSEHEADER_OUTLOOP 6
-#define BADBODY 7
+#define BADHEADERNAME 4
+#define BADHEADER 5
+#define BADBODY 6
 
 class Request
 {
@@ -23,6 +22,7 @@ class Request
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
 	std::string msgBody_;
+	std::string queryString_;
 	
 	std::string headerDate_;
 	std::string headerAuth_;
@@ -46,6 +46,7 @@ class Request
 	bool requestLine_parsed;
 	bool headers_parsed;
 	bool body_parsed;
+	bool queryString_parsed;
 
 	std::vector<std::string> methods;
 	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
@@ -64,6 +65,7 @@ class Request
 	int checkHeadersEnd();
 	int getBody();
 	void parseHeadersContent();
+	void parseQueryString();
 	void reset();
 
 	std::vector<std::string> workLine(std::string &, const char &);

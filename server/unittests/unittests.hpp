@@ -9,10 +9,9 @@
 #define BADREQUEST 1
 #define BADMETHOD 2
 #define BADVERSION 3
-#define PARSEHEADER_INLOOP 4
-#define BADHEADERNAME 5
-#define PARSEHEADER_OUTLOOP 6
-#define BADBODY 7
+#define BADHEADERNAME 4
+#define BADHEADER 5
+#define BADBODY 6
 
 void testParsingRequestLine()
 {
@@ -77,7 +76,7 @@ void testParsingRequestReceivedAtOnce()
 
 	r.reset();
 	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADHEADERNAME, "2 correct request line");
+	assertEqual(r.parse(), BADHEADER, "2 correct request line");
 
 	r.reset();
 	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
@@ -88,12 +87,17 @@ void testParsingRequestReceivedAtOnce()
 	assertEqual(r.parse(), BADVERSION, "lowercase version");
 
 	r.reset();
-	r.request_ = "GET /qwe http/1.1\r\n\r\nmessage";
-	assertEqual(r.parse(), BADHEADERNAME, "1 body no headers");
+	r.request_ = "GET /qwe HTTP/1.1\r\n\r\nmessage";
+	assertEqual(r.parse(), BADBODY, "1 body no headers");
 
 	r.reset();
-	r.request_ = "GET /qwe http/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	assertEqual(r.parse(), BADHEADERNAME, "no newline bet headers and body");
+
+	r.reset();
+	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+	r.parse();
+	assertEqual(r.queryString_parsed, true, "parsing query_string");
 }
 
 //void testClient()
