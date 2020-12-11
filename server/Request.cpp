@@ -192,8 +192,7 @@ int Request::parseHeaders()
 				headers_parsed = 1;
 				return (0);
 			}
-			else
-				return (PARSEHEADER_INLOOP);
+			break;
 		}
 
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
@@ -206,7 +205,7 @@ int Request::parseHeaders()
 		dist = std::distance(it, itx);
 		headersRaw_[dist] = headerLine[HEADERCONTENT];
 	}
-	return (PARSEHEADER_OUTLOOP);
+	return (BADHEADER);
 }
 
 int Request::parseRequestLine()

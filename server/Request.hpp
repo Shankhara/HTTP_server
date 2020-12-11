@@ -11,10 +11,9 @@
 #define BADREQUEST 1
 #define BADMETHOD 2
 #define BADVERSION 3
-#define PARSEHEADER_INLOOP 4
-#define BADHEADERNAME 5
-#define PARSEHEADER_OUTLOOP 6
-#define BADBODY 7
+#define BADHEADERNAME 4
+#define BADHEADER 5
+#define BADBODY 6
 
 class Request
 {
