@@ -19,6 +19,12 @@ bool assertHeaderStatus(const std::string &response, const std::string &status, 
 	return false;
 }
 
+std::string get_working_path()
+{
+	char temp[4096];
+	return ( getcwd(temp, sizeof(temp)) ? std::string( temp ) : std::string("") );
+}
+
 void assertCGIFailed(const std::string &filename, const std::string &status, const std::string &name)
 {
 	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
@@ -27,9 +33,26 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	CGIExec cgi;
 	request.setRequestMethod("GET");
 	request.setContentLength("0");
-	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", filename, request);
+	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, request);
 	resp->readPipe();
 	assertHeaderStatus(client->getResponse(), status, name);
+	close(resp->getFd());
+	delete listener;
+	delete client;
+	delete resp;
+}
+
+void assertCGISuccess(const std::string &filename, const std::string &name)
+{
+	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
+	Client *client = new Client(12, *listener);
+	RequestMock  request(*client);
+	CGIExec cgi;
+	request.setRequestMethod("GET");
+	request.setContentLength("0");
+	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, request);
+	resp->readPipe();
+	assertHeaderStatus(client->getResponse(), "200", name);
 	close(resp->getFd());
 	delete listener;
 	delete client;
@@ -39,8 +62,9 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 
 void testCGI()
 {
-	assertCGIFailed("./notfound.php", "404", "php 404");
-	assertCGIFailed("./500.php", "500", "php 500");
+	assertCGIFailed("/notfound.php", "404", "php 404");
+	assertCGIFailed("/500.php", "500", "php 500");
+	assertCGISuccess("/200.php", "php_info()");
 }
 
 #endif //WEBSERV_CGI_HPP

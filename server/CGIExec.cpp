@@ -12,6 +12,7 @@ const std::string CGIExec::vars_[] = {
 								  "REMOTE_USER=",
 								  "REQUEST_METHOD=",
 								  "REQUEST_URI=",
+								  "SCRIPT_FILENAME=",
 								  "SCRIPT_NAME=",
 								  "SERVER_NAME=",
 								  "SERVER_PORT=",
@@ -20,15 +21,15 @@ const std::string CGIExec::vars_[] = {
 };
 
 CGIExec::~CGIExec() {
-	free(envs_[16]);
+	free(envs_[17]);
 }
 
 CGIExec::CGIExec() {
-	setEnv_(16, "REDIRECT_STATUS=200");
-	envs_[17] = 0;
+	setEnv_(17, "REDIRECT_STATUS=200");
+	envs_[18] = 0;
 }
 
-void CGIExec::build_(const RequestMock &request) {
+void CGIExec::build_(const RequestMock &request, const std::string &workDir, const std::string &filename) {
 	setEnv_(AUTH_TYPE, "");
 	setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
 	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
@@ -40,20 +41,23 @@ void CGIExec::build_(const RequestMock &request) {
 	setEnv_(REMOTE_USER, "");
 	setEnv_(REQUEST_METHOD, request.getRequestMethod());
 	setEnv_(REQUEST_URI, "");
-	setEnv_(SCRIPT_NAME, "");
+	setEnv_(SCRIPT_FILENAME, workDir + filename);
+	setEnv_(SCRIPT_NAME, filename);
 	setEnv_(SERVER_NAME, "");
 	setEnv_(SERVER_PORT, itoa_(dynamic_cast<Listener &>(request.getClient().getListener()).getPort()));
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
 
-CGIResponse *CGIExec::run(const std::string &bin, const std::string &filename, RequestMock &request)
+CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
+						  const std::string &filename, RequestMock &request)
 {
 	int pfd[2];
 
+	Log().Get(logDEBUG) << "WD: " << workingDir << "BIN: " << cgiBin << " " << filename;
 	if (pipe(pfd))
 	{
-		Log().Get(logERROR) << "Unable to pipe: " << strerror(errno);
+		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
 		return (0);
 	}
 	CGIResponse *response = new CGIResponse(pfd[0], request.getClient());
@@ -61,15 +65,23 @@ CGIResponse *CGIExec::run(const std::string &bin, const std::string &filename, R
 	if (cpid < 0)
 	{
 		delete response;
-		Log().Get(logERROR) << "Unable to fork: " << strerror(errno);
+		Log().Get(logERROR) << __FUNCTION__  << "Unable to fork: " << strerror(errno);
 		return (0);
 	}
 	if (cpid == 0)
 	{
-		pipeStdout(pfd);
-		build_(request);
-		exec_(bin, filename);
+		if (chdir(workingDir.c_str()) == -1)
+		{
+			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno);
+			exit(255);
+		}
+		pipeSTDOUT_(pfd);
+		build_(request, workingDir, filename);
+		//TODO: redirect stderr to a logfile?
+		close(STDERR_FILENO);
+		exec_(cgiBin, filename);
 		close(STDOUT_FILENO);
+		exit(0);
 	}
 	else
 	{
@@ -89,27 +101,27 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	freeEnvs_();
 	if (ret == -1)
 	{
-		Log().Get(logERROR) << "Unable to execve " << strerror(errno);
+		Log().Get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno);
 	}
 }
 
 
-void	CGIExec::pipeStdout(int pfd[2])
+void	CGIExec::pipeSTDOUT_(int pfd[2])
 {
 	if (close(pfd[0]) == -1)
 	{
-		Log().Get(logERROR) << "Unable to close " << strerror(errno);
-		throw ;
+		Log().Get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
+		exit(EXIT_FAILURE);
 	}
 	if (dup2(pfd[1], STDOUT_FILENO) == -1)
 	{
-		Log().Get(logERROR) << "Unable to dup2 " << strerror(errno);
-		throw ;
+		Log().Get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
+		exit(EXIT_FAILURE);
 	}
 	if (close(pfd[1]) == -1)
 	{
-		Log().Get(logERROR) << "Unable to close " << strerror(errno);
-		throw ;
+		Log().Get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
+		exit(EXIT_FAILURE);
 	}
 	stdoutFD_ = STDOUT_FILENO;
 }
