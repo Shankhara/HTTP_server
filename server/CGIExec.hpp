@@ -4,6 +4,7 @@
 #include "Logger.hpp"
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <cstring>
 #include <wait.h>
 #include <vector>
@@ -42,6 +43,7 @@ private:
 	void						exec_(const std::string &, const std::string &);
 	void 						setEnv_(int name, std::string c);
 	void 						pipeSTDOUT_(int pfd[2]);
+	void 						dupSTDERR_();
 	void 						build_(const RequestMock &, const std::string &, const std::string &);
 	void						freeEnvs_();
 	std::string					itoa_(int nb);

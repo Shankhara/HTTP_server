@@ -33,7 +33,7 @@ void CGIExec::build_(const RequestMock &request, const std::string &workDir, con
 	setEnv_(AUTH_TYPE, "");
 	setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
 	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
-	setEnv_(PATH_INFO, "/");
+	setEnv_(PATH_INFO, "");
 	setEnv_(PATH_TRANSLATED, "");
 	setEnv_(QUERY_STRING, "");
 	setEnv_(REMOTE_ADDR, "");
@@ -77,8 +77,7 @@ CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingD
 		}
 		pipeSTDOUT_(pfd);
 		build_(request, workingDir, filename);
-		//TODO: redirect stderr to a logfile?
-		close(STDERR_FILENO);
+		dupSTDERR_();
 		exec_(cgiBin, filename);
 		close(STDOUT_FILENO);
 		exit(0);
@@ -124,6 +123,14 @@ void	CGIExec::pipeSTDOUT_(int pfd[2])
 		exit(EXIT_FAILURE);
 	}
 	stdoutFD_ = STDOUT_FILENO;
+}
+
+void	CGIExec::dupSTDERR_()
+{
+	int fd;
+	if ((fd = open("/dev/null", O_RDONLY)) == -1)
+		return ;
+	dup2(fd, STDERR_FILENO);
 }
 
 void CGIExec::setEnv_(int name, std::string c)
