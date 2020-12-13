@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 03:18:09 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 06:24:16 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ static const char		*locationProps_[] = {	"method",
 												"client_max_body_size",
 												0 };
 
+static int	line_;
+static int	char_;
 
 class Parsing
 {
@@ -109,17 +111,40 @@ class Parsing
 		bool						parseName();
 		Parsing::servers			getDefaultServer();
 		Parsing::location			getDefaultLocation();
-		size_t             			getMcbs(std::string s);
+		size_t             			getMcbs(stds s);
+		bool                		parseSemi(stds *src);
 		bool						valid(stds name, const char **valid_names);
 		stds						getNextLine(iterator *first, iterator end);
-		void						skipWhite(iterator *first, iterator end);
+		void						skipWhite(iterator *first, iterator end, bool inc);
 		bool						compString(iterator *first, iterator end, stds src);
 		iterator					getBrackets(iterator next, iterator end);
 		std::vector<stds>			splitWhitespace(stds str);
+		stds						getStatic(char const *s);
 		int							to_int(char const *s, size_t count);
 		std::vector<servers>		getServers() {	return (this->servers_); }
-	
-		class ParsingException : public std::exception { virtual const char *what() const throw(); };
+
+	class ParsingException : public std::exception
+	{
+		private:
+			std::string		msg_;
+
+		public:
+			ParsingException(std::string file, std::string msg = "Configfile error.")
+			{
+				std::string	li;	
+				std::string	ch;
+
+				std::ostringstream conv;
+				std::ostringstream conv2;
+				conv << line_;
+				li = std::string(conv.str());	
+				conv2 << char_;
+				ch = std::string(conv2.str());	
+				this->msg_ = std::string(file + std::string(":") + li + std::string(":") + ch + std::string(": error: ") + std::string(msg));
+			}		
+			~ParsingException() throw() {};
+			const char *what () const throw () { return (msg_.c_str()); }
+	};	
 };
 
 #endif

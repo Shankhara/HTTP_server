@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 03:57:06 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 04:47:33 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,16 @@ int main()
 		std::cout << "PORT : " << a.getServers()[i].port << std::endl;
 		if (a.getServers()[i].error_pages.empty() == false)
 		{
-			std::map<int, std::string>::iterator it = a.getServers()[i].error_pages.begin();
-			std::cout << "ERROR_PAGE : " << std::endl;
-			std::cout << "	CODE : " << it->first << std::endl;
-			std::cout << "	PAGE : " << it->second << std::endl;
-			std::cout << std::endl;
+			
+			ite it = a.getServers()[i].error_pages.begin();
+			ite end = a.getServers()[i].error_pages.end();
+			for (; it != end; it++)
+			{
+				std::cout << "ERROR_PAGE : " << std::endl;
+				std::cout << "	CODE : " << it->first << std::endl;
+				std::cout << "	PAGE : " << it->second << std::endl;
+				std::cout << std::endl;
+			}
 		}
 		for (std::map<std::string, std::string>::iterator it = a.getServers()[i].access_log.begin(); it != a.getServers()[i].access_log.end(); it++)
 		{
