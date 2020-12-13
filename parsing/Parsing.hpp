@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/12 20:33:18 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 02:28:55 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,54 +61,58 @@ static const char		*locationProps_[] = {	"method",
 
 class Parsing
 {
+	public :
+		typedef typename std::string			stds;
+		typedef typename stds::iterator			iterator;
+
 	private :
 
 		struct location
 		{
-			std::string					name;
-			std::string					root;
-			std::vector<std::string>	methods;
-			bool						autoindex;
-			std::string					index;
-			std::vector<std::string>	cgi_extension;
-			std::string					cgi_path;
-			bool						upload_enable;
-			std::string					upload_path;
-			size_t						client_max_body_size;
+			stds					name;
+			stds					root;
+			std::vector<stds>		methods;
+			bool					autoindex;
+			stds					index;
+			std::vector<stds>		cgi_extension;
+			stds					cgi_path;
+			bool					upload_enable;
+			stds					upload_path;
+			size_t					client_max_body_size;
 		};
 
 		struct servers
 		{
-			std::vector<std::string>	names;
-			std::string					host;
-			std::string					root;
-			std::map<int, std::string>	error_pages;
-			std::vector<location>		locations;
-			size_t						port;
+			std::vector<stds>		names;
+			stds					host;
+			stds					root;
+			std::map<int, stds>		error_pages;
+			std::vector<location>	locations;
+			size_t					port;
 		};
 	
-		std::string				file_;
+		stds					file_;
 		std::vector<servers>	servers_;
 
 	public :
 		Parsing();	
-		Parsing(std::string file);
+		Parsing(stds file);
 		~Parsing();
 
 		void						parseConfig();
 		void						parseServer();
-		Parsing::servers			parseProps(std::string::iterator first, std::string::iterator end);
-		Parsing::servers			returnProps(Parsing::servers server, std::vector<std::string> line);
-		Parsing::location			parseLocation(std::string name, std::string::iterator first, std::string::iterator end);
-		Parsing::location			returnLocation(Parsing::location location, std::vector<std::string> line);
+		Parsing::servers			parseProps(iterator first, iterator end);
+		Parsing::servers			returnProps(Parsing::servers server, std::vector<stds> line);
+		Parsing::location			parseLocation(stds name, iterator first, iterator end);
+		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line);
 		void						parseMethods();
 		bool						parseName();
-		bool						valid(std::string name, const char **valid_names);
-		std::string					getNextLine(std::string::iterator *first, std::string::iterator end);
-		void						skipWhite(std::string::iterator *first, std::string::iterator end);
-		bool						compString(std::string::iterator *first, std::string::iterator end, std::string src);
-		std::string::iterator		getBrackets(std::string::iterator next, std::string::iterator end);
-		std::vector<std::string>	splitWhitespace(std::string str);
+		bool						valid(stds name, const char **valid_names);
+		stds						getNextLine(iterator *first, iterator end);
+		void						skipWhite(iterator *first, iterator end);
+		bool						compString(iterator *first, iterator end, stds src);
+		iterator					getBrackets(iterator next, iterator end);
+		std::vector<stds>			splitWhitespace(stds str);
 		int							to_int(char const *s, size_t count);
 		std::vector<servers>		getServers() {	return (this->servers_); }
 	

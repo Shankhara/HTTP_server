@@ -6,34 +6,37 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 02:23:23 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 02:44:02 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Parsing.hpp"
 
+typedef typename std::string           			stds;
+typedef typename stds::iterator        			iterator;
+typedef typename std::pair<int, stds> 			p;
+typedef typename std::istreambuf_iterator<char>	ist;
 
-Parsing::Parsing(void) : file_(std::string(DEFAULT_PATH)), servers_() {}
+Parsing::Parsing(void) : file_(stds(DEFAULT_PATH)), servers_() {}
 
-Parsing::Parsing(std::string file=DEFAULT_PATH) : file_(file), servers_() {}
+Parsing::Parsing(stds file=DEFAULT_PATH) : file_(file), servers_() {}
 
 Parsing::~Parsing(void) {}
 
-void Parsing::parseConfig(void)
+void				Parsing::parseConfig(void)
 {
-	std::string::iterator	first;
-	std::string::iterator	next;
-	size_t					size = 0;
+	iterator	first;
+	iterator	next;
 
 	if (this->file_.length() < 6 || this->parseName() == false)
 		throw (Parsing::ParsingException());	
 	std::ifstream	file(this->file_.c_str());
-	std::string content((std::istreambuf_iterator<char>(file)), (std::istreambuf_iterator<char>()));
+	stds content((ist(file)), (ist()));
 	first = content.begin();
 	while (first != content.end())
 	{
 		this->skipWhite(&first, content.end());
-		if (this->compString(&first, content.end(), std::string("server")) == false)
+		if (this->compString(&first, content.end(), stds("server")) == false)
 			throw (Parsing::ParsingException());
 		if (*first != '{')
 			throw (Parsing::ParsingException());
@@ -48,24 +51,24 @@ void Parsing::parseConfig(void)
 	return;
 }
 
-Parsing::servers	Parsing::parseProps(std::string::iterator first, std::string::iterator end)
+Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 {
-	Parsing::servers				server;
-	std::vector<std::string>		line;
-	std::string						tmp;
-	std::string::iterator			next;
+	Parsing::servers	server;
+	std::vector<stds>	line;
+	stds				tmp;
+	iterator			next;
 
-	server.host = std::string("localhost");
+	server.host = stds("localhost");
 	while (first != end)
 	{
 		this->skipWhite(&first, end);
 		tmp = getNextLine(&first, end);
 		this->skipWhite(&first, end);
-		if (tmp[tmp.size() - 1] != ';' && tmp.find("location") == std::string::npos)
+		if (tmp[tmp.size() - 1] != ';' && tmp.find("location") == stds::npos)
 			throw (Parsing::ParsingException());
-		if (tmp.find("location") != std::string::npos)
+		if (tmp.find("location") != stds::npos)
 		{
-			line = this->splitWhitespace(std::string(tmp, 0, tmp.size()));
+			line = this->splitWhitespace(stds(tmp, 0, tmp.size()));
 			if (line.size() < 2)
 				throw (Parsing::ParsingException());
 			if (line[line.size() - 1] != "{" && *first != '{')
@@ -85,16 +88,16 @@ Parsing::servers	Parsing::parseProps(std::string::iterator first, std::string::i
 			continue;
 		}	
 		else	
-			line = this->splitWhitespace(std::string(tmp, 0, tmp.size() - 1));
+			line = this->splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		server = this->returnProps(server, line);
 	}
 	return server;
 }
-Parsing::location		Parsing::parseLocation(std::string name, std::string::iterator first, std::string::iterator end)
+Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator end)
 {
-	Parsing::location				location;
-	std::vector<std::string>		line;
-	std::string						tmp;
+	Parsing::location	location;
+	std::vector<stds>	line;
+	stds				tmp;
 	
 	location.name = name;
 	while (first != end)
@@ -104,13 +107,13 @@ Parsing::location		Parsing::parseLocation(std::string name, std::string::iterato
 		this->skipWhite(&first, end);
 		if (tmp[tmp.size() - 1] != ';')
 			throw (Parsing::ParsingException());
-		line = this->splitWhitespace(std::string(tmp, 0, tmp.size() - 1));
+		line = this->splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line);
 	}
 	return location;
 }
 
-Parsing::servers			Parsing::returnProps(Parsing::servers server, std::vector<std::string> line)
+Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds> line)
 {
 	if (line.size() <= 1)
 		throw (Parsing::ParsingException());
@@ -118,27 +121,28 @@ Parsing::servers			Parsing::returnProps(Parsing::servers server, std::vector<std
 		throw (Parsing::ParsingException());
 	if (line[0] == "listen")
 	{
-		if (line.size() >= 2 && this->to_int(line[1].c_str(), line[1].size()) != 0)
+		if (this->to_int(line[1].c_str(), line[1].size()) != 0)
 			server.port = this->to_int(line[1].c_str(), line[1].size());
+		else
+			throw (Parsing::ParsingException());
 		if (line.size() == 3)
 			server.host = line[2];
 	}
 	else if (line[0] == "error_page")
 		if (line.size() == 3)
-			server.error_pages.insert(std::pair<int, std::string>(this->to_int(line[1].c_str(), line[1].size()), line[2]));
+			server.error_pages.insert(p(this->to_int(line[1].c_str(), line[1].size()), line[2]));
 	else if (line[0] == "server_name")
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	else if (line[0] == "root")
-		if (line.size() == 2)
 			server.root = line[1];
 	return server;
 }
 
-Parsing::location		Parsing::returnLocation(Parsing::location location, std::vector<std::string> line)
+Parsing::location		Parsing::returnLocation(Parsing::location location, std::vector<stds> line)
 {
-	std::string::iterator	first;
-	std::string::iterator	second;
+	iterator	first;
+	iterator	second;
 
 	if (line.size() <= 1)
 		throw (Parsing::ParsingException());
@@ -157,9 +161,9 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		}
 	else if (line[0] == "autoindex")
 	{
-		if (this->compString(&first, line[1].end(), std::string("off")))
+		if (this->compString(&first, line[1].end(), stds("off")))
 			location.autoindex = false;
-		else if (this->compString(&second, line[1].end(), std::string("on")))
+		else if (this->compString(&second, line[1].end(), stds("on")))
 			location.autoindex = true;
 		else
 			throw (Parsing::ParsingException());
@@ -173,9 +177,9 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		location.cgi_path = line[1];
 	else if (line[0] == "upload_enable")
 	{
-		if (this->compString(&first, line[1].end(), std::string("off")))
+		if (this->compString(&first, line[1].end(), stds("off")))
 			location.upload_enable = false;
-		else if (this->compString(&second, line[1].end(), std::string("on")))
+		else if (this->compString(&second, line[1].end(), stds("on")))
 			location.upload_enable = true;
 		else
 			throw (Parsing::ParsingException());
@@ -189,16 +193,16 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	return (location);	
 }
 
-bool		Parsing::parseName(void)
+bool				Parsing::parseName(void)
 {
 	if (this->file_.substr(this->file_.length() - 5) == ".conf")
 		return (true);
 	return (false);
 }
 
-std::string		Parsing::getNextLine(std::string::iterator *first, std::string::iterator end)
+stds				Parsing::getNextLine(iterator *first, iterator end)
 {
-	std::string	line;
+	stds	line;
 
 	while (*first != end)
 	{
@@ -211,7 +215,7 @@ std::string		Parsing::getNextLine(std::string::iterator *first, std::string::ite
 	return line;
 }
 
-void		Parsing::skipWhite(std::string::iterator *first, std::string::iterator end)
+void				Parsing::skipWhite(iterator *first, iterator end)
 {
 	while (true)
 	{
@@ -228,7 +232,7 @@ void		Parsing::skipWhite(std::string::iterator *first, std::string::iterator end
 	}
 }
 
-bool		Parsing::valid(std::string name, const char **valid_names)
+bool				Parsing::valid(stds name, const char **valid_names)
 {
 	size_t i;
 
@@ -242,9 +246,9 @@ bool		Parsing::valid(std::string name, const char **valid_names)
 	return (false);
 }
 
-bool		Parsing::compString(std::string::iterator *first, std::string::iterator end, std::string src)
+bool				Parsing::compString(iterator *first, iterator end, stds src)
 {
-	std::string::iterator	first_one = src.begin();
+	iterator	first_one = src.begin();
 	
 	while ((*(*first)++) == *(first_one++))
 	{
@@ -257,7 +261,7 @@ bool		Parsing::compString(std::string::iterator *first, std::string::iterator en
 	return (false);
 }
 
-std::string::iterator Parsing::getBrackets(std::string::iterator next, std::string::iterator end)
+iterator 			Parsing::getBrackets(iterator next, iterator end)
 {
 	int begin = 1;	
 	
@@ -271,11 +275,11 @@ std::string::iterator Parsing::getBrackets(std::string::iterator next, std::stri
 	return (next);
 }
 
-std::vector<std::string>	Parsing::splitWhitespace(std::string str)
+std::vector<stds>	Parsing::splitWhitespace(stds str)
 {
-	std::vector<std::string> res;
-	size_t i;
-	size_t j;
+	std::vector<stds> 	res;
+	size_t				i;
+	size_t				j;
 
 	i = 0;
 	j = 0;
@@ -287,24 +291,24 @@ std::vector<std::string>	Parsing::splitWhitespace(std::string str)
 				++j;
 			else
 			{
-				res.push_back(std::string(str, j, i - j));
+				res.push_back(stds(str, j, i - j));
 				j = i + 1;
 			}
 		}
 		++i;
 	}
 	if (i != j)
-		res.push_back(std::string(str, j, i - j));
+		res.push_back(stds(str, j, i - j));
 	return (res);
 }
 
-int							Parsing::to_int(char const *s, size_t count)
+int					Parsing::to_int(char const *s, size_t count)
 {
-     int result = 0;
-     size_t i = 0 ;
+     int		result = 0;
+     size_t		i = -1 ;
      if ( s[0] == '+' || s[0] == '-' ) 
           ++i;
-     while(i < count)
+     while(++i < count)
      {
           if ( s[i] >= '0' && s[i] <= '9' )
           {
@@ -313,13 +317,11 @@ int							Parsing::to_int(char const *s, size_t count)
           }
           else
               throw std::invalid_argument("invalid input string");
-          i++;
      }
      return result;
 } 
 
-
-const char	*Parsing::ParsingException::what() const throw()
+const char			*Parsing::ParsingException::what() const throw()
 {
 	return "ConfigFile : Error Configuration";
 }
