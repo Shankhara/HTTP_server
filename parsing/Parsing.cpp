@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 02:02:36 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 02:23:23 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,20 +124,14 @@ Parsing::servers			Parsing::returnProps(Parsing::servers server, std::vector<std
 			server.host = line[2];
 	}
 	else if (line[0] == "error_page")
-	{
 		if (line.size() == 3)
 			server.error_pages.insert(std::pair<int, std::string>(this->to_int(line[1].c_str(), line[1].size()), line[2]));
-	}
 	else if (line[0] == "server_name")
-	{
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
-	}
 	else if (line[0] == "root")
-	{
 		if (line.size() == 2)
 			server.root = line[1];
-	}
 	return server;
 }
 
@@ -153,18 +147,14 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	if (this->valid(line[0], locationProps_) == false)
 		throw (Parsing::ParsingException());
 	if (line[0] == "root")
-	{
 		location.root = line[1];
-	}
 	else if (line[0] == "method")
-	{
 		for (size_t i = 0; i < line.size() - 1; i++)
 		{
 			if (this->valid(line[i + 1], methods_) == false)
 				throw (Parsing::ParsingException());
 			location.methods.push_back(line[i + 1]);
 		}
-	}	
 	else if (line[0] == "autoindex")
 	{
 		if (this->compString(&first, line[1].end(), std::string("off")))
@@ -175,18 +165,12 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (Parsing::ParsingException());
 	}
 	else if (line[0] == "index")
-	{
 		location.index = line[1];
-	}	
 	else if (line[0] == "cgi_extension")
-	{
 		for (size_t i = 0; i < line.size() - 1; i++)
-			location.cgi_extension.push_back(line[i + 1]);
-	}	
+			location.cgi_extension.push_back(line[i + 1]);	
 	else if (line[0] == "cgi_path")
-	{
 		location.cgi_path = line[1];
-	}	
 	else if (line[0] == "upload_enable")
 	{
 		if (this->compString(&first, line[1].end(), std::string("off")))
@@ -197,13 +181,11 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (Parsing::ParsingException());
 	}	
 	else if (line [0] == "upload_path")
-	{
 		location.upload_path = line[1];
-	}	
-	else if (line [0] == "client_max_body_size")
+	/*else if (line [0] == "client_max_body_size")
 	{
 		
-	}	
+	}*/
 	return (location);	
 }
 
