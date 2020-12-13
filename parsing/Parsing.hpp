@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 03:04:32 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 03:18:09 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ class Parsing
 			stds					root;
 			std::map<int, stds>		error_pages;
 			std::vector<location>	locations;
+			std::map<stds, stds>	access_log;
 			size_t					port;
 		};
 	

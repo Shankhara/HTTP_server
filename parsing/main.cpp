@@ -6,11 +6,13 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 03:14:36 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 03:57:06 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Parsing.hpp"
+
+typedef typename std::map<int, std::string>::iterator ite;
 
 int main()
 {
@@ -30,6 +32,21 @@ int main()
 		std::cout << "HOST : " << a.getServers()[i].host << std::endl;
 		std::cout << "ROOT : " << a.getServers()[i].root << std::endl;
 		std::cout << "PORT : " << a.getServers()[i].port << std::endl;
+		if (a.getServers()[i].error_pages.empty() == false)
+		{
+			std::map<int, std::string>::iterator it = a.getServers()[i].error_pages.begin();
+			std::cout << "ERROR_PAGE : " << std::endl;
+			std::cout << "	CODE : " << it->first << std::endl;
+			std::cout << "	PAGE : " << it->second << std::endl;
+			std::cout << std::endl;
+		}
+		for (std::map<std::string, std::string>::iterator it = a.getServers()[i].access_log.begin(); it != a.getServers()[i].access_log.end(); it++)
+		{
+			std::cout << "ACCESS_LOG : " << std::endl;
+			std::cout << "	DOMAIN : " << it->first << std::endl;
+			std::cout << "	NAME : " << it->second << std::endl;
+			std::cout << std::endl;
+		}
 		std::cout << "LOCATION : " << std::endl;
 		for (size_t j = 0; j < a.getServers()[i].locations.size(); j++)
 		{

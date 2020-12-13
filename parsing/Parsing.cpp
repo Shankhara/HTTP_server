@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 03:05:16 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 03:57:28 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,12 +129,15 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 	}
 	else if (line[0] == "error_page")
 		if (line.size() == 3)
-			server.error_pages.insert(p(this->to_int(line[1].c_str(), line[1].size()), line[2]));
+			server.error_pages[this->to_int(line[1].c_str(), line[1].size())] = line[2];
 	else if (line[0] == "server_name")
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	else if (line[0] == "root")
 			server.root = line[1];
+	else if (line[0] == "access_log")
+		if (line.size() == 3)
+			server.access_log.insert(std::pair<stds, stds>(line[1], line[2]));
 	return server;
 }
 
@@ -219,7 +222,6 @@ Parsing::servers	Parsing::getDefaultServer()
 	server.port = 80;
 	server.host = "127.0.0.1";
 	server.root = "";
-	server.error_pages = std::map<int, stds>();
 	return (server);
 }
 
