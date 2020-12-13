@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:58:56 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 07:04:39 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,18 @@ int main(int ac, const char *av[])
 				std::cout << std::endl;
 			}
 		}
-		for (std::map<std::string, std::string>::iterator it = a.getServers()[i].access_log.begin(); it != a.getServers()[i].access_log.end(); it++)
+		if (a.getServers()[i].access_log.empty() == false)
 		{
-			std::cout << "ACCESS_LOG : " << std::endl;
-			std::cout << "	DOMAIN : " << it->first << std::endl;
-			std::cout << "	NAME : " << it->second << std::endl;
-			std::cout << std::endl;
+			
+			ite it = a.getServers()[i].access_log.begin();
+			ite end = a.getServers()[i].access_log.end();
+			for (; it != end; it++)
+			{
+				std::cout << "ACCESS_LOG : " << std::endl;
+				std::cout << "	DOMAIN : " << it->first << std::endl;
+				std::cout << "	NAME : " << it->second << std::endl;
+				std::cout << std::endl;
+			}
 		}
 		std::cout << "LOCATION : " << std::endl;
 		for (size_t j = 0; j < a.getServers()[i].locations.size(); j++)
