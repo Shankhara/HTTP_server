@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 02:44:02 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 03:05:16 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,11 @@ void				Parsing::parseConfig(void)
 
 Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 {
-	Parsing::servers	server;
+	Parsing::servers	server = this->getDefaultServer();
 	std::vector<stds>	line;
 	stds				tmp;
 	iterator			next;
 
-	server.host = stds("localhost");
 	while (first != end)
 	{
 		this->skipWhite(&first, end);
@@ -95,7 +94,7 @@ Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 }
 Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator end)
 {
-	Parsing::location	location;
+	Parsing::location	location = this->getDefaultLocation();
 	std::vector<stds>	line;
 	stds				tmp;
 	
@@ -186,10 +185,8 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	}	
 	else if (line [0] == "upload_path")
 		location.upload_path = line[1];
-	/*else if (line [0] == "client_max_body_size")
-	{
-		
-	}*/
+	else if (line [0] == "client_max_body_size")
+		location.client_max_body_size = this->getMcbs(line[1]);
 	return (location);	
 }
 
@@ -213,6 +210,32 @@ stds				Parsing::getNextLine(iterator *first, iterator end)
 		(*first)++;
 	}
 	return line;
+}
+
+Parsing::servers	Parsing::getDefaultServer()
+{
+	Parsing::servers server;
+
+	server.port = 80;
+	server.host = "127.0.0.1";
+	server.root = "";
+	server.error_pages = std::map<int, stds>();
+	return (server);
+}
+
+Parsing::location	Parsing::getDefaultLocation()
+{
+	Parsing::location location;
+
+	location.name = "/";
+	location.root = "";
+	location.index = "";
+	location.autoindex = false;
+	location.cgi_path = "";
+	location.upload_enable = false;
+	location.upload_path = "";
+	location.client_max_body_size = 1048576;
+	return (location);
 }
 
 void				Parsing::skipWhite(iterator *first, iterator end)
@@ -275,6 +298,19 @@ iterator 			Parsing::getBrackets(iterator next, iterator end)
 	return (next);
 }
 
+size_t				Parsing::getMcbs(std::string s)
+{
+	size_t size = static_cast<size_t>(this->to_int(s.c_str(), s.size()));
+
+	if (s[s.size() - 1] == 'G' || s[s.size() - 1] == 'g')
+		size *= 1000000000;	
+	else if (s[s.size() - 1] == 'M' || s[s.size() - 1] == 'm')
+		size *= 1000000;	
+	else if (s[s.size() - 1] == 'K' || s[s.size() - 1] == 'k')
+		size *= 1000;	
+	return (size);
+}
+
 std::vector<stds>	Parsing::splitWhitespace(stds str)
 {
 	std::vector<stds> 	res;
@@ -316,7 +352,7 @@ int					Parsing::to_int(char const *s, size_t count)
               result = result * 10 + value;
           }
           else
-              throw std::invalid_argument("invalid input string");
+			break;
      }
      return result;
 } 

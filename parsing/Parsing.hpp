@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 02:28:55 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 03:04:32 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,10 @@ class Parsing
 		Parsing::servers			returnProps(Parsing::servers server, std::vector<stds> line);
 		Parsing::location			parseLocation(stds name, iterator first, iterator end);
 		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line);
-		void						parseMethods();
 		bool						parseName();
+		Parsing::servers			getDefaultServer();
+		Parsing::location			getDefaultLocation();
+		size_t             			getMcbs(std::string s);
 		bool						valid(stds name, const char **valid_names);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end);
