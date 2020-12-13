@@ -1,11 +1,9 @@
 #include "unittests.hpp"
-#include "CGI.hpp"
-
 
 int main()
 {
-	testClient();
-	testRequest();
-	testCGI();
+	testParsingRequestSequence();
+	testParsingRequestLine();
+	testParsingRequestReceivedAtOnce();
 	return 0;
 }

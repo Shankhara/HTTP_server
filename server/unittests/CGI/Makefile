@@ -1,12 +1,12 @@
-NAME	= webserver
+NAME	= tests
 SRCS	= main.cpp
-SRCS	+= Server.cpp
-SRCS	+= Logger.cpp
-SRCS	+= CGIExec.cpp
-SRCS	+= RequestMock.cpp
-SRCS	+= fds/Listener.cpp
-SRCS	+= fds/Client.cpp
-SRCS	+= fds/CGIResponse.cpp
+SRCS	+= ../../Server.cpp
+SRCS	+= ../../Logger.cpp
+SRCS	+= ../../CGIExec.cpp
+SRCS	+= ../../RequestMock.cpp
+SRCS	+= ../../fds/Listener.cpp
+SRCS	+= ../../fds/Client.cpp
+SRCS	+= ../../fds/CGIResponse.cpp
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++
 
@@ -35,17 +35,16 @@ fclean:	clean
 
 re:		fclean all
 
-run: all
-	@./webserver
-	@rm -f ./webserver
+debug: re
+		@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./tests -v
+			
 
-debug: all
-	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserver -v
-	@rm -f ./webserver
+run: re
+		./tests
 
-tests:
-	@make -C ./unittests/
-	@./unittests/unittests
+
+
+
 
 
 .PHONY: all clean fclean re run tests

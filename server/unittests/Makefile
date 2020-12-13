@@ -1,39 +1,27 @@
-NAME	= unittests
-SRCS	= unittests.cpp
-SRCS	+= ../Client.cpp
-SRCS	+= ../Request.cpp
-SRCS	+= ../Logger.cpp
-#SRCS	+= ../CGIExec.cpp
+VPATH		= ../:../fds/
 
-CFLAGS	= -Wall -Wextra -Werror
-CC		= clang++
+NAME		= unittests
+OBJS		= unittests.o Client.o Request.o Logger.o Server.o
 
-OBJDIR	= .objs
-OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
+CXX			= clang++
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
+RM			= rm -f
 
-$(NAME): $(OBJS)
-		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
+$(NAME):	$(OBJS)
+			$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
 
-all:		$(NAME)
-
-$(OBJS): | $(OBJDIR)
-
-$(OBJDIR):
-		@mkdir $(OBJDIR)
-
-${OBJDIR}/%.o: %.cpp
-		${CC} ${CFLAGS} -c $< -o $@
+unittests.o : unittests.hpp
+Client.o : ../fds/Client.hpp
+Request.o : ../Request.hpp 
+Logger.o : ../Logger.hpp
+Server.o : ../Server.hpp
 
 clean:
-			rm -rf $(OBJDIR) *.o
+			$(RM) $(OBJS)
 
-fclean:	clean
-			rm -f $(NAME)
+fclean: 	clean
+			$(RM) $(NAME)
 
-re:		fclean all
+re:			fclean $(NAME)
 
-run: all
-	@./server
-
-
-.PHONY: all clean fclean re run
+.PHONY: all clean fclean re

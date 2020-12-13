@@ -14,37 +14,27 @@
 #include <errno.h>
 #include <vector>
 #include <arpa/inet.h>
-#include "Client.hpp"
 #include "Logger.hpp"
-
-struct s_listener {
-	int			port;
-	int			fd;
-	std::string name;
-	uint32_t	ipv4;
-};
+#include "fds/FileDescriptor.hpp"
 
 class Server
 {
 private:
 	static Server					*instance_;
-	std::vector<Client>				clients_;
-    std::vector<struct s_listener>	listeners_;
-    int 							fdmax_;
+    std::vector<FileDescriptor*>	fds_;
+	int 							fdmax_;
 	fd_set							master_;
-	Server();
     void 							run_();
-	void			 				listen_(struct s_listener &);
-	bool        					isListener_(int fd);
-	uint16_t 						htons_(uint16_t);
+	Server();
 
 public:
 	~Server();
 	static Server		*getInstance();
-	void 				onClientConnect(int);
-	void				onClientDisconnect(int);
+	static void 		releaseInstance();
     void 				start();
-	void				addListener(const std::string &, const std::string &, int);
+    void 				addFileDescriptor(FileDescriptor *);
+    void 				stop();
+	void 				deleteFileDescriptor(int);
 };
 
 #endif

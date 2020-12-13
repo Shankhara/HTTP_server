@@ -4,16 +4,21 @@
 #include "Logger.hpp"
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <cstring>
 #include <wait.h>
 #include <vector>
-#include "Request.hpp"
+#include "RequestMock.hpp"
+#include "Server.hpp"
+#include "fds/Client.hpp"
+#include "fds/CGIResponse.hpp"
+#include "fds/Listener.hpp"
 
 class CGIExec {
 private:
-	const Request				request_;
+	int							stdoutFD_;
 	static const std::string	vars_[];
-	std::vector<char *>	envs_;
+	char *						envs_[19];
 	static CGIExec				*instance_;
 	std::string 				cgiScript_;
 	enum e_envs {
@@ -28,22 +33,25 @@ private:
 		REMOTE_USER,
 		REQUEST_METHOD,
 		REQUEST_URI,
+		SCRIPT_FILENAME,
 		SCRIPT_NAME,
 		SERVER_NAME,
 		SERVER_PORT,
 		SERVER_PROTOCOL,
-		SERVER_SOFTWARE
+		SERVER_SOFTWARE,
 	};
-	void							exec_();
+	void						exec_(const std::string &, const std::string &);
 	void 						setEnv_(int name, std::string c);
-	void 						pipeStdout(int pfd[2]);
-	CGIExec();
+	void 						pipeSTDOUT_(int pfd[2]);
+	void 						dupSTDERR_();
+	void 						build_(const RequestMock &, const std::string &, const std::string &);
+	void						freeEnvs_();
+	std::string					itoa_(int nb);
 
 public:
-	void 						build(const Request &);
-	static CGIExec				*getInstance();
-	void 						run();
-	~CGIExec();
+	CGIExec();
+	CGIResponse					*run(const std::string &, const std::string &, const std::string &, RequestMock &);
+	virtual						~CGIExec();
 };
 
 
