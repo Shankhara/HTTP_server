@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:51:37 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 06:58:56 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,16 @@ typedef typename std::map<int, std::string>::iterator ite;
 
 int main(int ac, const char *av[])
 {
-	std::string t = av[1];
-	Parsing a(t);
+
+
+	std::string file = av[1];
+	Parsing a(file);
 	a.parseConfig();
+
+
+	// tu chopes la config avec .getServers() qui retourne un vector<servers> :)
+
+/*
 	for (size_t i = 0; i < a.getServers().size(); i++)
 	{
 		std::cout << std::endl;
@@ -73,6 +80,6 @@ int main(int ac, const char *av[])
 			std::cout << "	UPLOAD_PATH : " << a.getServers()[i].locations[j].upload_path << std::endl;
 			std::cout << "	CLIENT_MAX_BODY_SIZE : " << a.getServers()[i].locations[j].client_max_body_size << std::endl;
 		}
-	}
+	}*/
 	return (0);
 }
