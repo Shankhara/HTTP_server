@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 07:30:37 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 07:34:53 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,16 +134,24 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 			server.host = line[2];
 	}
 	else if (line[0] == "error_page")
+	{
 		if (line.size() == 3)
 			server.error_pages.push_back(pi(this->to_int(line[1].c_str(), line[1].size()), line[2]));
+		else
+			throw (PpE(this->file_, stds("error_page need at least 2 arguments")));
+	}
 	else if (line[0] == "server_name")
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	else if (line[0] == "root")
 			server.root = line[1];
 	else if (line[0] == "access_log")
+	{
 		if (line.size() == 3)
 			server.access_log.push_back(ps(line[1], line[2]));
+		else
+			throw (PpE(this->file_, stds("access_log need at least 2 arguments")));
+	}
 	else if (line [0] == "client_max_body_size")
 		server.client_max_body_size = this->getMcbs(line[1]);
 	return server;
