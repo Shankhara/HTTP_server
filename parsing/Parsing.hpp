@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:24:16 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 06:41:57 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,6 @@ class Parsing
 		bool						compString(iterator *first, iterator end, stds src);
 		iterator					getBrackets(iterator next, iterator end);
 		std::vector<stds>			splitWhitespace(stds str);
-		stds						getStatic(char const *s);
 		int							to_int(char const *s, size_t count);
 		std::vector<servers>		getServers() {	return (this->servers_); }
 

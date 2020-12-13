@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 04:47:33 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 06:51:37 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 typedef typename std::map<int, std::string>::iterator ite;
 
-int main()
+int main(int ac, const char *av[])
 {
-	Parsing a(std::string(DEFAULT_PATH));
+	std::string t = av[1];
+	Parsing a(t);
 	a.parseConfig();
 	for (size_t i = 0; i < a.getServers().size(); i++)
 	{

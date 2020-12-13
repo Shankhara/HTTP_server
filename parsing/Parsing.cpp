@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:39:50 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 06:43:37 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void				Parsing::parseConfig(void)
 	line_ = 1;
 	char_ = 1;
 	if (this->file_.length() < 6 || this->parseName() == false)
-		throw (PpE(this->file_, this->getStatic("File should have the .conf extension")));
+		throw (PpE(this->file_, stds("File should have the .conf extension")));
 	std::ifstream	file(this->file_.c_str());
 	content = stds((ist(file)), (ist()));
 	first = content.begin();
@@ -42,12 +42,12 @@ void				Parsing::parseConfig(void)
 	{
 		this->skipWhite(&first, content.end(), true);
 		if (this->compString(&first, content.end(), stds("server")) == false)
-			throw (PpE(this->file_, this->getStatic("Expected \"server\"")));
+			throw (PpE(this->file_, stds("Expected \"server\"")));
 		if (*first != '{')
-			throw (PpE(this->file_, this->getStatic("Expected token {")));
+			throw (PpE(this->file_, stds("Expected token {")));
 		next = first;
 		if (*(next = getBrackets(next, content.end())) != '}')
-			throw (PpE(this->file_, this->getStatic("Expected token }")));
+			throw (PpE(this->file_, stds("Expected token }")));
 		char_++;
 		this->skipWhite(&(++first), content.end(), true);
 		this->servers_.push_back(this->parseProps(first, next));
@@ -70,19 +70,19 @@ Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 		tmp = getNextLine(&first, end);
 		this->skipWhite(&first, end, true);
 		if (this->parseSemi(&tmp) == false && tmp.find("location") == stds::npos)
-			throw (PpE(this->file_, this->getStatic("Expected token ;")));
+			throw (PpE(this->file_, stds("Expected token ;")));
 		if (tmp.find("location") != stds::npos)
 		{
 			line = this->splitWhitespace(stds(tmp, 0, tmp.size()));
 			if (line.size() < 2)
-				throw (PpE(this->file_, this->getStatic("Expected at least 1 argument")));
+				throw (PpE(this->file_, stds("Expected at least 1 argument")));
 			if (line[line.size() - 1] != "{" && *first != '{')
 				this->skipWhite(&first, end, true);
 			if (line[line.size() - 1] != "{" && *first != '{')
-				throw (PpE(this->file_, this->getStatic("Expected token {")));
+				throw (PpE(this->file_, stds("Expected token {")));
 			next = first;
 			if (*(next = this->getBrackets(next, end)) != '}')
-				throw (PpE(this->file_, this->getStatic("Expected token }")));
+				throw (PpE(this->file_, stds("Expected token }")));
 			if (*first == '{')
 				this->skipWhite(&(++first), end, true);
 			else
@@ -111,7 +111,7 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		tmp = getNextLine(&first, end);
 		this->skipWhite(&first, end, true);
 		if (tmp[tmp.size() - 1] != ';')
-			throw (PpE(this->file_, this->getStatic("Expected token ;")));
+			throw (PpE(this->file_, stds("Expected token ;")));
 		line = this->splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line);
 	}
@@ -121,13 +121,13 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds> line)
 {
 	if (line.size() <= 1)
-		throw (PpE(this->file_, this->getStatic("Expected at least 1 argument")));
+		throw (PpE(this->file_, stds("Expected at least 1 argument")));
 	if (this->valid(line[0], serverProps_) == false)
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "listen")
 	{
 		if (this->to_int(line[1].c_str(), line[1].size()) == 0)
-			throw (PpE(this->file_, this->getStatic("Port can't be 0")));
+			throw (PpE(this->file_, stds("Port can't be 0")));
 		server.port = this->to_int(line[1].c_str(), line[1].size());
 		if (line.size() == 3)
 			server.host = line[2];
@@ -152,7 +152,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	iterator	second;
 
 	if (line.size() <= 1)
-		throw (PpE(this->file_, this->getStatic("Excepted at least 1 argument")));
+		throw (PpE(this->file_, stds("Excepted at least 1 argument")));
 	first = line[1].begin();
 	second = line[1].begin();
 	if (this->valid(line[0], locationProps_) == false)
@@ -173,7 +173,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		else if (this->compString(&second, line[1].end(), stds("on")))
 			location.autoindex = true;
 		else
-			throw (PpE(this->file_, this->getStatic("Value can be set with \"on\" or \"off\" only")));
+			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
 	}
 	else if (line[0] == "index")
 		location.index = line[1];
@@ -189,7 +189,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		else if (this->compString(&second, line[1].end(), stds("on")))
 			location.upload_enable = true;
 		else
-			throw (PpE(this->file_, this->getStatic("Value can be set with \"on\" or \"off\" only")));
+			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
 	}	
 	else if (line [0] == "upload_path")
 		location.upload_path = line[1];
@@ -233,11 +233,6 @@ bool				Parsing::parseSemi(stds *src)
 	}
 	src = tmp;
 	return (true);
-}
-
-std::string			Parsing::getStatic(const char *str)
-{ 
-	return (stds(str));
 }
 
 stds				Parsing::getNextLine(iterator *first, iterator end)
