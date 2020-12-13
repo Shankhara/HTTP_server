@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:41:57 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 07:27:08 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static const char 		*serverProps_[] = { "listen",
 											"error_page",
 											"root",
 											"access_log",
+											"client_max_body_size",
 											0 };
 										
 static const char		*methods_[] = { "GET",
@@ -64,8 +65,10 @@ static int	char_;
 class Parsing
 {
 	public :
-		typedef typename std::string			stds;
-		typedef typename stds::iterator			iterator;
+		typedef typename std::string					stds;
+		typedef typename stds::iterator					iterator;
+		typedef typename std::pair<int, stds>           pi;
+		typedef typename std::pair<stds, stds>          ps;
 
 	private :
 
@@ -88,10 +91,11 @@ class Parsing
 			std::vector<stds>		names;
 			stds					host;
 			stds					root;
-			std::map<int, stds>		error_pages;
+			std::vector<pi>			error_pages;
 			std::vector<location>	locations;
-			std::map<stds, stds>	access_log;
+			std::vector<ps>			access_log;
 			size_t					port;
+			size_t					client_max_body_size;
 		};
 	
 		stds					file_;

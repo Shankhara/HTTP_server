@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 06:43:37 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/13 07:30:37 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 typedef typename std::string           			stds;
 typedef typename stds::iterator        			iterator;
-typedef typename std::pair<int, stds> 			p;
+typedef typename std::pair<int, stds> 			pi;
+typedef typename std::pair<stds, stds> 			ps;
 typedef typename std::istreambuf_iterator<char>	ist;
 typedef typename Parsing::ParsingException		PpE;
 
@@ -134,7 +135,7 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 	}
 	else if (line[0] == "error_page")
 		if (line.size() == 3)
-			server.error_pages[this->to_int(line[1].c_str(), line[1].size())] = line[2];
+			server.error_pages.push_back(pi(this->to_int(line[1].c_str(), line[1].size()), line[2]));
 	else if (line[0] == "server_name")
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
@@ -142,7 +143,9 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 			server.root = line[1];
 	else if (line[0] == "access_log")
 		if (line.size() == 3)
-			server.access_log.insert(std::pair<stds, stds>(line[1], line[2]));
+			server.access_log.push_back(ps(line[1], line[2]));
+	else if (line [0] == "client_max_body_size")
+		server.client_max_body_size = this->getMcbs(line[1]);
 	return server;
 }
 
@@ -258,7 +261,6 @@ Parsing::servers	Parsing::getDefaultServer()
 	server.port = 80;
 	server.host = "127.0.0.1";
 	server.root = "";
-	server.error_pages = std::map<int, stds>();
 	return (server);
 }
 
@@ -313,7 +315,7 @@ bool				Parsing::valid(stds name, const char **valid_names)
 	{
 		if (name == valid_names[i])
 			return (true);
-		++i;
+		i++;
 	}
 	return (false);
 }
