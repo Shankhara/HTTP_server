@@ -16,3 +16,6 @@ void Response::createResponse()
 {
 	statusLine();
 }
+
+std::string Response::getResponseMsg() const
+{ return msg_; }

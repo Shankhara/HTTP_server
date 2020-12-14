@@ -4,6 +4,7 @@
 #include "../fds/Client.hpp"
 #include "../Server.hpp"
 #include "../Request.hpp"
+#include "../Response.hpp"
 //#include "CGI.hpp"
 
 #define BADREQUEST 1
@@ -101,11 +102,34 @@ void receivedAtOnce()
 	assertEqual(r.queryString_parsed, true, "parsing query_string");
 }
 
-void testParsingRequest()
+void testRequestParse()
 {
+	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
 	sequencialReceive();
 	receivedAtOnce();
 	requestLine();
+}
+
+void statusLine()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	Request r;
+
+	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
+	r.parse();
+
+	Response a(r);
+
+	std::cout << a.getResponseMsg() << std::endl;
+}
+
+void testResponseBuild()
+{
+	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	statusLine();
 }
 
 //void testClient()
