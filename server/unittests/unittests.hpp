@@ -13,7 +13,7 @@
 #define BADHEADER 5
 #define BADBODY 6
 
-void testParsingRequestLine()
+void requestLine()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	
@@ -38,7 +38,7 @@ void testParsingRequestLine()
 	assertEqual(r.parse(), BADVERSION, "version badly written");
 }
 
-void testParsingRequestSequence()
+void sequencialReceive()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
@@ -57,7 +57,7 @@ void testParsingRequestSequence()
 	assertEqual(r.parse(), 0, "correct request sent, sequence reading");
 }
 
-void testParsingRequestReceivedAtOnce()
+void receivedAtOnce()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
@@ -98,6 +98,13 @@ void testParsingRequestReceivedAtOnce()
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	r.parse();
 	assertEqual(r.queryString_parsed, true, "parsing query_string");
+}
+
+void testParsingRequest()
+{
+	sequencialReceive();
+	receivedAtOnce();
+	requestLine();
 }
 
 //void testClient()

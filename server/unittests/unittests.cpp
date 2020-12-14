@@ -2,8 +2,6 @@
 
 int main()
 {
-	testParsingRequestSequence();
-	testParsingRequestLine();
-	testParsingRequestReceivedAtOnce();
+	testParsingRequest();
 	return 0;
 }

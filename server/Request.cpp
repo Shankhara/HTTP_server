@@ -9,16 +9,16 @@ Request::Request(std::string & request) : request_(request)
 	body_parsed = 0;
 	queryString_parsed = 0;
 
-	std::string str_list[9] = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE", "PATCH" };
+	static std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
+		"OPTIONS", "TRACE", "PATCH" };
 	std::vector<std::string> tmp(str_list, str_list + 9);
 	methods = tmp;
 
-	std::string str_list2[12] = { "accept-charsets", "accept-language", "allow", \
-	"authorization", "content-language", "content-length", "content-location", \
-	"content-type", "date", "host", "referer", };
-	std::vector<std::string> tmp2(str_list2, str_list2 + 12);
+	static std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
+		"authorization", "content-language", "content-length", "content-location", \
+		"content-type", "date", "host", "referer", };
+	std::vector<std::string> tmp2(str_list2, str_list2 + 11);
 	headersName = tmp2;
-
 }
 
 //Request::Request(Client & c) : client_(c), request_(c.getResponse())
@@ -142,8 +142,13 @@ int Request::checkVersion()
 int Request::getBody()
 {
 	std::string line;
-	
-	if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
+
+	if (headersRaw_[TRANSFERT_ENCODING] == "chunked")
+	{
+		if (parseChunkedBody())
+			return (BADBODY);
+	}
+	else if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
 	{
 		msgBody_ = request_;
 		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
@@ -279,41 +284,41 @@ void Request::parseHeadersContent()
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
 }
 
-std::vector<std::string> Request::getRequestLine()
+std::vector<std::string> Request::getRequestLine() const
 { return (requestLine_); }
 
-std::string Request::getHeaderDate()
+std::string Request::getHeaderDate() const
 { return (headerDate_); }
 
-std::string Request::getHeaderAuth()
+std::string Request::getHeaderAuth() const
 { return (headerAuth_); }
 
-std::string Request::getHeaderHost()
+std::string Request::getHeaderHost() const
 { return (headerHost_); }
 
-std::string Request::getHeaderReferer()
+std::string Request::getHeaderReferer() const
 { return (headerReferer_); }
 
-std::string Request::getHeaderContentLength()
+std::string Request::getHeaderContentLength() const
 { return (headerContentLength_); }
 
-std::string Request::getHeaderContentLocation()
+std::string Request::getHeaderContentLocation() const
 { return (headerContentLocation_); }
 
-std::vector<std::string> Request::getHeaderAcceptCharset()
+std::vector<std::string> Request::getHeaderAcceptCharset() const
 { return (headerAcceptCharset_); }
 
-std::vector<std::string> Request::getHeaderAcceptLanguage()
+std::vector<std::string> Request::getHeaderAcceptLanguage() const
 { return (headerAcceptLanguage_); }
 
-std::vector<std::string> Request::getHeaderAllow()
+std::vector<std::string> Request::getHeaderAllow() const
 { return (headerAllow_); }
 
-std::vector<std::string> Request::getHeaderContentLanguage()
+std::vector<std::string> Request::getHeaderContentLanguage() const
 { return (headerContentLanguage_); }
 
-std::vector<std::string> Request::getHeaderContentType()
+std::vector<std::string> Request::getHeaderContentType() const
 { return (headerContentType_); }
 
-//Client &Request::getClient()
+//Client &Request::getClient() const
 //{ return client_; }

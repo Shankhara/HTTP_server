@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "fds/Client.hpp"
 
-#define LEN 100
 #define CRLF "\r\n"
 
 #define BADREQUEST 1
@@ -72,17 +71,17 @@ class Request
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
 	
-	//Client &getClient();
-	std::vector<std::string> getRequestLine();
-	std::string getHeaderDate();
-	std::string getHeaderAuth();
-	std::string getHeaderHost();
-	std::string getHeaderReferer();
-	std::string getHeaderContentLength();
-	std::string getHeaderContentLocation();
-	std::vector<std::string> getHeaderAcceptCharset();
-	std::vector<std::string> getHeaderAcceptLanguage();
-	std::vector<std::string> getHeaderAllow();
-	std::vector<std::string> getHeaderContentLanguage();
-	std::vector<std::string> getHeaderContentType();
+	//Client &getClient() const;
+	std::vector<std::string> getRequestLine() const;
+	std::string getHeaderDate() const;
+	std::string getHeaderAuth() const;
+	std::string getHeaderHost() const;
+	std::string getHeaderReferer() const;
+	std::string getHeaderContentLength() const;
+	std::string getHeaderContentLocation() const;
+	std::vector<std::string> getHeaderAcceptCharset() const;
+	std::vector<std::string> getHeaderAcceptLanguage() const;
+	std::vector<std::string> getHeaderAllow() const;
+	std::vector<std::string> getHeaderContentLanguage() const;
+	std::vector<std::string> getHeaderContentType() const;
 };
