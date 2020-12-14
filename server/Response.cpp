@@ -15,7 +15,7 @@ void Response::statusLine()
 
 void Response::statusCode()
 {
-	msg_append(request_.statusCode);
+//	msg_append(request_.statusCode);
 	msg_.append(" ");
 }
 
