@@ -21,10 +21,7 @@ Request::Request()
 	headersName = tmp2;
 }
 
-Request::~Request()
-{
-
-}
+Request::~Request() { }
 
 void Request::reset()
 {
@@ -119,9 +116,9 @@ int Request::checkMethod()
 		if (methods[i] == requestLine_[METHOD])
 				return (0);
 	}
+	//statusCode_ = 400;
 	return (1);
 }
-
 
 int Request::checkVersion()
 {
@@ -187,10 +184,11 @@ int Request::parseHeaders()
 
   		std::transform(st, ste, st, ft_tolower);
 		itx = std::find(it, ite, headerLine[HEADERTITLE]);
-		if (itx == ite)
-			return (BADHEADERNAME);
-		dist = std::distance(it, itx);
-		headersRaw_[dist] = headerLine[HEADERCONTENT];
+		if (itx != ite)
+		{
+			dist = std::distance(it, itx);
+			headersRaw_[dist] = headerLine[HEADERCONTENT];
+		}
 	}
 	return (BADHEADER);
 }
@@ -276,8 +274,14 @@ int Request::appendRequest(char buf[256], int nbytes)
 	return (parse());
 }
 
-std::vector<std::string> Request::getRequestLine() const
-{ return (requestLine_); }
+std::string Request::getMethod() const
+{ return (requestLine_[METHOD]); }
+
+std::string Request::getReqTarget() const
+{ return (requestLine_[REQTARGET]); }
+
+std::string Request::getVersion() const
+{ return (requestLine_[VERSION]); }
 
 std::string Request::getHeaderDate() const
 { return (headerDate_); }

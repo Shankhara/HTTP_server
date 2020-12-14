@@ -94,7 +94,7 @@ void receivedAtOnce()
 
 	r.reset();
 	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
-	assertEqual(r.parse(), BADHEADERNAME, "no newline bet headers and body");
+	assertEqual(r.parse(), BADHEADER, "no newline bet headers and body");
 
 	r.reset();
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
@@ -121,6 +121,7 @@ void statusLine()
 	r.parse();
 
 	Response a(r);
+	a.createResponse();
 
 	std::cout << a.getResponseMsg() << std::endl;
 }
@@ -131,13 +132,3 @@ void testResponseBuild()
 
 	statusLine();
 }
-
-//void testClient()
-//{
-//	Client c(0, 0);
-//
-//	std::string get = "GET / HTTP/1.1\r\n\r\n";
-//	c.constructRequest(const_cast<char *>(get.c_str()), get.size());
-//	assertStringEqual(c.getResponse(), get, "Client GET");
-//}
-

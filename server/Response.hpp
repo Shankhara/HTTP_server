@@ -14,6 +14,7 @@ class Response
 
 	void createResponse();
 	void statusLine();
+	void statusCode();
 
 	std::string getResponseMsg() const;
 
