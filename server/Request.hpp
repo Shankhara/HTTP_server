@@ -3,7 +3,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <algorithm>
-#include "fds/Client.hpp"
+#include <string>
 
 #define CRLF "\r\n"
 
@@ -14,10 +14,10 @@
 #define BADHEADER 5
 #define BADBODY 6
 
+
 class Request
 {
 	private:
-	//Client &client_;
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
 	std::string msgBody_;
@@ -37,11 +37,11 @@ class Request
 	std::vector<std::string> headerContentType_;
 
 	public:
-	//Request(Client &);
-	Request(std::string &);
+	Request();
+	//explicit Request(std::string *);
 	~Request();
 	
-	std::string & request_;
+	std::string request_;
 	bool requestLine_parsed;
 	bool headers_parsed;
 	bool body_parsed;
@@ -70,8 +70,9 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
+
+	int 		appendRequest(char [256], int);
 	
-	//Client &getClient() const;
 	std::vector<std::string> getRequestLine() const;
 	std::string getHeaderDate() const;
 	std::string getHeaderAuth() const;

@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd, FileDescriptor &f): listener_(f), keepAlive_(false){
+Client::Client(int fd, FileDescriptor &f): listener_(f) {
 	fd_ = fd;
 }
 
@@ -12,7 +12,7 @@ void Client::onEvent()
 {
 	static char buf[256];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
-	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> RECV " << nbytes << " Keepalive " << keepAlive_;
+	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
@@ -42,7 +42,9 @@ void Client::setAddr(struct sockaddr_storage addr) {
 }
 
 void Client::constructRequest(char buf[], int nbytes) {
-	appendResponse(buf, nbytes);
+	if (request_.appendRequest(buf, nbytes) == 0)
+	{
+	}
 }
 
 std::string &Client::getResponse()

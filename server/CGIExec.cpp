@@ -21,7 +21,6 @@ const std::string CGIExec::vars_[] = {
 };
 
 CGIExec::~CGIExec() {
-	free(envs_[17]);
 }
 
 CGIExec::CGIExec() {
@@ -73,14 +72,14 @@ CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingD
 		if (chdir(workingDir.c_str()) == -1)
 		{
 			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno);
-			exit(255);
+			exit(EXIT_FAILURE);
 		}
 		pipeSTDOUT_(pfd);
 		build_(request, workingDir, filename);
 		dupSTDERR_();
 		exec_(cgiBin, filename);
 		close(STDOUT_FILENO);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 	else
 	{
@@ -150,7 +149,7 @@ void CGIExec::setEnv_(int name, std::string c)
 
 void CGIExec::freeEnvs_()
 {
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 18; i++)
 		free(envs_[i]);
 }
 

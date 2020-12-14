@@ -11,6 +11,7 @@
 #include "../Server.hpp"
 #include <signal.h>
 #include "FileDescriptor.hpp"
+#include "../Request.hpp"
 
 
 class Client: public FileDescriptor {
@@ -19,7 +20,7 @@ private:
 	FileDescriptor 			&listener_;
 	struct sockaddr_storage addr_;
 	std::string				response_;
-	bool 					keepAlive_;
+	Request					request_;
 
 public:
 	Client(int, FileDescriptor &);
