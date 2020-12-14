@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 07:30:07 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/14 21:50:40 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ typedef typename std::map<std::string, std::string>::iterator 	its;
 int main(int ac, const char *av[])
 {
 
+
+	(void)(ac);
 
 	std::string file = av[1];
 	Parsing a(file);

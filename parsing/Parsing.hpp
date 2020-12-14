@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 07:27:08 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/14 22:08:01 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <map>
 # include <unistd.h>
 # include <fcntl.h>
+# include "Utils.hpp"
 # include <iostream>
 # include <cstdlib>
 # include <vector>
@@ -29,6 +30,7 @@
 # include <sys/time.h>
 # include <sys/types.h>
 # define	DEFAULT_PATH "./test/nginx.conf"
+# define	UNUSED(x)	((void)(x))
 
 static const char 		*serverProps_[] = { "listen",
 											"server_name",
@@ -112,20 +114,14 @@ class Parsing
 		Parsing::servers			returnProps(Parsing::servers server, std::vector<stds> line);
 		Parsing::location			parseLocation(stds name, iterator first, iterator end);
 		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line);
-		bool						parseName();
 		Parsing::servers			getDefaultServer();
 		Parsing::location			getDefaultLocation();
-		size_t             			getMcbs(stds s);
+		bool                		compString(iterator *first, iterator end, stds src);
 		bool                		parseSemi(stds *src);
-		bool						valid(stds name, const char **valid_names);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
-		bool						compString(iterator *first, iterator end, stds src);
-		iterator					getBrackets(iterator next, iterator end);
-		std::vector<stds>			splitWhitespace(stds str);
-		int							to_int(char const *s, size_t count);
 		std::vector<servers>		getServers() {	return (this->servers_); }
-
+	
 	class ParsingException : public std::exception
 	{
 		private:
@@ -137,6 +133,8 @@ class Parsing
 				std::string	li;	
 				std::string	ch;
 
+				if (serverProps_ == methods_ && locationProps_ == methods_)
+					UNUSED(li);
 				std::ostringstream conv;
 				std::ostringstream conv2;
 				conv << line_;

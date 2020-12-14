@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/13 07:34:53 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/14 22:09:12 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void				Parsing::parseConfig(void)
 
 	line_ = 1;
 	char_ = 1;
-	if (this->file_.length() < 6 || this->parseName() == false)
+	if (this->file_.length() < 6 || this->file_.substr(this->file_.length() - 5) != ".conf")
 		throw (PpE(this->file_, stds("File should have the .conf extension")));
 	std::ifstream	file(this->file_.c_str());
 	content = stds((ist(file)), (ist()));
@@ -42,7 +42,7 @@ void				Parsing::parseConfig(void)
 	while (first != content.end())
 	{
 		this->skipWhite(&first, content.end(), true);
-		if (this->compString(&first, content.end(), stds("server")) == false)
+		if (compString(&first, content.end(), stds("server")) == false)
 			throw (PpE(this->file_, stds("Expected \"server\"")));
 		if (*first != '{')
 			throw (PpE(this->file_, stds("Expected token {")));
@@ -74,7 +74,7 @@ Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 			throw (PpE(this->file_, stds("Expected token ;")));
 		if (tmp.find("location") != stds::npos)
 		{
-			line = this->splitWhitespace(stds(tmp, 0, tmp.size()));
+			line = splitWhitespace(stds(tmp, 0, tmp.size()));
 			if (line.size() < 2)
 				throw (PpE(this->file_, stds("Expected at least 1 argument")));
 			if (line[line.size() - 1] != "{" && *first != '{')
@@ -82,7 +82,7 @@ Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 			if (line[line.size() - 1] != "{" && *first != '{')
 				throw (PpE(this->file_, stds("Expected token {")));
 			next = first;
-			if (*(next = this->getBrackets(next, end)) != '}')
+			if (*(next = getBrackets(next, end)) != '}')
 				throw (PpE(this->file_, stds("Expected token }")));
 			if (*first == '{')
 				this->skipWhite(&(++first), end, true);
@@ -94,7 +94,7 @@ Parsing::servers	Parsing::parseProps(iterator first, iterator end)
 			continue;
 		}	
 		else	
-			line = this->splitWhitespace(stds(tmp, 0, tmp.size() - 1));
+			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		server = this->returnProps(server, line);
 	}
 	return server;
@@ -113,7 +113,7 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		this->skipWhite(&first, end, true);
 		if (tmp[tmp.size() - 1] != ';')
 			throw (PpE(this->file_, stds("Expected token ;")));
-		line = this->splitWhitespace(stds(tmp, 0, tmp.size() - 1));
+		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line);
 	}
 	return location;
@@ -123,20 +123,20 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 {
 	if (line.size() <= 1)
 		throw (PpE(this->file_, stds("Expected at least 1 argument")));
-	if (this->valid(line[0], serverProps_) == false)
+	if (valid(line[0], serverProps_) == false)
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "listen")
 	{
-		if (this->to_int(line[1].c_str(), line[1].size()) == 0)
+		if (to_int(line[1].c_str(), line[1].size()) == 0)
 			throw (PpE(this->file_, stds("Port can't be 0")));
-		server.port = this->to_int(line[1].c_str(), line[1].size());
+		server.port = to_int(line[1].c_str(), line[1].size());
 		if (line.size() == 3)
 			server.host = line[2];
 	}
 	else if (line[0] == "error_page")
 	{
 		if (line.size() == 3)
-			server.error_pages.push_back(pi(this->to_int(line[1].c_str(), line[1].size()), line[2]));
+			server.error_pages.push_back(pi(to_int(line[1].c_str(), line[1].size()), line[2]));
 		else
 			throw (PpE(this->file_, stds("error_page need at least 2 arguments")));
 	}
@@ -153,7 +153,7 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 			throw (PpE(this->file_, stds("access_log need at least 2 arguments")));
 	}
 	else if (line [0] == "client_max_body_size")
-		server.client_max_body_size = this->getMcbs(line[1]);
+		server.client_max_body_size = getMcbs(line[1]);
 	return server;
 }
 
@@ -166,22 +166,22 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		throw (PpE(this->file_, stds("Excepted at least 1 argument")));
 	first = line[1].begin();
 	second = line[1].begin();
-	if (this->valid(line[0], locationProps_) == false)
+	if (valid(line[0], locationProps_) == false)
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "root")
 		location.root = line[1];
 	else if (line[0] == "method")
 		for (size_t i = 0; i < line.size() - 1; i++)
 		{
-			if (this->valid(line[i + 1], methods_) == false)
+			if (valid(line[i + 1], methods_) == false)
 				throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[i + 1])));
 			location.methods.push_back(line[i + 1]);
 		}
 	else if (line[0] == "autoindex")
 	{
-		if (this->compString(&first, line[1].end(), stds("off")))
+		if (compString(&first, line[1].end(), stds("off")))
 			location.autoindex = false;
-		else if (this->compString(&second, line[1].end(), stds("on")))
+		else if (compString(&second, line[1].end(), stds("on")))
 			location.autoindex = true;
 		else
 			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
@@ -195,9 +195,9 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		location.cgi_path = line[1];
 	else if (line[0] == "upload_enable")
 	{
-		if (this->compString(&first, line[1].end(), stds("off")))
+		if (compString(&first, line[1].end(), stds("off")))
 			location.upload_enable = false;
-		else if (this->compString(&second, line[1].end(), stds("on")))
+		else if (compString(&second, line[1].end(), stds("on")))
 			location.upload_enable = true;
 		else
 			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
@@ -205,15 +205,8 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	else if (line [0] == "upload_path")
 		location.upload_path = line[1];
 	else if (line [0] == "client_max_body_size")
-		location.client_max_body_size = this->getMcbs(line[1]);
+		location.client_max_body_size = getMcbs(line[1]);
 	return (location);	
-}
-
-bool				Parsing::parseName(void)
-{
-	if (this->file_.substr(this->file_.length() - 5) == ".conf")
-		return (true);
-	return (false);
 }
 
 bool				Parsing::parseSemi(stds *src)
@@ -269,6 +262,7 @@ Parsing::servers	Parsing::getDefaultServer()
 	server.port = 80;
 	server.host = "127.0.0.1";
 	server.root = "";
+	server.client_max_body_size = 1048576;
 	return (server);
 }
 
@@ -285,6 +279,21 @@ Parsing::location	Parsing::getDefaultLocation()
 	location.upload_path = "";
 	location.client_max_body_size = 1048576;
 	return (location);
+}
+
+bool              	Parsing::compString(iterator *first, iterator end, stds src) 
+{ 
+    iterator    first_one = src.begin(); 
+ 
+    while ((*(*first)++) == *(first_one++)) 
+    { 
+        if (first_one == src.end()) 
+        { 
+            this->skipWhite(first, end, false); 
+            return (true); 
+        } 
+    } 
+    return (false); 
 }
 
 void				Parsing::skipWhite(iterator *first, iterator end, bool inc)
@@ -313,106 +322,3 @@ void				Parsing::skipWhite(iterator *first, iterator end, bool inc)
 			break;
 	}
 }
-
-bool				Parsing::valid(stds name, const char **valid_names)
-{
-	size_t i;
-
-	i = 0;
-	while (valid_names[i])
-	{
-		if (name == valid_names[i])
-			return (true);
-		i++;
-	}
-	return (false);
-}
-
-bool				Parsing::compString(iterator *first, iterator end, stds src)
-{
-	iterator	first_one = src.begin();
-	
-	while ((*(*first)++) == *(first_one++))
-	{
-		if (first_one == src.end())
-		{
-			this->skipWhite(first, end, false);
-			return (true);
-		}
-	}
-	return (false);
-}
-
-iterator 			Parsing::getBrackets(iterator next, iterator end)
-{
-	int begin = 1;	
-	
-	while (begin != 0 && next++ != end)
-	{
-		if (*next == '{')
-			begin++;	
-		if (*next == '}')
-			begin--;
-	}
-	return (next);
-}
-
-size_t				Parsing::getMcbs(std::string s)
-{
-	size_t size = static_cast<size_t>(this->to_int(s.c_str(), s.size()));
-
-	if (s[s.size() - 1] == 'G' || s[s.size() - 1] == 'g')
-		size *= 1000000000;	
-	else if (s[s.size() - 1] == 'M' || s[s.size() - 1] == 'm')
-		size *= 1000000;	
-	else if (s[s.size() - 1] == 'K' || s[s.size() - 1] == 'k')
-		size *= 1000;	
-	return (size);
-}
-
-std::vector<stds>	Parsing::splitWhitespace(stds str)
-{
-	std::vector<stds> 	res;
-	size_t				i;
-	size_t				j;
-
-	i = 0;
-	j = 0;
-	while (str[i])
-	{
-		if (std::isspace(str[i]))
-		{
-			if (i == j)
-				++j;
-			else
-			{
-				res.push_back(stds(str, j, i - j));
-				j = i + 1;
-			}
-		}
-		++i;
-	}
-	if (i != j)
-		res.push_back(stds(str, j, i - j));
-	return (res);
-}
-
-int					Parsing::to_int(char const *s, size_t count)
-{
-     int		result = 0;
-     size_t		i = -1 ;
-     if ( s[0] == '+' || s[0] == '-' ) 
-          ++i;
-     while(++i < count)
-     {
-          if ( s[i] >= '0' && s[i] <= '9' )
-          {
-              int value = (s[0] == '-') ? ('0' - s[i] ) : (s[i]-'0');
-              result = result * 10 + value;
-          }
-          else
-			break;
-     }
-     return result;
-} 
-
