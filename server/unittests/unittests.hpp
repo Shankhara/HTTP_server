@@ -17,8 +17,8 @@ void requestLine()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	
-	std::string str = "GET /qwe HTTP/1.1\r\n";
-	Request r(str);
+	Request r;
+	r.request_ = "GET /qwe HTTP/1.1\r\n";
 	assertEqual(r.parse(), 0, "correct line");
 
 	r.reset();
@@ -47,13 +47,15 @@ void sequencialReceive()
 	std::string str = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 	std::string get;
 
-	Request r(get);
+	Request r;
 	while ((start + len) < str.size())
 	{
 	  	get.append(str, start, len);
+		r.request_ = get;
 		start += len;
 	}
 	get.append(str, start);
+	r.request_ = get;
 	assertEqual(r.parse(), 0, "correct request sent, sequence reading");
 }
 
@@ -61,9 +63,8 @@ void receivedAtOnce()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-	std::string str = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
-	Request r(str);
-
+	Request r;
+	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 	assertEqual(r.parse(), 0, "correct request");
 
 	r.reset();
