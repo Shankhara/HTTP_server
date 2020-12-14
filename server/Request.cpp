@@ -8,6 +8,7 @@ Request::Request()
 	headers_parsed = false;
 	body_parsed = false;
 	queryString_parsed = false;
+	statusCode_ = 100;
 
 	static const std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
@@ -29,6 +30,7 @@ void Request::reset()
 	headers_parsed = false;
 	body_parsed = false;
 	queryString_parsed = false;
+	statusCode_ = 100;
 
 	request_.clear();
 	requestLine_.clear();
@@ -48,34 +50,6 @@ void Request::reset()
 	headerAllow_.clear();
 	headerContentLanguage_.clear();
 	headerContentType_.clear();
-}
-
-std::string Request::decodeBase64(std::string & str)
-{
-	int val = 0;
-	int valb = -8;
-	unsigned char c;
-	std::string res;
-	std::vector<int> tab(256, -1);
-	std::string::iterator it = str.begin();
-
-	for (int i = 0; i < 64; i++)
-		tab["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i; 
-	while (it != str.end())
-	{
-		c = *it;
-		if (tab[c] == -1)
-			break;
-		val = (val << 6) + tab[c];
-		valb += 6;
-		if (valb >= 0)
-		{
-			res.push_back(char((val >> valb) & 0xFF));
-			valb -= 8;
-		}
-		it++;
-	}
-	return res;
 }
 
 std::string Request::decode_authorization()
@@ -117,7 +91,6 @@ int Request::checkMethod()
 		if (methods[i] == requestLine_[METHOD])
 				return (0);
 	}
-	statusCode_ = 400;
 	return (1);
 }
 
@@ -132,10 +105,17 @@ int Request::getBody()
 {
 	std::string line;
 
-	if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
+	if (request_.size() > 0)
 	{
+		if (headersRaw_[CONTENT_LENGTH].empty())
+		{
+			statusCode_ = 411;
+			return (BADBODY);
+		}
+
 		msgBody_ = request_;
 		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
+		
 		if (msgBody_.size() == len)
 		{
 			body_parsed = 0;
@@ -189,53 +169,14 @@ int Request::parseHeaders()
 		{
 			dist = std::distance(it, itx);
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
+			if (headerLine[HEADERCONTENT].size() > 8000)//get larger_client_header_buffers)
+			{
+				statusCode_ = 414;
+				break;
+			}
 		}
 	}
 	return (BADHEADER);
-}
-
-int Request::parseRequestLine()
-{
-	std::string line;
-
-	getNextLine(request_, line);
-	requestLine_ = workLine(line, ' ');
-
-	if (requestLine_.size() != 3)
-		return (BADREQUEST);
-	if (checkMethod())
-	    return (BADMETHOD);
-	if (checkVersion())
-		return (BADVERSION);
-
-	requestLine_parsed = 1;
-	return (0);
-}
-
-int Request::parse()
-{
-	int ret = 0;
-
-    if (request_.size() && !requestLine_parsed)
-	{
-		if ((ret = parseRequestLine()))
-			return (ret);
-		if (!queryString_parsed)
-			parseQueryString();
-	}
-	
-	if (request_.size() && !headers_parsed)
-		if ((ret = parseHeaders()))
-			return (ret);
-
-	if (request_.size() && !body_parsed)
-		if ((ret = getBody()))
-			return (ret);
-
-	if (headers_parsed)
-		parseHeadersContent();
-
-	return (ret);
 }
 
 void Request::parseHeadersContent()
@@ -269,10 +210,95 @@ void Request::parseHeadersContent()
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
 }
 
+int Request::parseRequestLine()
+{
+	std::string line;
+
+	getNextLine(request_, line);
+	requestLine_ = workLine(line, ' ');
+
+	if (requestLine_.size() != 3)
+	{
+		statusCode_ = 400;
+		return (BADREQUEST);
+	}
+	if (checkMethod())
+	{
+		statusCode_ = 501;
+	    return (BADMETHOD);
+	}
+	if (requestLine_.size() > 8000)//get larger_client_header_buffers)
+	{
+		statusCode_ = 414;
+		return (BADREQUEST);
+	}
+	if (checkVersion())
+	{
+		statusCode_ = 505;
+		return (BADVERSION);
+	}
+	requestLine_parsed = 1;
+	return (0);
+}
+
+int Request::parse()
+{
+	int ret = 0;
+
+    if (request_.size() && !requestLine_parsed)
+	{
+		if ((ret = parseRequestLine()))
+			return (ret);
+		if (!queryString_parsed)
+			parseQueryString();
+	}
+	
+	if (request_.size() && !headers_parsed)
+		if ((ret = parseHeaders()))
+			return (ret);
+
+	if (request_.size() && !body_parsed)
+		if ((ret = getBody()))
+			return (ret);
+
+	if (headers_parsed)
+		parseHeadersContent();
+
+	return (ret);
+}
+
 int Request::appendRequest(char buf[256], int nbytes)
 {
 	request_.append(buf, nbytes);
 	return (parse());
+}
+
+std::string Request::decodeBase64(std::string & str)
+{
+	int val = 0;
+	int valb = -8;
+	unsigned char c;
+	std::string res;
+	std::vector<int> tab(256, -1);
+	std::string::iterator it = str.begin();
+
+	for (int i = 0; i < 64; i++)
+		tab["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i; 
+	while (it != str.end())
+	{
+		c = *it;
+		if (tab[c] == -1)
+			break;
+		val = (val << 6) + tab[c];
+		valb += 6;
+		if (valb >= 0)
+		{
+			res.push_back(char((val >> valb) & 0xFF));
+			valb -= 8;
+		}
+		it++;
+	}
+	return res;
 }
 
 std::string Request::getMethod() const
