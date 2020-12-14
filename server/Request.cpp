@@ -143,12 +143,7 @@ int Request::getBody()
 {
 	std::string line;
 
-	if (headersRaw_[TRANSFERT_ENCODING] == "chunked")
-	{
-		if (parseChunkedBody())
-			return (BADBODY);
-	}
-	else if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
+	if (!headersRaw_[CONTENT_LENGTH].empty() && request_.size() > 0)
 	{
 		msgBody_ = request_;
 		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
