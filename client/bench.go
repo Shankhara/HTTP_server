@@ -27,7 +27,7 @@ type Resp struct {
 func worker(stats chan *Resp, conf Conf, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	strGet := "GET / HTTP/1.0\r\n\r\n"
+	strGet := "GET / HTTP/1.1\r\n\r\n"
 	for i := 0; i < conf.requests; i++ {
 		start := time.Now()
 		conn, err := net.Dial("tcp", conf.url)

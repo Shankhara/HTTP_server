@@ -54,7 +54,7 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 {
 	int pfd[2];
 
-	Log().Get(logDEBUG) << "WD: " << workingDir << "BIN: " << cgiBin << " " << filename;
+	Log().Get(logDEBUG) << "CGI: " << cgiBin << " " << workingDir << filename ;
 	if (pipe(pfd))
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
@@ -133,7 +133,7 @@ void	CGIExec::dupSTDERR_()
 	dup2(fd, STDERR_FILENO);
 }
 
-void CGIExec::setEnv_(int name, std::string c)
+void CGIExec::setEnv_(int name, const std::string &c)
 {
 	//TODO: concat instead allocating tmp buf
 	std::string buf = vars_[name] + c;

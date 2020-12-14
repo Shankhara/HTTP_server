@@ -4,7 +4,6 @@ SRCS	+= Server.cpp
 SRCS	+= Logger.cpp
 SRCS	+= CGIExec.cpp
 SRCS	+= Request.cpp
-SRCS	+= RequestMock.cpp
 SRCS	+= fds/Listener.cpp
 SRCS	+= fds/Client.cpp
 SRCS	+= fds/CGIResponse.cpp

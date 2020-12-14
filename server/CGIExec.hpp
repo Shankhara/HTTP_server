@@ -43,7 +43,7 @@ private:
 		SERVER_SOFTWARE,
 	};
 	void						exec_(const std::string &, const std::string &);
-	void 						setEnv_(int name, std::string c);
+	void 						setEnv_(int name, const std::string &);
 	void 						pipeSTDOUT_(int pfd[2]);
 	void 						dupSTDERR_();
 	void 						build_(Request &, const std::string &, const std::string &);

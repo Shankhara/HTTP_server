@@ -12,12 +12,12 @@ void Client::onEvent()
 {
 	static char buf[256];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
-	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> RECV " << nbytes;
+	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)
 		{
-			Log().Get(logERROR) << "Client " << addr_.ss_family << "recv error" << strerror(errno);
+			Log().Get(logERROR) << __FUNCTION__ << "Client " << fd_ << " recv error" << strerror(errno);
 			Server::getInstance()->deleteFileDescriptor(fd_);
 			return ;
 		}
@@ -58,10 +58,10 @@ void Client::constructRequest(char buf[], int nbytes) {
 		FileDescriptor *response = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
 		if (response == 0)
 			Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN A 500 STATUS CODE";
-		response_ = "\"HTTP/1.1 \"200\" OK\\r\\n\"";
+		response_ = "\"HTTP/1.1 200 OK\\r\\n\"";
 		Server::getInstance()->addFileDescriptor(response);
 	}else{
-		Log().Get(logDEBUG) << __FUNCTION__  << " got result " << result;
+		Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN 400 STATUS CODE " << result;
 	}
 	//TODO: delete client
 }

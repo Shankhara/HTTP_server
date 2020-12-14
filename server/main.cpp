@@ -21,6 +21,7 @@ void addListener(const std::string &name, const std::string &ip, int port)
 }
 
 int main(int argc, char *argv[]) {
+	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0)
 		Log::setLevel(logDEBUG);
