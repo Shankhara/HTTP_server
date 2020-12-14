@@ -1,6 +1,9 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
+const std::string Request::methods[] = {"GET", "HEAD", "POST", "PUT", "DELETE",
+		"OPTIONS", "TRACE", "PATCH" };
+
 Request::Request()
 {
 	headersRaw_.resize(11);
@@ -8,11 +11,6 @@ Request::Request()
 	headers_parsed = 0;
 	body_parsed = 0;
 	queryString_parsed = 0;
-
-	static std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
-		"OPTIONS", "TRACE", "PATCH" };
-	std::vector<std::string> tmp(str_list, str_list + 9);
-	methods = tmp;
 
 	static std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
 		"authorization", "content-language", "content-length", "content-location", \
@@ -111,7 +109,7 @@ std::vector<std::string> Request::workLine(std::string & line, const char & c)
 
 int Request::checkMethod()
 {
-	for (size_t i = 0; i < methods.size(); i++)
+	for (size_t i = 0; i < 9; i++)
 	{
 		if (methods[i] == requestLine_[METHOD])
 				return (0);

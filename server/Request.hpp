@@ -47,7 +47,7 @@ class Request
 	bool body_parsed;
 	bool queryString_parsed;
 
-	std::vector<std::string> methods;
+	static const std::string methods[];
 	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
 
