@@ -9,16 +9,16 @@
 #include <sys/socket.h>
 #include "../Logger.hpp"
 #include "../Server.hpp"
-#include <signal.h>
 #include "FileDescriptor.hpp"
 #include "../Request.hpp"
+#include "../CGIExec.hpp"
 
 
 class Client: public FileDescriptor {
 
 private:
 	FileDescriptor 			&listener_;
-	struct sockaddr_storage addr_;
+	struct 					sockaddr_storage addr_;
 	std::string				response_;
 	Request					request_;
 
@@ -32,6 +32,7 @@ public:
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();
 	FileDescriptor 		&getListener() const;
+	Request 			&getRequest();
 };
 
 

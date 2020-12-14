@@ -10,6 +10,8 @@
 #include "../Logger.hpp"
 #include "Client.hpp"
 
+class Client;
+
 class CGIResponse: public FileDescriptor {
 private:
 	Client &client_;

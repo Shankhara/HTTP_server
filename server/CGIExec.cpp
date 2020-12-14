@@ -20,16 +20,15 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::~CGIExec() {
-}
+CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec() {
 	setEnv_(17, "REDIRECT_STATUS=200");
 	envs_[18] = 0;
 }
 
-void CGIExec::build_(const RequestMock &request, const std::string &workDir, const std::string &filename) {
-	setEnv_(AUTH_TYPE, "");
+void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
+	setEnv_(AUTH_TYPE, request.getHeaderAuth());
 	setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
 	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
 	setEnv_(PATH_INFO, "");
@@ -38,18 +37,18 @@ void CGIExec::build_(const RequestMock &request, const std::string &workDir, con
 	setEnv_(REMOTE_ADDR, "");
 	setEnv_(REMOTE_IDENT, "");
 	setEnv_(REMOTE_USER, "");
-	setEnv_(REQUEST_METHOD, request.getRequestMethod());
+	setEnv_(REQUEST_METHOD, "GET");
 	setEnv_(REQUEST_URI, "");
 	setEnv_(SCRIPT_FILENAME, workDir + filename);
 	setEnv_(SCRIPT_NAME, filename);
-	setEnv_(SERVER_NAME, "");
-	setEnv_(SERVER_PORT, itoa_(dynamic_cast<Listener &>(request.getClient().getListener()).getPort()));
+	setEnv_(SERVER_NAME, request.getHeaderHost());
+	setEnv_(SERVER_PORT, "");
 	setEnv_(SERVER_PROTOCOL, "");
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
 
 CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
-						  const std::string &filename, RequestMock &request)
+						  const std::string &filename, Client &client)
 {
 	int pfd[2];
 
@@ -59,7 +58,7 @@ CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingD
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
 		return (0);
 	}
-	CGIResponse *response = new CGIResponse(pfd[0], request.getClient());
+	CGIResponse *response = new CGIResponse(pfd[0], client);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -75,9 +74,9 @@ CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingD
 			exit(EXIT_FAILURE);
 		}
 		pipeSTDOUT_(pfd);
-		build_(request, workingDir, filename);
-		dupSTDERR_();
-		exec_(cgiBin, filename);
+		build_(client.getRequest(), workingDir, filename);
+		//dupSTDERR_();
+		exec_(cgiBin, workingDir + filename);
 		close(STDOUT_FILENO);
 		exit(EXIT_SUCCESS);
 	}

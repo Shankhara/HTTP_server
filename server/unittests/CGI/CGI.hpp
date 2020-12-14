@@ -3,9 +3,18 @@
 
 #include "../tests.hpp"
 #include "../../CGIExec.hpp"
-#include "../../RequestMock.hpp"
+#include "../../Request.hpp"
 #include "../../fds/Client.hpp"
 #include "../../fds/Listener.hpp"
+
+struct serversMock
+{
+	std::vector<std::string>		names;
+	std::string						host;
+	std::string						root;
+	size_t							port;
+	size_t							client_max_body_size;
+};
 
 bool assertHeaderStatus(const std::string &response, const std::string &status, const std::string &name)
 {
@@ -29,11 +38,9 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 {
 	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
 	Client *client = new Client(12, *listener);
-	RequestMock  request(*client);
+	client->getRequest().appendRequest("GET / HTTP1.1", 13);
 	CGIExec cgi;
-	request.setRequestMethod("GET");
-	request.setContentLength("0");
-	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, request);
+	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, *client);
 	resp->readPipe();
 	assertHeaderStatus(client->getResponse(), status, name);
 	close(resp->getFd());
@@ -46,11 +53,9 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 {
 	Listener *listener = new Listener(inet_addr("127.0.0.1"), 8080, "testCGI");
 	Client *client = new Client(12, *listener);
-	RequestMock  request(*client);
+	client->getRequest().appendRequest("GET / HTTP1.1", 13);
 	CGIExec cgi;
-	request.setRequestMethod("GET");
-	request.setContentLength("0");
-	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, request);
+	CGIResponse *resp = cgi.run("/usr/bin/php-cgi", get_working_path(), filename, *client);
 	resp->readPipe();
 	assertHeaderStatus(client->getResponse(), "200", name);
 	close(resp->getFd());

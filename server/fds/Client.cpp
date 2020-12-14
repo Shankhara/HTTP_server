@@ -23,11 +23,6 @@ void Client::onEvent()
 		}
 	}
 	constructRequest(buf, nbytes);
-	if (response_.length() > 0)
-	{
-		sendResponse();
-		Server::getInstance()->deleteFileDescriptor(fd_);
-	}
 }
 
 void Client::sendResponse() const
@@ -42,9 +37,15 @@ void Client::setAddr(struct sockaddr_storage addr) {
 }
 
 void Client::constructRequest(char buf[], int nbytes) {
-	if (request_.appendRequest(buf, nbytes) == 0)
+	int result;
+	if ((result = request_.appendRequest(buf, nbytes)) == 4)
 	{
+		CGIExec exec = CGIExec();
+		exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
+	}else{
+		Log().Get(logDEBUG) << __FUNCTION__  << " got result " << result;
 	}
+	//TODO: delete client
 }
 
 std::string &Client::getResponse()
@@ -58,6 +59,10 @@ void Client::appendResponse(char buf[], int nbytes) {
 
 FileDescriptor &Client::getListener() const {
 	return listener_;
+}
+
+Request &Client::getRequest(){
+	return request_;
 }
 
 

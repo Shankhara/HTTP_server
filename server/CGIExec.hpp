@@ -8,7 +8,7 @@
 #include <cstring>
 #include <wait.h>
 #include <vector>
-#include "RequestMock.hpp"
+#include "Request.hpp"
 #include "Server.hpp"
 #include "fds/Client.hpp"
 #include "fds/CGIResponse.hpp"
@@ -44,13 +44,13 @@ private:
 	void 						setEnv_(int name, std::string c);
 	void 						pipeSTDOUT_(int pfd[2]);
 	void 						dupSTDERR_();
-	void 						build_(const RequestMock &, const std::string &, const std::string &);
+	void 						build_(Request &, const std::string &, const std::string &);
 	void						freeEnvs_();
 	std::string					itoa_(int nb);
 
 public:
 	CGIExec();
-	CGIResponse					*run(const std::string &, const std::string &, const std::string &, RequestMock &);
+	CGIResponse					*run(const std::string &, const std::string &, const std::string &, Client &);
 	virtual						~CGIExec();
 };
 
