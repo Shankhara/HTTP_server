@@ -39,11 +39,10 @@ void Client::sendResponse() const
 			Log().Get(logERROR) << __FUNCTION__ << " Unable to send response " << strerror(errno);
 			break ;
 		}
-		Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> sent NBYTES: " << nbytes;
+		Log().Get(logDEBUG) << __FUNCTION__  << ">  Client" << fd_ << " -> sent NBYTES: " << nbytes;
 		responsePtr += nbytes;
 		responseSize -= nbytes;
 	}
-	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> response sent";
 }
 
 void Client::setAddr(struct sockaddr_storage addr) {

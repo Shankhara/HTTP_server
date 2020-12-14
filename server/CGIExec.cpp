@@ -20,7 +20,9 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::~CGIExec() {}
+CGIExec::~CGIExec() {
+	free(envs_[17]);
+}
 
 CGIExec::CGIExec() {
 	setEnv_(17, "REDIRECT_STATUS=200");
@@ -37,8 +39,8 @@ void CGIExec::build_(Request &request, const std::string &workDir, const std::st
 	setEnv_(REMOTE_ADDR, "");
 	setEnv_(REMOTE_IDENT, "");
 	setEnv_(REMOTE_USER, "");
-	setEnv_(REQUEST_METHOD, "GET");
-	setEnv_(REQUEST_URI, "");
+	setEnv_(REQUEST_METHOD, request.getMethod());
+	setEnv_(REQUEST_URI, request.getReqTarget()); //TODO: rename ReqTarget en URI?
 	setEnv_(SCRIPT_FILENAME, workDir + filename);
 	setEnv_(SCRIPT_NAME, filename);
 	setEnv_(SERVER_NAME, request.getHeaderHost());

@@ -20,21 +20,22 @@ int CGIResponse::readPipe() {
 
 	while ((nbytes = read(fd_, buf, 255)) > 0)
 	{
-		Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
+		//Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
 		client_.appendResponse(buf, nbytes);
 	}
 	return nbytes;
 }
 
 void CGIResponse::onEvent() {
-	if (readPipe() <= 0)
+	int status;
+	if ((status = readPipe()) <= 0)
 	{
-		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
+		if (status < 0)
+			Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 		client_.sendResponse();
 		// TODO: improv deleteFileDescriptor will close an already close fd, maybe send on EOF is good enough?
-		Server::getInstance()->deleteFileDescriptor(fd_);
 		Server::getInstance()->deleteFileDescriptor(client_.getFd());
-
+		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }
 
