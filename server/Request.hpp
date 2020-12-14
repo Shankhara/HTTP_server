@@ -14,7 +14,6 @@
 #define BADHEADER 5
 #define BADBODY 6
 
-
 class Request
 {
 	friend class Response;
@@ -72,8 +71,10 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
-	
-	std::vector<std::string> getRequestLine() const;
+
+	std::string getMethod() const;
+	std::string getReqTarget() const;
+	std::string getVersion() const;
 	std::string getHeaderDate() const;
 	std::string getHeaderAuth() const;
 	std::string getHeaderHost() const;

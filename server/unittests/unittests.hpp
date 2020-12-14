@@ -121,6 +121,7 @@ void statusLine()
 	r.parse();
 
 	Response a(r);
+	a.createResponse();
 
 	std::cout << a.getResponseMsg() << std::endl;
 }
@@ -131,13 +132,3 @@ void testResponseBuild()
 
 	statusLine();
 }
-
-//void testClient()
-//{
-//	Client c(0, 0);
-//
-//	std::string get = "GET / HTTP/1.1\r\n\r\n";
-//	c.constructRequest(const_cast<char *>(get.c_str()), get.size());
-//	assertStringEqual(c.getResponse(), get, "Client GET");
-//}
-
