@@ -100,6 +100,15 @@ void receivedAtOnce()
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	r.parse();
 	assertEqual(r.queryString_parsed, true, "parsing query_string");
+
+	r.reset();
+	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\n";
+	assertEqual(r.parse(), BADHEADER, "no newline after headers with no body");
+
+	r.reset();
+	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
+	r.parse();
+	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
 }
 
 void testRequestParse()

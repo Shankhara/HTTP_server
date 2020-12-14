@@ -21,6 +21,7 @@ class Request
 	private:
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
+	int statusCode_;
 	std::string msgBody_;
 	std::string queryString_;
 	
@@ -53,7 +54,8 @@ class Request
 
 	std::vector<std::string> headersName;
 	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
-		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, REFERER };
+		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, LAST_MODIFIED, LOCATION, REFERER, \
+		RETRY_AFTER, SERVER, TRANSFER_ENCODING, USER_AGENT, WWW_AUTHORIZATION };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
 	int appendRequest(char [256], int);
@@ -64,6 +66,7 @@ class Request
 	int checkVersion();
 	int checkHeadersEnd();
 	int getBody();
+	int getChunkedBody();
 	void parseHeadersContent();
 	void parseQueryString();
 	void reset();
@@ -72,6 +75,7 @@ class Request
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
 
+	int getStatusCode() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
 	std::string getVersion() const;

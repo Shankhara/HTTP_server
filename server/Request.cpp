@@ -4,17 +4,17 @@
 Request::Request()
 {
 	headersRaw_.resize(11);
-	requestLine_parsed = 0;
-	headers_parsed = 0;
-	body_parsed = 0;
-	queryString_parsed = 0;
+	requestLine_parsed = false;
+	headers_parsed = false;
+	body_parsed = false;
+	queryString_parsed = false;
 
-	static std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
+	static const std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
 	std::vector<std::string> tmp(str_list, str_list + 9);
 	methods = tmp;
 
-	static std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
+	static const std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
 		"authorization", "content-language", "content-length", "content-location", \
 		"content-type", "date", "host", "referer", };
 	std::vector<std::string> tmp2(str_list2, str_list2 + 11);
@@ -28,6 +28,7 @@ void Request::reset()
 	requestLine_parsed = false;
 	headers_parsed = false;
 	body_parsed = false;
+	queryString_parsed = false;
 
 	request_.clear();
 	requestLine_.clear();
@@ -116,7 +117,7 @@ int Request::checkMethod()
 		if (methods[i] == requestLine_[METHOD])
 				return (0);
 	}
-	//statusCode_ = 400;
+	statusCode_ = 400;
 	return (1);
 }
 
