@@ -1,7 +1,7 @@
 VPATH		= ../:../fds/
 
 NAME		= unittests
-OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o
+OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
@@ -16,6 +16,8 @@ Request.o : ../Request.hpp
 Logger.o : ../Logger.hpp
 Server.o : ../Server.hpp
 Response.o : ../Response.hpp
+CGIExec.o : ../CGIExec.hpp
+CGIResponse.o : ../fds/CGIResponse.hpp
 
 clean:
 			$(RM) $(OBJS)

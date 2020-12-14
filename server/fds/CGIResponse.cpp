@@ -33,7 +33,6 @@ void CGIResponse::onEvent() {
 		if (status < 0)
 			Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 		client_.sendResponse();
-		// TODO: improv deleteFileDescriptor will close an already close fd, maybe send on EOF is good enough?
 		Server::getInstance()->deleteFileDescriptor(client_.getFd());
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}

@@ -61,7 +61,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 		response_ = "\"HTTP/1.1 200 OK\\r\\n\"";
 		Server::getInstance()->addFileDescriptor(response);
 	}else{
-		Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN 400 STATUS CODE " << result;
+		Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN 400 STATUS CODE " << result << " REQ: " << request_.request_;
 	}
 	//TODO: delete client
 }
