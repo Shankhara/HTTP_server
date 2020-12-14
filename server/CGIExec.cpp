@@ -47,7 +47,7 @@ void CGIExec::build_(Request &request, const std::string &workDir, const std::st
 	setEnv_(SERVER_SOFTWARE, "webserver/0.0.0");
 }
 
-CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
+FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
 						  const std::string &filename, Client &client)
 {
 	int pfd[2];
@@ -75,7 +75,7 @@ CGIResponse *CGIExec::run(const std::string &cgiBin, const std::string &workingD
 		}
 		pipeSTDOUT_(pfd);
 		build_(client.getRequest(), workingDir, filename);
-		//dupSTDERR_();
+		dupSTDERR_();
 		exec_(cgiBin, workingDir + filename);
 		close(STDOUT_FILENO);
 		exit(EXIT_SUCCESS);

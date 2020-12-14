@@ -1,10 +1,12 @@
 #include "CGIResponse.hpp"
 
-CGIResponse::CGIResponse(int fd, Client &client): client_(client) {
+CGIResponse::CGIResponse(int fd, Client &client): client_(client)
+{
 	fd_ = fd;
 }
 
-CGIResponse::~CGIResponse() {
+CGIResponse::~CGIResponse()
+{
 	int status;
 
 	pid_t result = waitpid(pid_, &status, WNOHANG);

@@ -27,9 +27,23 @@ void Client::onEvent()
 
 void Client::sendResponse() const
 {
-	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> sent " <<  response_;
-	if (send(fd_, response_.c_str(), response_.length(), 0) == -1)
-		Log().Get(logERROR) << "Listener" << listener_.getFd() << " client " << addr_.ss_family << "send error" << strerror(errno);
+	const char* responsePtr = response_.data();
+	std::size_t responseSize = response_.size();
+	int nbytes;
+
+	while (responseSize > 0)
+	{
+		nbytes = send(fd_, responsePtr, responseSize, 0);
+		if (nbytes == -1)
+		{
+			Log().Get(logERROR) << __FUNCTION__ << " Unable to send response " << strerror(errno);
+			break ;
+		}
+		Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> sent NBYTES: " << nbytes;
+		responsePtr += nbytes;
+		responseSize -= nbytes;
+	}
+	Log().Get(logDEBUG) << "Client" << listener_.getFd() << " client " << addr_.ss_family << " -> response sent";
 }
 
 void Client::setAddr(struct sockaddr_storage addr) {
@@ -38,12 +52,14 @@ void Client::setAddr(struct sockaddr_storage addr) {
 
 void Client::constructRequest(char buf[], int nbytes) {
 	int result;
-	if ((result = request_.appendRequest(buf, nbytes)) == 4)
+
+	if ((result = request_.appendRequest(buf, nbytes)) == 0)
 	{
 		CGIExec exec = CGIExec();
-		CGIResponse *response = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
+		FileDescriptor *response = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
 		if (response == 0)
 			Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN A 500 STATUS CODE";
+		response_ = "\"HTTP/1.1 \"200\" OK\\r\\n\"";
 		Server::getInstance()->addFileDescriptor(response);
 	}else{
 		Log().Get(logDEBUG) << __FUNCTION__  << " got result " << result;

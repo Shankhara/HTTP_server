@@ -11,10 +11,10 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "fds/Client.hpp"
-#include "fds/CGIResponse.hpp"
 #include "fds/Listener.hpp"
+#include "fds/CGIResponse.hpp"
 
-class CGIResponse;
+class Client;
 
 class CGIExec {
 private:
@@ -52,7 +52,7 @@ private:
 
 public:
 	CGIExec();
-	CGIResponse					*run(const std::string &, const std::string &, const std::string &, Client &);
+	FileDescriptor				*run(const std::string &, const std::string &, const std::string &, Client &);
 	virtual						~CGIExec();
 };
 
