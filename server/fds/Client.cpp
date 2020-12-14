@@ -52,12 +52,10 @@ std::string &Client::getResponse()
 	return response_;
 }
 
-void Client::appendResponse(char buf[], int nbytes) {
-	response_.append(buf, nbytes);
+void Client::appendResponse(char buf[], int nbytes) { // C'est la class Response qui va renvoyer la reponse prete.
+	response_.append(buf, nbytes);					 // On y accedera comme ca : response.getResponseMsg();
 }
 
 FileDescriptor &Client::getListener() const {
 	return listener_;
 }
-
-

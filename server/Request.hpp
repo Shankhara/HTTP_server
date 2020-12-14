@@ -17,6 +17,8 @@
 
 class Request
 {
+	friend class Response;
+
 	private:
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
