@@ -17,6 +17,8 @@
 
 class Request
 {
+	friend class Response;
+
 	private:
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
@@ -38,7 +40,6 @@ class Request
 
 	public:
 	Request();
-	//explicit Request(std::string *);
 	~Request();
 	
 	std::string request_;
@@ -56,6 +57,7 @@ class Request
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, REFERER };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
+	int appendRequest(char [256], int);
 	int parse();
 	int parseRequestLine();
 	int parseHeaders();
@@ -70,8 +72,6 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
-
-	int 		appendRequest(char [256], int);
 	
 	std::vector<std::string> getRequestLine() const;
 	std::string getHeaderDate() const;

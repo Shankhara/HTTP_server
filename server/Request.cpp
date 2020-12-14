@@ -1,26 +1,6 @@
 #include "Request.hpp"
 #include "Utils.hpp"
 
-/*Request::Request(std::string *request) : request_(request)
-{
-	headersRaw_.resize(11);
-	requestLine_parsed = 0;
-	headers_parsed = 0;
-	body_parsed = 0;
-	queryString_parsed = 0;
-
-	static std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
-		"OPTIONS", "TRACE", "PATCH" };
-	std::vector<std::string> tmp(str_list, str_list + 9);
-	methods = tmp;
-
-	static std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
-		"authorization", "content-language", "content-length", "content-location", \
-		"content-type", "date", "host", "referer", };
-	std::vector<std::string> tmp2(str_list2, str_list2 + 11);
-	headersName = tmp2;
-}*/
-
 Request::Request()
 {
 	headersRaw_.resize(11);
@@ -290,7 +270,8 @@ void Request::parseHeadersContent()
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
 }
 
-int Request::appendRequest(char buf[256], int nbytes) {
+int Request::appendRequest(char buf[256], int nbytes)
+{
 	request_.append(buf, nbytes);
 	return (parse());
 }
@@ -330,4 +311,3 @@ std::vector<std::string> Request::getHeaderContentLanguage() const
 
 std::vector<std::string> Request::getHeaderContentType() const
 { return (headerContentType_); }
-

@@ -14,6 +14,8 @@
 #include "fds/CGIResponse.hpp"
 #include "fds/Listener.hpp"
 
+class CGIResponse;
+
 class CGIExec {
 private:
 	int							stdoutFD_;

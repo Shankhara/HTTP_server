@@ -31,6 +31,8 @@ void CGIResponse::onEvent() {
 		client_.sendResponse();
 		// TODO: improv deleteFileDescriptor will close an already close fd, maybe send on EOF is good enough?
 		Server::getInstance()->deleteFileDescriptor(fd_);
+		Server::getInstance()->deleteFileDescriptor(client_.getFd());
+
 	}
 }
 
