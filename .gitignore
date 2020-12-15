@@ -1,3 +1,4 @@
 server/server
 server/.objs/
-a.out
+*.out
+*.swp
