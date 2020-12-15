@@ -1,11 +1,14 @@
 #include "Client.hpp"
 
 Client::Client(int fd, FileDescriptor &f): listener_(f) {
+
 	fd_ = fd;
+	Log().Get(logDEBUG) << __FUNCTION__  << fd_;
 }
 
 Client::~Client() {
 	Log().Get(logDEBUG) << "Client deleted " << fd_;
+	close(fd_);
 }
 
 void Client::onEvent()
@@ -61,7 +64,8 @@ void Client::constructRequest(char buf[], int nbytes) {
 		response_ = "\"HTTP/1.1 200 OK\\r\\n\"";
 		Server::getInstance()->addFileDescriptor(response);
 	}else{
-		Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN 400 STATUS CODE " << result << " REQ: " << request_.request_;
+		Log().Get(logERROR) << __FUNCTION__  << " TCP RST, We should send a 400 Response instead. Parse Error code: " << result << " REQ BODY: " << request_.request_;
+		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 	//TODO: delete client
 }

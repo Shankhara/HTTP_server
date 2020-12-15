@@ -2,6 +2,11 @@
 
 Listener::Listener(uint32_t ip, int port, const std::string &name): ip_(ip), port_(port), name_(name) {}
 
+Listener::~Listener(){
+	if (fd_ > 0)
+		close(fd_);
+}
+
 void Listener::onEvent()
 {
 	onNewClient();
@@ -30,6 +35,7 @@ void Listener::ListenAndServe() {
 	if (fd_ == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in socket()\n";
+		delete Server::getInstance();
 		exit(EXIT_FAILURE);
 	}
 	memset(&server, 0, sizeof(sockaddr_in));
@@ -39,12 +45,14 @@ void Listener::ListenAndServe() {
 	if ((bind(fd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in bind() " << strerror(errno);
-		exit(EXIT_FAILURE);
+		delete Server::getInstance();
+		exit(EXIT_FAILURE) ;
 	}
 	if (listen(fd_, FD_SETSIZE) == -1)
 	{
 		Log().Get(logERROR) << "server:start -> error in listen() " << strerror(errno);
-		exit(EXIT_FAILURE);
+		delete Server::getInstance();
+		exit(EXIT_FAILURE) ;
 	}
 }
 
@@ -57,7 +65,6 @@ uint16_t Listener::htons_(uint16_t hostshort)
 	return (ui);
 }
 
-Listener::~Listener(){}
 
 int Listener::getPort() const {
 	return port_;

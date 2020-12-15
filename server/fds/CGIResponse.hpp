@@ -10,6 +10,8 @@
 #include "../Logger.hpp"
 #include "Client.hpp"
 
+#define BUFFER_SIZE 32768
+
 class Client;
 
 class CGIResponse: public FileDescriptor {
@@ -21,7 +23,7 @@ public:
 	CGIResponse(int, Client &);
 	virtual		~CGIResponse();
 	void		onEvent();
-	int			readPipe();
+	int			pipeToClient();
 	pid_t		getPid() const;
 	void		setPid(pid_t pid);
 };

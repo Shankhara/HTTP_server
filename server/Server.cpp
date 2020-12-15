@@ -77,7 +77,6 @@ void Server::stop() {
 		{
 			Log().Get(logDEBUG) << "deleting " << i;
 			delete fds_[i];
-			close(i);
 		}
 	}
 }
