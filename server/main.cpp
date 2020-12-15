@@ -29,7 +29,12 @@ int main(int argc, char *argv[]) {
 		Log::setLevel(logDEBUG);
 	Server *webserv = Server::getInstance();
 	Parsing p = Parsing("./parsing/test/nginx.conf");
-	p.parseConfig();
+	try {
+		p.parseConfig();
+	} catch (Parsing::ParsingException &e) {
+		Log().Get(logERROR) << " Unable to parse: " << e.what();
+		exit(EXIT_FAILURE);
+	}
 	for (size_t i = 0; i < p.getServers().size(); i++)
 		addListener(p.getServers()[i]);
 	webserv->start();
