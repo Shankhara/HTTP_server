@@ -17,10 +17,10 @@
 #include "Parsing.hpp"
 
 
-typedef typename std::string                    stds;
-typedef typename stds::iterator                 iterator;
-typedef typename std::pair<int, stds>           pi;
-typedef typename std::pair<stds, stds>          ps;
+typedef std::string                    stds;
+typedef stds::iterator                 iterator;
+typedef std::pair<int, stds>           pi;
+typedef std::pair<stds, stds>          ps;
 
 bool				valid(stds name, const char **valid_names);
 iterator			getBrackets(iterator next, iterator end);

@@ -29,7 +29,7 @@
 # include <sys/stat.h>
 # include <sys/time.h>
 # include <sys/types.h>
-# define	DEFAULT_PATH "./test/nginx.conf"
+# define	DEFAULT_PATH "./parsing/test/nginx.conf"
 # define	UNUSED(x)	((void)(x))
 
 static const char 		*serverProps_[] = { "listen",
@@ -67,41 +67,41 @@ static int	char_;
 class Parsing
 {
 	public :
-		typedef typename std::string					stds;
-		typedef typename stds::iterator					iterator;
-		typedef typename std::pair<int, stds>           pi;
-		typedef typename std::pair<stds, stds>          ps;
+		typedef std::string					stds;
+		typedef stds::iterator					iterator;
+		typedef std::pair<int, stds>           pi;
+		typedef std::pair<stds, stds>          ps;
 
-	private :
+	struct location
+	{
+		stds					name;
+		stds					root;
+		std::vector<stds>		methods;
+		bool					autoindex;
+		stds					index;
+		std::vector<stds>		cgi_extension;
+		stds					cgi_path;
+		bool					upload_enable;
+		stds					upload_path;
+		size_t					client_max_body_size;
+	};
 
-		struct location
-		{
-			stds					name;
-			stds					root;
-			std::vector<stds>		methods;
-			bool					autoindex;
-			stds					index;
-			std::vector<stds>		cgi_extension;
-			stds					cgi_path;
-			bool					upload_enable;
-			stds					upload_path;
-			size_t					client_max_body_size;
-		};
+	struct servers
+	{
+		std::vector<stds>		names;
+		stds					host;
+		stds					root;
+		std::vector<pi>			error_pages;
+		std::vector<location>	locations;
+		std::vector<ps>			access_log;
+		size_t					port;
+		size_t					client_max_body_size;
+	};
 
-		struct servers
-		{
-			std::vector<stds>		names;
-			stds					host;
-			stds					root;
-			std::vector<pi>			error_pages;
-			std::vector<location>	locations;
-			std::vector<ps>			access_log;
-			size_t					port;
-			size_t					client_max_body_size;
-		};
-	
-		stds					file_;
-		std::vector<servers>	servers_;
+
+private :
+	stds					file_;
+	std::vector<servers>	servers_;
 
 	public :
 		Parsing();	
@@ -132,9 +132,8 @@ class Parsing
 			{
 				std::string	li;	
 				std::string	ch;
-
-				if (serverProps_ == methods_ && locationProps_ == methods_)
-					UNUSED(li);
+				//if (serverProps_ == methods_ && locationProps_ == methods_)
+				//	UNUSED(li);
 				std::ostringstream conv;
 				std::ostringstream conv2;
 				conv << line_;

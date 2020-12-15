@@ -7,6 +7,9 @@ SRCS	+= Request.cpp
 SRCS	+= fds/Listener.cpp
 SRCS	+= fds/Client.cpp
 SRCS	+= fds/CGIResponse.cpp
+SRCS	+= parsing/Parsing.cpp
+SRCS	+= parsing/Ut.cpp
+
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++
 
@@ -23,6 +26,7 @@ $(OBJS): | $(OBJDIR)
 $(OBJDIR):
 		@mkdir $(OBJDIR)
 		@mkdir -p $(OBJDIR)/fds
+		@mkdir -p $(OBJDIR)/parsing
 
 ${OBJDIR}/%.o: %.cpp
 		${CC} ${CFLAGS} -c $< -o $@

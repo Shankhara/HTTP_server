@@ -12,18 +12,18 @@
 
 # include "Parsing.hpp"
 
-typedef typename std::string           			stds;
-typedef typename stds::iterator        			iterator;
-typedef typename std::pair<int, stds> 			pi;
-typedef typename std::pair<stds, stds> 			ps;
-typedef typename std::istreambuf_iterator<char>	ist;
-typedef typename Parsing::ParsingException		PpE;
+typedef std::string           			stds;
+typedef stds::iterator        			iterator;
+typedef std::pair<int, stds> 			pi;
+typedef std::pair<stds, stds> 			ps;
+typedef std::istreambuf_iterator<char>	ist;
+typedef Parsing::ParsingException		PpE;
 
 stds 	content;
 
 Parsing::Parsing(void) : file_(stds(DEFAULT_PATH)), servers_() {}
 
-Parsing::Parsing(stds file=DEFAULT_PATH) : file_(file), servers_() {}
+Parsing::Parsing(stds file) : file_(file), servers_() {}
 
 Parsing::~Parsing(void) {}
 
