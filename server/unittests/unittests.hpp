@@ -64,7 +64,7 @@ void receivedAtOnce()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-	Request r;
+  	Request r;
 	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 	assertEqual(r.parse(), 0, "correct request");
 
@@ -109,6 +109,11 @@ void receivedAtOnce()
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
 	r.parse();
 	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
+
+	r.reset();
+	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	r.parse();
+	//assertEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
 }
 
 void testRequestParse()

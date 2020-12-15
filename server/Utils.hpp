@@ -6,6 +6,24 @@
 
 char ft_tolower(char i) { return std::tolower(i); }
 
+int ft_atoi(std::string const &str)
+{
+	int res = 0;
+
+	for (int i = 0; str[i] != '\0'; i++)
+        res = res * 10 + str[i] - '0';
+    return res;
+}
+size_t strHex_to_int(std::string const &str)
+{ 
+	size_t x;   
+	std::stringstream ss;
+
+	ss << std::hex << str;
+	ss >> x;
+	return x;
+}
+
 std::vector<std::string> explode(const std::string & str, const char & delim)
 {
 	size_t start, end = 0;

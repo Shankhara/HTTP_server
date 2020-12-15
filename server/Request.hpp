@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <stdio.h>
 
 #define CRLF "\r\n"
 
@@ -55,7 +58,7 @@ class Request
 	std::vector<std::string> headersName;
 	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, LAST_MODIFIED, LOCATION, REFERER, \
-		RETRY_AFTER, SERVER, TRANSFER_ENCODING, USER_AGENT, WWW_AUTHORIZATION };
+		RETRY_AFTER, SERVER, TRANSFER_ENCODING, USER_AGENT, WWW_AUTHENTICATE };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
 	int appendRequest(char [256], int);
@@ -70,6 +73,7 @@ class Request
 	void parseHeadersContent();
 	void parseQueryString();
 	void reset();
+	void replaceReturnCarriage(std::string & str);
 
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decodeBase64(std::string &);

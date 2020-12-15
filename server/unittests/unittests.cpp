@@ -3,6 +3,6 @@
 int main()
 {
 	testRequestParse();
-	testResponseBuild();
+//	testResponseBuild();
 	return 0;
 }

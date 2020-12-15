@@ -3,7 +3,7 @@
 
 Request::Request()
 {
-	headersRaw_.resize(11);
+	headersRaw_.resize(18);
 	requestLine_parsed = false;
 	headers_parsed = false;
 	body_parsed = false;
@@ -12,13 +12,14 @@ Request::Request()
 
 	static const std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
-	std::vector<std::string> tmp(str_list, str_list + 9);
+	std::vector<std::string> tmp(str_list, str_list + 8);
 	methods = tmp;
 
-	static const std::string str_list2[11] = { "accept-charsets", "accept-language", "allow", \
+	static const std::string str_list2[18] = { "accept-charsets", "accept-language", "allow", \
 		"authorization", "content-language", "content-length", "content-location", \
-		"content-type", "date", "host", "referer", };
-	std::vector<std::string> tmp2(str_list2, str_list2 + 11);
+		"content-type", "date", "host", "last-modified", "location", "referer", \
+		"retry-after", "server", "transfer-encoding", "user-agent", "www-authenticate" };
+	std::vector<std::string> tmp2(str_list2, str_list2 + 18);
 	headersName = tmp2;
 }
 
@@ -101,12 +102,58 @@ int Request::checkVersion()
 	return (0);
 }
 
+void Request::replaceReturnCarriage(std::string & str)
+{
+	size_t pos = 1;
+
+	while (pos != std::string::npos)
+	{
+		pos = str.find('\r');
+		if (pos != std::string::npos)
+			str[pos] = '\n';
+	}
+}
+
+int Request::getChunkedBody()
+{
+	std::string hex_size, res;
+	size_t start = 0, end = 0, num_size = 0;
+
+	while (start != std::string::npos)
+	{
+		if (request_[start] == '0')
+		{
+			end = request_.find("\r\n\r\n", start);
+			if (end != std::string::npos)
+				return (0);
+		}
+		end = request_.find("\r\n", start);
+		hex_size.assign(request_, start, end);
+		num_size = strHex_to_int(hex_size);
+	
+		start = request_.find_first_not_of("\r\n", end + 1);
+		res.append(request_, start, num_size);
+		start = request_.find_first_not_of("\r\n", start + num_size);
+	}
+	replaceReturnCarriage(res);
+	return (1);
+}
+
 int Request::getBody()
 {
-	std::string line;
-
 	if (request_.size() > 0)
 	{
+		size_t pos = headersRaw_[TRANSFER_ENCODING].find("chunked");
+		if (pos != std::string::npos)
+		{
+			if (getChunkedBody())
+			{
+				statusCode_ = 501;
+				return (BADBODY);
+			}
+			body_parsed = 0;
+			return (0);
+		}
 		if (headersRaw_[CONTENT_LENGTH].empty())
 		{
 			statusCode_ = 411;
