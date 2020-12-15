@@ -1,6 +1,6 @@
 #include "Listener.hpp"
 
-Listener::Listener(uint32_t ip, int port, const std::string &name): ip_(ip), port_(port), name_(name) {}
+Listener::Listener(): ip_(0), port_(0) {}
 
 Listener::~Listener(){
 	if (fd_ > 0)
@@ -69,3 +69,25 @@ uint16_t Listener::htons_(uint16_t hostshort)
 int Listener::getPort() const {
 	return port_;
 }
+
+void Listener::addServer(const Parsing::servers &s) {
+	in_addr_t  host = inet_addr(s.host.c_str());
+	if (host == INADDR_NONE)
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " Unable to add: " << s.host;
+		return;
+	}
+	if (ip_ == 0 && port_ == 0)
+	{
+		ip_ = host;
+		port_ = s.port;
+	}
+	else if (host != ip_ || port_ != s.port)
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " this host:port doesnt belong to this listener: " << s.host << ":" << s.port;
+		return;
+	}
+	Log().Get(logINFO) << s.names[0] << " started on port " << s.host << ":" << s.port << " (maxconn: " << FD_SETSIZE << ")";
+	servers_.push_back(s);
+}
+

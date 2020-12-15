@@ -11,13 +11,10 @@ void signalHandler(int) {
 	exit(0);
 }
 
-//void addListener(const std::string &name, const std::string &ip, int port)
 void addListener(const Parsing::servers &server)
 {
-	Listener *l = new Listener(inet_addr(server.host.c_str()),
-						   server.port,
-						   server.names[0]);
-	Log().Get(logINFO) << server.names[0] << " started on port " << server.host << ":" << server.port << " (maxconn: " << FD_SETSIZE << ")";
+	Listener *l = new Listener();
+	l->addServer(server);
 	l->ListenAndServe();
 	Server::getInstance()->addFileDescriptor(l);
 }
@@ -33,7 +30,7 @@ int main(int argc, char *argv[]) {
 		p.parseConfig();
 	} catch (Parsing::ParsingException &e) {
 		Log().Get(logERROR) << " Unable to parse: " << e.what();
-		exit(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 	for (size_t i = 0; i < p.getServers().size(); i++)
 		addListener(p.getServers()[i]);

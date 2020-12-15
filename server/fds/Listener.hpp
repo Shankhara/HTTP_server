@@ -4,22 +4,24 @@
 #include "FileDescriptor.hpp"
 #include "../Server.hpp"
 #include "Client.hpp"
+#include "../parsing/Parsing.hpp"
 
 
 class Listener: public FileDescriptor {
 private:
-	const uint32_t ip_;
-	const int port_;
-	const std::string name_;
+	uint32_t						ip_;
+	unsigned int					port_;
+	std::vector<Parsing::servers>	servers_;
 
 public:
-	Listener(uint32_t ip, int port, const std::string &name);
-	virtual ~Listener();
-	void	onEvent();
-	void 	ListenAndServe();
-	uint16_t htons_(uint16_t hostshort);
-	void	onNewClient();
-	int getPort() const;
+	Listener();
+	virtual 	~Listener();
+	void		onEvent();
+	void 		addServer(const Parsing::servers &);
+	void 		ListenAndServe();
+	uint16_t 	htons_(uint16_t hostshort);
+	void		onNewClient();
+	int 		getPort() const;
 };
 
 
