@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/14 22:09:12 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/14 22:35:56 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,23 @@ Parsing::~Parsing(void) {}
 
 void				Parsing::parseConfig(void)
 {
+	std::__cxx11::basic_string<char>	*ptr = NULL;
 	iterator	first;
 	iterator	next;
 
 	line_ = 1;
 	char_ = 1;
-	if (this->file_.length() < 6 || this->file_.substr(this->file_.length() - 5) != ".conf")
-		throw (PpE(this->file_, stds("File should have the .conf extension")));
+	if (this->file_.length() < 6)
+	{
+		*ptr = this->file_.substr(this->file_.length() - 5);
+		if (*ptr != ".conf")
+			throw (PpE(this->file_, stds("File should have the .conf extension")));
+	}
+	free(ptr);
 	std::ifstream	file(this->file_.c_str());
 	content = stds((ist(file)), (ist()));
 	first = content.begin();
+	file.close();
 	while (first != content.end())
 	{
 		this->skipWhite(&first, content.end(), true);
