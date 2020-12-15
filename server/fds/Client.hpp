@@ -12,18 +12,23 @@
 #include "FileDescriptor.hpp"
 #include "../Request.hpp"
 #include "../CGIExec.hpp"
+#include "../parsing/Parsing.hpp"
 
 
 class Client: public FileDescriptor {
 
 private:
-	FileDescriptor 			&listener_;
+	Parsing::servers 		&server_;
+public:
+	Parsing::servers &getServer() const;
+
+private:
 	struct 					sockaddr_storage addr_;
 	std::string				response_;
 	Request					request_;
 
 public:
-	Client(int, FileDescriptor &);
+	Client(int, Parsing::servers &);
 	virtual ~Client();
 	void 				constructRequest(char [], int);
 	void 				sendResponse() const;
@@ -31,7 +36,6 @@ public:
 	std::string 		&getResponse();
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();
-	FileDescriptor 		&getListener() const;
 	Request 			&getRequest();
 };
 

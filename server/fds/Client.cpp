@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd, FileDescriptor &f): listener_(f) {
+Client::Client(int fd, Parsing::servers &s): server_(s) {
 
 	fd_ = fd;
 	Log().Get(logDEBUG) << __FUNCTION__  << fd_;
@@ -79,10 +79,10 @@ void Client::appendResponse(char buf[], int nbytes) { // C'est la class Response
 	response_.append(buf, nbytes);					 // On y accedera comme ca : response.getResponseMsg();
 }
 
-FileDescriptor &Client::getListener() const {
-	return listener_;
-}
-
 Request &Client::getRequest(){
 	return request_;
+}
+
+Parsing::servers &Client::getServer() const {
+	return server_;
 }

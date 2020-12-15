@@ -24,7 +24,7 @@ void Listener::onNewClient()
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-	Client *client = new Client(newfd, *this);
+	Client *client = new Client(newfd, servers_[0]);
 	client->setAddr(remoteaddr);
 	Server::getInstance()->addFileDescriptor(client);
 }
@@ -66,7 +66,7 @@ uint16_t Listener::htons_(uint16_t hostshort)
 }
 
 
-int Listener::getPort() const {
+unsigned int Listener::getPort() const {
 	return port_;
 }
 
