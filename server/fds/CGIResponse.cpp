@@ -3,7 +3,9 @@
 CGIResponse::CGIResponse(int fd, Client &client): client_(client)
 {
 	fd_ = fd;
-	Log().Get(logDEBUG) << __FUNCTION__  << fd_;
+	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_;
+	//TODO: be serious
+	write(client.getFd(),"HTTP/1.1 200 OK\r\n", 17);
 }
 
 CGIResponse::~CGIResponse()
@@ -14,6 +16,7 @@ CGIResponse::~CGIResponse()
 	if (result == 0)
 		kill(pid_, 9);
 	close(fd_);
+	Log().Get(logDEBUG) << "CGIResponse deleted " << fd_;
 }
 
 int CGIResponse::pipeToClient() {
@@ -39,7 +42,6 @@ void CGIResponse::onEvent() {
 		if (status < 0)
 			Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 		Server::getInstance()->deleteFileDescriptor(client_.getFd());
-		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }
 

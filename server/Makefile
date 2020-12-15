@@ -43,13 +43,18 @@ run: all
 	@./webserver
 	@rm -f ./webserver
 
-debug: all
+leaks: re
 	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserver -v
 	@rm -f ./webserver
 
 tests:
 	@make -C ./unittests/
 	@./unittests/unittests
+
+verbose: re
+	@ ./webserver -v
+	@rm -f ./webserver
+	
 
 
 .PHONY: all clean fclean re run tests

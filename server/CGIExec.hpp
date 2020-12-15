@@ -48,7 +48,6 @@ private:
 	void 						dupSTDERR_();
 	void 						build_(Request &, const std::string &, const std::string &);
 	void						freeEnvs_();
-	std::string					itoa_(int nb);
 
 public:
 	CGIExec();

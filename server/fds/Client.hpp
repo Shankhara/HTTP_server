@@ -19,11 +19,8 @@ class Client: public FileDescriptor {
 
 private:
 	Parsing::servers 		&server_;
-public:
-	Parsing::servers &getServer() const;
-
-private:
 	struct 					sockaddr_storage addr_;
+	FileDescriptor			*CGIResponse_;
 	std::string				response_;
 	Request					request_;
 
@@ -37,6 +34,7 @@ public:
 	void 				setAddr(struct sockaddr_storage addr);
 	void 				onEvent();
 	Request 			&getRequest();
+	Parsing::servers &getServer() const;
 };
 
 

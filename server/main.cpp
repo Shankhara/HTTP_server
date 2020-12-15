@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signalHandler);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0)
 		Log::setLevel(logDEBUG);
-	Server *webserv = Server::getInstance();
 	Parsing p = Parsing("./parsing/test/nginx.conf");
 	try {
 		p.parseConfig();
@@ -32,6 +31,7 @@ int main(int argc, char *argv[]) {
 		Log().Get(logERROR) << " Unable to parse: " << e.what();
 		return (EXIT_FAILURE);
 	}
+	Server *webserv = Server::getInstance();
 	for (size_t i = 0; i < p.getServers().size(); i++)
 		addListener(p.getServers()[i]);
 	webserv->start();

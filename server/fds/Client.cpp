@@ -1,19 +1,21 @@
 #include "Client.hpp"
 
 Client::Client(int fd, Parsing::servers &s): server_(s) {
-
+	CGIResponse_ = 0;
 	fd_ = fd;
-	Log().Get(logDEBUG) << __FUNCTION__  << fd_;
+	Log().Get(logDEBUG) << "Creating Client: " << fd_;
 }
 
 Client::~Client() {
 	Log().Get(logDEBUG) << "Client deleted " << fd_;
 	close(fd_);
+	if (CGIResponse_ != 0)
+		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
 }
 
 void Client::onEvent()
 {
-	static char buf[256];
+	static char buf[1024];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
@@ -58,11 +60,10 @@ void Client::constructRequest(char buf[], int nbytes) {
 	if ((result = request_.appendRequest(buf, nbytes)) == 0)
 	{
 		CGIExec exec = CGIExec();
-		FileDescriptor *response = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
-		if (response == 0)
+		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
+		if (CGIResponse_ == 0)
 			Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN A 500 STATUS CODE";
-		response_ = "\"HTTP/1.1 200 OK\\r\\n\"";
-		Server::getInstance()->addFileDescriptor(response);
+		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}else{
 		Log().Get(logERROR) << __FUNCTION__  << " TCP RST, We should send a 400 Response instead. Parse Error code: " << result << " REQ BODY: " << request_.request_;
 		Server::getInstance()->deleteFileDescriptor(fd_);

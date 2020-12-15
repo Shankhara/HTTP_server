@@ -154,15 +154,3 @@ void CGIExec::freeEnvs_()
 		free(envs_[i]);
 }
 
-std::string CGIExec::itoa_(int nb)
-{
-	std::string ss;
-	while(nb)
-	{
-		int x = nb%10;
-		nb /= 10;
-		ss+= 48 + x;
-	}
-	return ss;
-}
-
