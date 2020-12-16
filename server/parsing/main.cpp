@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/14 21:50:40 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 16:12:24 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,6 @@ int main(int ac, const char *av[])
 			std::cout << "ERROR_PAGE : " << std::endl;
 			std::cout << "	CODE : " << a.getServers()[i].error_pages[l].first << std::endl;
 			std::cout << "	PAGE : " << a.getServers()[i].error_pages[l].second << std::endl;
-			std::cout << std::endl;
-		}
-		for (size_t d = 0; d < a.getServers()[i].access_log.size(); d++)
-		{
-			std::cout << "ACCES_LOG : " << std::endl;
-			std::cout << "	DOMAIN : " << a.getServers()[i].access_log[d].first << std::endl;
-			std::cout << "	MAIN : " << a.getServers()[i].access_log[d].second << std::endl;
 			std::cout << std::endl;
 		}
 		std::cout << "LOCATION : " << std::endl;

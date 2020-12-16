@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/15 15:25:12 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 16:12:52 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ static const char 		*serverProps_[] = { "listen",
 											"server_name",
 											"error_page",
 											"root",
-											"access_log",
 											"client_max_body_size",
 											0 };
 										
@@ -68,9 +67,9 @@ class Parsing
 {
 	public :
 		typedef std::string					stds;
-		typedef stds::iterator					iterator;
-		typedef std::pair<int, stds>           pi;
-		typedef std::pair<stds, stds>          ps;
+		typedef stds::iterator				iterator;
+		typedef std::pair<int, stds>        pi;
+		typedef std::pair<stds, stds>       ps;
 
 	struct location
 	{
@@ -86,14 +85,13 @@ class Parsing
 		size_t					client_max_body_size;
 	};
 
-	struct servers
+	struct server
 	{
 		std::vector<stds>		names;
 		stds					host;
 		stds					root;
 		std::vector<pi>			error_pages;
 		std::vector<location>	locations;
-		std::vector<ps>			access_log;
 		size_t					port;
 		size_t					client_max_body_size;
 	};
@@ -101,7 +99,7 @@ class Parsing
 
 private :
 	stds					file_;
-	std::vector<servers>	servers_;
+	std::vector<server>		servers_;
 
 	public :
 		Parsing();	
@@ -110,17 +108,17 @@ private :
 
 		void						parseConfig();
 		void						parseServer();
-		Parsing::servers			parseProps(iterator first, iterator end);
-		Parsing::servers			returnProps(Parsing::servers server, std::vector<stds> line);
+		Parsing::server				parseProps(iterator first, iterator end);
+		Parsing::server				returnProps(Parsing::server server, std::vector<stds> line);
 		Parsing::location			parseLocation(stds name, iterator first, iterator end);
 		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line);
-		Parsing::servers			getDefaultServer();
+		Parsing::server				getDefaultServer();
 		Parsing::location			getDefaultLocation();
 		bool                		compString(iterator *first, iterator end, stds src);
 		bool                		parseSemi(stds *src);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
-		std::vector<servers>		getServers() {	return (this->servers_); }
+		std::vector<server>			getServers() {	return (this->servers_); }
 	
 	class ParsingException : public std::exception
 	{

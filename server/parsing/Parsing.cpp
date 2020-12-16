@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/14 22:35:56 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 16:11:21 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ void				Parsing::parseConfig(void)
 	return;
 }
 
-Parsing::servers	Parsing::parseProps(iterator first, iterator end)
+Parsing::server	Parsing::parseProps(iterator first, iterator end)
 {
-	Parsing::servers	server = this->getDefaultServer();
+	Parsing::server	server = this->getDefaultServer();
 	std::vector<stds>	line;
 	stds				tmp;
 	iterator			next;
@@ -126,7 +126,7 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 	return location;
 }
 
-Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds> line)
+Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> line)
 {
 	if (line.size() <= 1)
 		throw (PpE(this->file_, stds("Expected at least 1 argument")));
@@ -152,13 +152,6 @@ Parsing::servers		Parsing::returnProps(Parsing::servers server, std::vector<stds
 			server.names.push_back(line[i + 1]);
 	else if (line[0] == "root")
 			server.root = line[1];
-	else if (line[0] == "access_log")
-	{
-		if (line.size() == 3)
-			server.access_log.push_back(ps(line[1], line[2]));
-		else
-			throw (PpE(this->file_, stds("access_log need at least 2 arguments")));
-	}
 	else if (line [0] == "client_max_body_size")
 		server.client_max_body_size = getMcbs(line[1]);
 	return server;
@@ -176,7 +169,9 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 	if (valid(line[0], locationProps_) == false)
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "root")
+	{
 		location.root = line[1];
+	}
 	else if (line[0] == "method")
 		for (size_t i = 0; i < line.size() - 1; i++)
 		{
@@ -262,9 +257,9 @@ stds				Parsing::getNextLine(iterator *first, iterator end)
 	return line;
 }
 
-Parsing::servers	Parsing::getDefaultServer()
+Parsing::server	Parsing::getDefaultServer()
 {
-	Parsing::servers server;
+	Parsing::server server;
 
 	server.port = 80;
 	server.host = "127.0.0.1";
