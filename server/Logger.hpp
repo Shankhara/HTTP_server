@@ -5,10 +5,11 @@
 #include <iostream>
 #include <sstream>
 #include <sys/time.h>
+#include <cstdlib>
 
 
 enum TLogLevel {
-	logDEBUG, logINFO, logWARNING, logERROR
+	logDEBUG, logINFO, logWARNING, logERROR, logFATAL
 };
 
 class Log
