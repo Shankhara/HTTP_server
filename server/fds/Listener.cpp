@@ -70,7 +70,7 @@ unsigned int Listener::getPort() const {
 	return port_;
 }
 
-void Listener::addServer(const Parsing::servers &s) {
+void Listener::addServer(const Parsing::server &s) {
 	in_addr_t  host = inet_addr(s.host.c_str());
 	if (host == INADDR_NONE)
 	{

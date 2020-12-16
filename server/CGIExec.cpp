@@ -96,9 +96,7 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	cmd[0] = const_cast<char *>(bin.c_str());
 	cmd[1] = const_cast<char *>(filename.c_str());
 	cmd[2] = 0;
-	int ret = execve(cmd[0], cmd, envs_);
-	freeEnvs_();
-	if (ret == -1)
+	if (execve(cmd[0], cmd, envs_) == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno);
 		write500();

@@ -11,7 +11,7 @@ void signalHandler(int) {
 	exit(0);
 }
 
-void addListener(const Parsing::servers &server)
+void addListener(const Parsing::server &server)
 {
 	Listener *l = new Listener();
 	l->addServer(server);

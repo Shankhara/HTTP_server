@@ -5,7 +5,7 @@ unsigned int CGIResponse::instances = 0;
 CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(false)
 {
 	fd_ = fd;
-	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_;
+	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_ << " From Client " << client_.getFd();
 	instances++;
 }
 
@@ -36,7 +36,7 @@ int CGIResponse::pipeToClient() {
 		if (send(client_.getFd(), buf, nbytes, 0) == -1)
 		{
 			Log().Get(logERROR) << "CGIResponse::send > FD " << fd_ << " SENT ERROR " << strerror(errno);
-			return 0;
+			return (-1);
 		}
 	}
 	return nbytes;

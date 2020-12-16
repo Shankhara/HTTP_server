@@ -11,13 +11,13 @@ class Listener: public FileDescriptor {
 private:
 	uint32_t						ip_;
 	unsigned int					port_;
-	std::vector<Parsing::servers>	servers_;
+	std::vector<Parsing::server>	servers_;
 
 public:
 	Listener();
 	virtual 	~Listener();
 	void		onEvent();
-	void 		addServer(const Parsing::servers &);
+	void 		addServer(const Parsing::server &);
 	void 		ListenAndServe();
 	uint16_t 	htons_(uint16_t hostshort);
 	void		onNewClient();
