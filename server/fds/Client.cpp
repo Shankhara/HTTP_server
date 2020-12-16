@@ -60,7 +60,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	if ((result = request_.appendRequest(buf, nbytes)) == 0)
 	{
 		CGIExec exec = CGIExec();
-		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/tmp", "/200.php", *this);
+		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/usr/local/wordpress", "/index.php", *this);
 		if (CGIResponse_ == 0)
 			Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN A 500 STATUS CODE";
 		Server::getInstance()->addFileDescriptor(CGIResponse_);

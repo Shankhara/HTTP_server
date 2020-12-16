@@ -39,7 +39,7 @@ fclean:	clean
 
 re:		fclean all
 
-run: all
+run: re
 	@./webserver
 	@rm -f ./webserver
 

@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signalHandler);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0)
 		Log::setLevel(logDEBUG);
-	Parsing p = Parsing("./parsing/test/nginx.conf");
+	Parsing p = Parsing("./parsing/test/wordpress.conf");
 	try {
 		p.parseConfig();
 	} catch (Parsing::ParsingException &e) {

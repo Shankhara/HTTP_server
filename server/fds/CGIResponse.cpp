@@ -1,11 +1,9 @@
 #include "CGIResponse.hpp"
 
-CGIResponse::CGIResponse(int fd, Client &client): client_(client)
+CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(false)
 {
 	fd_ = fd;
 	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_;
-	//TODO: be serious
-	write(client.getFd(),"HTTP/1.1 200 OK\r\n", 17);
 }
 
 CGIResponse::~CGIResponse()
@@ -25,6 +23,11 @@ int CGIResponse::pipeToClient() {
 
 	if ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
 	{
+		if (!httpStatus_)
+		{
+			parseCGIStatus(buf, nbytes);
+			httpStatus_ = true;
+		}
 		Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
 		if (send(client_.getFd(), buf, nbytes, 0) == -1)
 		{
@@ -35,14 +38,11 @@ int CGIResponse::pipeToClient() {
 	return nbytes;
 }
 
-void CGIResponse::onEvent() {
-	int status;
-	if ((status = pipeToClient()) <= 0)
-	{
-		if (status < 0)
-			Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
-		Server::getInstance()->deleteFileDescriptor(client_.getFd());
-	}
+void CGIResponse::onEvent()
+{
+	if (pipeToClient() < 0)
+		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
+	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
 
 pid_t CGIResponse::getPid() const {
@@ -51,4 +51,18 @@ pid_t CGIResponse::getPid() const {
 
 void CGIResponse::setPid(pid_t pid) {
 	pid_ = pid;
+}
+
+void CGIResponse::parseCGIStatus(char *buf, int nbytes) {
+	// TODO: dont use send?
+	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
+	{
+		send(client_.getFd(),"HTTP/1.1 500 Internal Server Error\r\n", 34, 0);
+		return ;
+	}
+	//TODO: check if its a valid HTTP code
+	std::string header = "HTTP/1.1 ";
+	header.append(buf + 8, 3);
+	header.append("\r\n");
+	send(client_.getFd(), header.c_str(),header.length(), 0);
 }

@@ -16,8 +16,10 @@ class Client;
 
 class CGIResponse: public FileDescriptor {
 private:
-	Client &client_;
-	pid_t  pid_;
+	Client 	&client_;
+	pid_t  	pid_;
+	bool 	httpStatus_;
+	void 	parseCGIStatus(char buf[], int);
 
 public:
 	CGIResponse(int, Client &);

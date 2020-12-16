@@ -48,6 +48,7 @@ private:
 	void 						dupSTDERR_();
 	void 						build_(Request &, const std::string &, const std::string &);
 	void						freeEnvs_();
+	void 						write500();
 
 public:
 	CGIExec();

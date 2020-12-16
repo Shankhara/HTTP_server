@@ -101,6 +101,7 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	if (ret == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno);
+		write500();
 	}
 }
 
@@ -110,17 +111,17 @@ void	CGIExec::pipeSTDOUT_(int pfd[2])
 	if (close(pfd[0]) == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
-		exit(EXIT_FAILURE);
+		write500();
 	}
 	if (dup2(pfd[1], STDOUT_FILENO) == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
-		exit(EXIT_FAILURE);
+		write500();
 	}
 	if (close(pfd[1]) == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
-		exit(EXIT_FAILURE);
+		write500();
 	}
 	stdoutFD_ = STDOUT_FILENO;
 }
@@ -152,5 +153,10 @@ void CGIExec::freeEnvs_()
 {
 	for (int i = 0; i < 18; i++)
 		free(envs_[i]);
+}
+
+void CGIExec::write500() {
+	write(STDOUT_FILENO, "Status: 500 Internal Server Error\r\n", 36);
+	exit(EXIT_FAILURE);
 }
 
