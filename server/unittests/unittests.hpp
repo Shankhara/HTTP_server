@@ -60,6 +60,17 @@ void sequencialReceive()
 	assertEqual(r.parse(), 0, "correct request sent, sequence reading");
 }
 
+void testConstructRequest()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	Request r;
+	std::string req("GET / HTTP/1.1\r\n\r\n");
+	r.appendRequest(const_cast<char *>(req.c_str()), 16);
+	assertEqual(r.parse(), 1, "Request not over");
+	r.appendRequest(const_cast<char *>(req.c_str()) + 16, 2);
+	assertEqual(r.parse(), 0, "Request over");
+}
+
 void receivedAtOnce()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -131,6 +142,7 @@ void testRequestParse()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
+	testConstructRequest();
 	sequencialReceive();
 	receivedAtOnce();
 	requestLine();
