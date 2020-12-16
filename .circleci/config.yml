@@ -3,11 +3,11 @@ version: 2
 jobs:
   build:
     docker:
-      - image: "debian:stretch"
+      - image: "ubuntu:18.04"
     steps:
       - checkout
       - run:
-          name: Installing GCC
+          name: Installing Build Tools
           command: 'apt-get update && apt-get install -y clang make'
       - run:
           name: Creating Build Files
