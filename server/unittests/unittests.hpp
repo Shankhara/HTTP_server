@@ -112,8 +112,19 @@ void receivedAtOnce()
 
 	r.reset();
 	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
-	r.parse();
-	//assertEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
+	assertEqual(r.parse(), 0, "get correct chunked body");
+
+	r.reset();
+	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad chunk size)");
+
+	r.reset();
+	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\n\r\n";
+	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad end)");
+
+	r.reset();
+	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
+	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad end 2)");
 }
 
 void testRequestParse()

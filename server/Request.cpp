@@ -102,41 +102,34 @@ int Request::checkVersion()
 	return (0);
 }
 
-void Request::replaceReturnCarriage(std::string & str)
-{
-	size_t pos = 1;
-
-	while (pos != std::string::npos)
-	{
-		pos = str.find('\r');
-		if (pos != std::string::npos)
-			str[pos] = '\n';
-	}
-}
-
 int Request::getChunkedBody()
 {
-	std::string hex_size, res;
-	size_t start = 0, end = 0, num_size = 0;
+	std::string hex_size, res, check;
+	size_t start = 0, end = 0, num_size = 0, total_size = 0;
 
-	while (start != std::string::npos)
+	while (start == 0 || request_[start] != '0')
 	{
-		if (request_[start] == '0')
-		{
-			end = request_.find("\r\n\r\n", start);
-			if (end != std::string::npos)
-				return (0);
-		}
 		end = request_.find("\r\n", start);
 		hex_size.assign(request_, start, end);
 		num_size = strHex_to_int(hex_size);
-	
-		start = request_.find_first_not_of("\r\n", end + 1);
+		if (num_size > 8000)
+			break;
+
+		start = end + 2;
+		if (request_[start + num_size] == '\n')
+			num_size++;
+
+		total_size += num_size;
 		res.append(request_, start, num_size);
 		start = request_.find_first_not_of("\r\n", start + num_size);
 	}
-	replaceReturnCarriage(res);
-	return (1);
+
+	check.append(request_, start);
+	if (check != "0\r\n\r\n")
+		return (1);
+
+	msgBody_ = res;
+	return (0);
 }
 
 int Request::getBody()
@@ -148,7 +141,7 @@ int Request::getBody()
 		{
 			if (getChunkedBody())
 			{
-				statusCode_ = 501;
+				statusCode_ = 400;
 				return (BADBODY);
 			}
 			body_parsed = 0;
