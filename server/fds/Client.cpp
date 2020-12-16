@@ -69,13 +69,13 @@ void Client::constructRequest(char buf[], int nbytes) {
 		CGIExec exec = CGIExec();
 		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/usr/local/wordpress", "/index.php", *this);
 		if (CGIResponse_ == 0)
-			Log().Get(logERROR) << __FUNCTION__  << "WE SHOULD RETURN A 500 STATUS CODE";
+			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}else{
-		Log().Get(logERROR) << __FUNCTION__  << " TCP RST, We should send a 400 Response instead. Parse Error code: " << result << " REQ BODY: " << request_.request_;
+		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << result << " REQ BODY: " << request_.request_;
+		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
-	//TODO: delete client
 }
 
 std::string &Client::getResponse()
