@@ -55,7 +55,7 @@ void Client::setAddr(struct sockaddr_storage addr) {
 }
 
 void Client::constructRequest(char buf[], int nbytes) {
-	int result;
+	int status;
 
 	if (CGIResponse::instances > MAX_CGI_FORKS)
 	{
@@ -64,17 +64,24 @@ void Client::constructRequest(char buf[], int nbytes) {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
-	if ((result = request_.appendRequest(buf, nbytes)) == 0)
+	request_.appendRequest(buf, nbytes);
+	status = request_.getStatusCode();
+	if (status == 100)
+		return ;
+	else if (status == 200)
 	{
-		if (CGIResponse_ != 0)
-			Log().Get(logFATAL) << " parse returned "<<  result << " but CGIResponse was already set: " << request_.request_;
+		if (CGIResponse_ != 0) {
+			Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
+								<< request_.request_;
+			return ;
+		}
 		CGIExec exec = CGIExec();
 		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/usr/local/wordpress", "/index.php", *this);
 		if (CGIResponse_ == 0)
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}else{
-		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << result << " REQ BODY: " << request_.request_;
+		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " << request_.request_;
 		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
