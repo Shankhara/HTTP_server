@@ -1,0 +1,20 @@
+language: cpp
+
+compiler:
+  - clang++
+
+before_install:
+  - sudo apt-get -y install valgrind
+
+script:
+  - cd server
+  - make
+
+notifications:
+  email:
+    recipients:
+      - terrail@42.student.fr
+      - racohen@42.student.fr
+      - cbouleng@42.student.fr
+    on_success: never
+    on_failure: always
