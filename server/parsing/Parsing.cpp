@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 16:29:29 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 16:56:50 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,17 +128,28 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 
 Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> line)
 {
+	stds	listen;
+	size_t	pos;
+
 	if (line.size() <= 1)
 		throw (PpE(this->file_, stds("Expected at least 1 argument")));
 	if (valid(line[0], serverProps_) == false)
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "listen")
 	{
-		if (to_int(line[1].c_str(), line[1].size()) == 0)
-			throw (PpE(this->file_, stds("Port can't be 0")));
-		server.port = to_int(line[1].c_str(), line[1].size());
-		if (line.size() == 3)
-			server.host = line[2];
+		pos = line[1].find(stds(":"));
+		if (pos != stds::npos)
+		{
+			listen = line[1].substr(pos + 1, line[1].size());		
+			if (to_int(listen.c_str(), listen.size()) == 0)
+				throw (PpE(this->file_, stds("Port can't be 0")));
+			server.port = to_int(listen.c_str(), listen.size());
+		}
+		server.host = line[1].substr(0, pos);
+		if (server.host == stds("*"))
+			server.host = stds("0.0.0.0");
+		if (server.host.size() < 6)	
+			throw (PpE(this->file_, stds("invalid host")));
 	}
 	else if (line[0] == "error_page")
 	{
