@@ -66,9 +66,11 @@ void testConstructRequest()
 	Request r;
 	std::string req("GET / HTTP/1.1\r\n\r\n");
 	r.appendRequest(const_cast<char *>(req.c_str()), 16);
-	assertEqual(r.parse(), 1, "Request not over");
+	r.parse();
+	assertEqual(r.getStatusCode(), 100, "Request not over");
 	r.appendRequest(const_cast<char *>(req.c_str()) + 16, 2);
-	assertEqual(r.parse(), 0, "Request over");
+	r.parse();
+	assertEqual(r.getStatusCode(), 200, "Request over");
 }
 
 void receivedAtOnce()

@@ -310,8 +310,12 @@ int Request::parse()
 			return (ret);
 
 	if (headers_parsed)
-		ret = parseHeadersContent();
-
+	{
+		if (parseHeadersContent())
+			return (ret);
+		else
+			statusCode_ = 200;
+	}
 	return (ret);
 }
 
@@ -320,6 +324,9 @@ int Request::appendRequest(char buf[256], int nbytes)
 	request_.append(buf, nbytes);
 	return (parse());
 }
+
+int Request::getStatusCode() const
+{ return (statusCode_); }
 
 std::string Request::getMethod() const
 { return (requestLine_[METHOD]); }
