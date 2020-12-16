@@ -232,9 +232,10 @@ int Request::parseHeadersContent()
 		headerAcceptLanguage_ = explode(headersRaw_[ACCEPT_LANGUAGE], ',');
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
-		if (!(headerAuth_ = decode_authorization()))
+		headerAuth_ = decode_authorization();
+		if (headerAuth_.empty())
 		{
-			statusCode = 401;
+			statusCode_ = 401;
 			return (1);
 		}
 	}
@@ -254,6 +255,7 @@ int Request::parseHeadersContent()
 		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
+	return 0;
 }
 
 int Request::parseRequestLine()
