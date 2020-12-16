@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 16:11:21 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 16:29:29 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,11 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	else if (line[0] == "root")
-			server.root = line[1];
+	{
+		if (line[1][0] != '/')
+			throw (PpE(this->file_, stds("root need absolute path")));
+		server.root = line[1];
+	}
 	else if (line [0] == "client_max_body_size")
 		server.client_max_body_size = getMcbs(line[1]);
 	return server;
@@ -170,6 +174,8 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "root")
 	{
+		if (line[1][0] != '/')
+			throw (PpE(this->file_, stds("root need absolute path")));
 		location.root = line[1];
 	}
 	else if (line[0] == "method")
