@@ -76,7 +76,6 @@ class Request
 	void replaceReturnCarriage(std::string & str);
 
 	std::vector<std::string> workLine(std::string &, const char &);
-	std::string decodeBase64(std::string &);
 	std::string decode_authorization();
 
 	int getStatusCode() const;

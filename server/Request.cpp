@@ -60,7 +60,7 @@ std::string Request::decode_authorization()
 
 	tmp = explode(headersRaw_[AUTHORIZATION], ' ');
 	if (tmp[0] == "Basic")
-		res = decodeBase64(tmp[1]);
+		res = decode64(tmp[1]);
 	return (res);
 }
 
@@ -319,34 +319,6 @@ int Request::appendRequest(char buf[256], int nbytes)
 {
 	request_.append(buf, nbytes);
 	return (parse());
-}
-
-std::string Request::decodeBase64(std::string & str)
-{
-	int val = 0;
-	int valb = -8;
-	unsigned char c;
-	std::string res;
-	std::vector<int> tab(256, -1);
-	std::string::iterator it = str.begin();
-
-	for (int i = 0; i < 64; i++)
-		tab["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i; 
-	while (it != str.end())
-	{
-		c = *it;
-		if (tab[c] == -1)
-			break;
-		val = (val << 6) + tab[c];
-		valb += 6;
-		if (valb >= 0)
-		{
-			res.push_back(char((val >> valb) & 0xFF));
-			valb -= 8;
-		}
-		it++;
-	}
-	return res;
 }
 
 std::string Request::getMethod() const
