@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 16:56:50 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/16 17:03:05 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,10 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 				throw (PpE(this->file_, stds("Port can't be 0")));
 			server.port = to_int(listen.c_str(), listen.size());
 		}
-		server.host = line[1].substr(0, pos);
+		if (pos != stds::npos)
+			server.host = line[1].substr(0, pos);
+		else
+			server.host = line[1];
 		if (server.host == stds("*"))
 			server.host = stds("0.0.0.0");
 		if (server.host.size() < 6)	
