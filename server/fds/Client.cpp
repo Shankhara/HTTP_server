@@ -57,6 +57,13 @@ void Client::setAddr(struct sockaddr_storage addr) {
 void Client::constructRequest(char buf[], int nbytes) {
 	int result;
 
+	if (CGIResponse::instances > MAX_CGI_FORKS)
+	{
+		Log().Get(logERROR) << __FUNCTION__  << "Too many CGIRunning, bounce this client: " << fd_;
+		send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
+		Server::getInstance()->deleteFileDescriptor(fd_);
+		return ;
+	}
 	if ((result = request_.appendRequest(buf, nbytes)) == 0)
 	{
 		CGIExec exec = CGIExec();

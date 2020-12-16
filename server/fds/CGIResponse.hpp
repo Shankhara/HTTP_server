@@ -16,12 +16,13 @@ class Client;
 
 class CGIResponse: public FileDescriptor {
 private:
-	Client 	&client_;
-	pid_t  	pid_;
-	bool 	httpStatus_;
-	void 	parseCGIStatus(char buf[], int);
+	Client 				&client_;
+	pid_t  				pid_;
+	bool 				httpStatus_;
+	void 				parseCGIStatus(char buf[], int);
 
 public:
+	static unsigned int instances;
 	CGIResponse(int, Client &);
 	virtual		~CGIResponse();
 	void		onEvent();

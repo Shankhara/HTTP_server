@@ -14,6 +14,8 @@
 #include "../CGIExec.hpp"
 #include "../parsing/Parsing.hpp"
 
+#define MAX_CGI_FORKS 20
+
 
 class Client: public FileDescriptor {
 

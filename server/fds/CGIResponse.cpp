@@ -1,9 +1,12 @@
 #include "CGIResponse.hpp"
 
+unsigned int CGIResponse::instances = 0;
+
 CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(false)
 {
 	fd_ = fd;
 	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_;
+	instances++;
 }
 
 CGIResponse::~CGIResponse()
@@ -15,6 +18,7 @@ CGIResponse::~CGIResponse()
 		kill(pid_, 9);
 	close(fd_);
 	Log().Get(logDEBUG) << "CGIResponse deleted " << fd_;
+	instances--;
 }
 
 int CGIResponse::pipeToClient() {
