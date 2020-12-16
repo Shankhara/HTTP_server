@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <errno.h>
-#include <unistd.h>
 #include <cstring>
 #include <sys/socket.h>
 #include "../Logger.hpp"

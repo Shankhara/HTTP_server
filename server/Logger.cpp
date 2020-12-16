@@ -15,6 +15,7 @@ static std::string timeStamp() {
 
 static std::string printCurrentLevel(TLogLevel level) {
 	switch (level) {
+		case logFATAL: return "FATAL";
 		case logERROR: return "ERROR";
 		case logWARNING: return "WARN";
 		case logINFO: return "INFO";
@@ -35,6 +36,8 @@ Log::~Log()
 	os << std::endl;
 	if (messageLevel_ >= level_)
 		std::cerr << os.str().c_str();
+	if (messageLevel_ == logFATAL)
+		exit(255);
 }
 
 Log::Log() {

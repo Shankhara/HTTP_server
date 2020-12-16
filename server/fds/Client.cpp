@@ -67,10 +67,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	if ((result = request_.appendRequest(buf, nbytes)) == 0)
 	{
 		if (CGIResponse_ != 0)
-		{
-			Log().Get(logERROR) << "parse returned "<<  result << " but CGIResponse was already set: " << request_.request_;
-			exit(EXIT_FAILURE);
-		}
+			Log().Get(logFATAL) << " parse returned "<<  result << " but CGIResponse was already set: " << request_.request_;
 		CGIExec exec = CGIExec();
 		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/usr/local/wordpress", "/index.php", *this);
 		if (CGIResponse_ == 0)
