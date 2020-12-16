@@ -219,7 +219,7 @@ int Request::parseHeaders()
 	return (BADHEADER);
 }
 
-void Request::parseHeadersContent()
+int Request::parseHeadersContent()
 {
 	//GENERAL HEADERS
 	if (!headersRaw_[DATE].empty())
@@ -231,7 +231,13 @@ void Request::parseHeadersContent()
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
 		headerAcceptLanguage_ = explode(headersRaw_[ACCEPT_LANGUAGE], ',');
 	if (!headersRaw_[AUTHORIZATION].empty())
-		headerAuth_ = decode_authorization();
+	{
+		if (!(headerAuth_ = decode_authorization()))
+		{
+			statusCode = 401;
+			return (1);
+		}
+	}
 	if (!headersRaw_[HOST].empty())
 		headerHost_ = headersRaw_[HOST];
 	if (!headersRaw_[REFERER].empty())
@@ -302,7 +308,7 @@ int Request::parse()
 			return (ret);
 
 	if (headers_parsed)
-		parseHeadersContent();
+		ret = parseHeadersContent();
 
 	return (ret);
 }

@@ -70,7 +70,7 @@ class Request
 	int checkHeadersEnd();
 	int getBody();
 	int getChunkedBody();
-	void parseHeadersContent();
+	int parseHeadersContent();
 	void parseQueryString();
 	void reset();
 	void replaceReturnCarriage(std::string & str);
