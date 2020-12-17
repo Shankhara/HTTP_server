@@ -6,6 +6,14 @@
 
 char ft_tolower(char i) { return std::tolower(i); }
 
+bool boolFind(std::string const & haystack, std::string const & needle)
+{
+	size_t ret = haystack.find(needle);
+	if (ret != std::string::npos)
+		return (1);
+	return (0);
+}
+
 std::string decode64(std::string const &str)
 {
 	size_t len = str.size(), index, ret;
