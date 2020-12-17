@@ -48,8 +48,8 @@ void Client::constructRequest(char buf[], int nbytes) {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
-	request_.appendRequest(buf, nbytes);
-	status = request_.getStatusCode();
+	status = request_.doRequest(buf, nbytes);
+	Log().Get(logDEBUG) << __FUNCTION__ << fd_ << "parsing status " << status;
 	if (status == 100)
 		return ;
 	else if (status == 200)
@@ -65,12 +65,11 @@ void Client::constructRequest(char buf[], int nbytes) {
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}
-	// Waiting for issue #17
-	/*else{
+	else{
 		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " << request_.request_;
 		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
-	}*/
+	}
 }
 
 std::string &Client::getResponse()
