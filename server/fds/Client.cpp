@@ -78,8 +78,8 @@ std::string &Client::getResponse()
 	return response_;
 }
 
-void Client::appendResponse(char buf[], int nbytes) { // C'est la class Response qui va renvoyer la reponse prete.
-	response_.append(buf, nbytes);					 // On y accedera comme ca : response.getResponseMsg();
+void Client::appendResponse(char buf[], int nbytes) { 
+	response_.append(buf, nbytes);					 
 }
 
 Request &Client::getRequest(){

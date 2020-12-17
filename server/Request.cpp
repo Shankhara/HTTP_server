@@ -25,7 +25,7 @@ Request::Request()
 
 Request::~Request() { }
 
-void Request::reset()
+void Request::clear()
 {
 	requestLine_parsed = false;
 	headers_parsed = false;
@@ -112,7 +112,7 @@ int Request::getChunkedBody()
 		end = request_.find("\r\n", start);
 		hex_size.assign(request_, start, end);
 		num_size = strHex_to_int(hex_size);
-		if (num_size > 8000)
+		if (num_size > MAX_SIZE)
 			break;
 
 		start = end + 2;
@@ -134,34 +134,35 @@ int Request::getChunkedBody()
 
 int Request::getBody()
 {
-	if (request_.size() > 0)
+	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 	{
-		size_t pos = headersRaw_[TRANSFER_ENCODING].find("chunked");
-		if (pos != std::string::npos)
+		statusCode_ = 411;
+		return (BADBODY);
+	}
+
+	size_t pos = headersRaw_[TRANSFER_ENCODING].find("chunked");
+	if (pos != std::string::npos)
+	{
+		if (getChunkedBody())
 		{
-			if (getChunkedBody())
-			{
-				statusCode_ = 400;
-				return (BADBODY);
-			}
-			body_parsed = 0;
-			return (0);
-		}
-		if (headersRaw_[CONTENT_LENGTH].empty())
-		{
-			statusCode_ = 411;
+			statusCode_ = 400;
 			return (BADBODY);
 		}
-
-		msgBody_ = request_;
-		size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
-		
-		if (msgBody_.size() == len)
-		{
-			body_parsed = 0;
-			return (0);
-		}
+		body_parsed = true;
+		statusCode_ = 200;
+		return (0);
 	}
+
+	msgBody_ = request_;
+	size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
+	
+	if (msgBody_.size() == len)
+	{
+		body_parsed = true;
+		statusCode_ = 200;
+		return (0);
+	}
+
 	return (BADBODY);	
 }
 
@@ -183,9 +184,8 @@ int Request::parseHeaders()
 	int dist, ret;
 	std::string line;
 	std::vector<std::string> headerLine;
-	std::vector<std::string>::iterator it = headersName.begin();
+	std::vector<std::string>::iterator itx, it = headersName.begin();
 	std::vector<std::string>::iterator ite = headersName.end();
-	std::vector<std::string>::iterator itx;
 	
 	while ((ret = getNextLine(request_, line)) > -1)
 	{
@@ -194,7 +194,7 @@ int Request::parseHeaders()
 		{
 			if (line == "\r")
 			{
-				headers_parsed = 1;
+				headers_parsed = true;
 				return (0);
 			}
 			break;
@@ -209,7 +209,7 @@ int Request::parseHeaders()
 		{
 			dist = std::distance(it, itx);
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
-			if (headerLine[HEADERCONTENT].size() > 8000)//get larger_client_header_buffers)
+			if (headerLine[HEADERCONTENT].size() > MAX_SIZE)
 			{
 				statusCode_ = 414;
 				break;
@@ -255,7 +255,13 @@ int Request::parseHeadersContent()
 		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
-	return 0;
+
+	//RESPONSE HEADERS
+//	LAST_MODIFIED, LOCATION RETRY_AFTER, SERVER, USER_AGENT, WWW_AUTHENTICATE
+	if (!headersRaw_[TRANSFER_ENCODING].empty())
+		headerTransferEncoding_ = headersRaw_[TRANSFER_ENCODING];
+
+	return (0);
 }
 
 int Request::parseRequestLine()
@@ -275,7 +281,7 @@ int Request::parseRequestLine()
 		statusCode_ = 501;
 	    return (BADMETHOD);
 	}
-	if (requestLine_.size() > 8000)//get larger_client_header_buffers)
+	if (requestLine_.size() > MAX_SIZE)
 	{
 		statusCode_ = 414;
 		return (BADREQUEST);
@@ -285,7 +291,7 @@ int Request::parseRequestLine()
 		statusCode_ = 505;
 		return (BADVERSION);
 	}
-	requestLine_parsed = 1;
+	requestLine_parsed = true;
 	return (0);
 }
 
@@ -293,7 +299,7 @@ int Request::parse()
 {
 	int ret = 0;
 
-    if (request_.size() && !requestLine_parsed)
+    if (!requestLine_parsed && boolFind(request_, "\r\n"))
 	{
 		if ((ret = parseRequestLine()))
 			return (ret);
@@ -301,20 +307,26 @@ int Request::parse()
 			parseQueryString();
 	}
 	
-	if (request_.size() && !headers_parsed)
+	if (requestLine_parsed && !headers_parsed && boolFind(keptLine_, "\r\n\r\n"))
+	{
+		if (request_ == "\r\n")
+		{
+			statusCode_ = 200;
+			return (0);
+		}
+
 		if ((ret = parseHeaders()))
 			return (ret);
 
-	if (request_.size() && !body_parsed)
+		if (headers_parsed)
+			if (parseHeadersContent())
+				return (ret);
+	}
+
+	if (requestLine_parsed && headers_parsed && !body_parsed)
+	{
 		if ((ret = getBody()))
 			return (ret);
-
-	if (headers_parsed)
-	{
-		if (parseHeadersContent())
-			return (ret);
-		else
-			statusCode_ = 200;
 	}
 	return (ret);
 }
@@ -323,6 +335,17 @@ int Request::appendRequest(char buf[256], int nbytes)
 {
 	request_.append(buf, nbytes);
 	return (parse());
+}
+
+int Request::doRequest(char buf[256], size_t nbytes)
+{
+	keptLine_.append(buf, nbytes);
+
+	request_.append(buf, nbytes);
+
+	parse();
+
+	return (statusCode_);
 }
 
 int Request::getStatusCode() const

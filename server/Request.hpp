@@ -8,7 +8,7 @@
 #include <sstream>
 #include <stdio.h>
 
-#define CRLF "\r\n"
+#define MAX_SIZE 8192
 
 #define BADREQUEST 1
 #define BADMETHOD 2
@@ -34,6 +34,7 @@ class Request
 	std::string headerReferer_;
 	std::string headerContentLength_;
 	std::string headerContentLocation_;
+	std::string headerTransferEncoding_;
 	
 	std::vector<std::string> headerAcceptCharset_;
 	std::vector<std::string> headerAcceptLanguage_;
@@ -46,6 +47,7 @@ class Request
 	~Request();
 	
 	std::string request_;
+	std::string keptLine_;
 	bool requestLine_parsed;
 	bool headers_parsed;
 	bool body_parsed;
@@ -62,6 +64,7 @@ class Request
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
 	int appendRequest(char [256], int);
+	int doRequest(char[256], size_t);
 	int parse();
 	int parseRequestLine();
 	int parseHeaders();
@@ -72,7 +75,7 @@ class Request
 	int getChunkedBody();
 	int parseHeadersContent();
 	void parseQueryString();
-	void reset();
+	void clear();
 	void replaceReturnCarriage(std::string & str);
 
 	std::vector<std::string> workLine(std::string &, const char &);
