@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 17:03:05 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/17 17:59:16 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -249,6 +249,8 @@ bool				Parsing::parseSemi(stds *src)
 		char_++;
 		first++;	
 	}
+	if (seen == false)
+		return (false);
 	first = src->begin();
 	while (first != end)
 	{
