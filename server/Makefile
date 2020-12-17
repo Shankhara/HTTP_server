@@ -1,4 +1,4 @@
-NAME	= webserver
+NAME	= webserv
 SRCS	= main.cpp
 SRCS	+= Server.cpp
 SRCS	+= Logger.cpp
@@ -40,20 +40,20 @@ fclean:	clean
 re:		fclean all
 
 run: re
-	@./webserver
-	@rm -f ./webserver
+	@./webserv
+	@rm -f ./webserv
 
 leaks: re
-	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserver -v
-	@rm -f ./webserver
+	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserv -v
+	@rm -f ./webserv
 
 tests:
 	@make -C ./unittests/
 	@./unittests/unittests
 
 verbose: re
-	@ ./webserver -v
-	@rm -f ./webserver
+	@ ./webserv -v
+	@rm -f ./webserv
 	
 
 

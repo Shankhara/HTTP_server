@@ -32,22 +32,6 @@ void Client::onEvent()
 
 void Client::sendResponse() const
 {
-	const char* responsePtr = response_.data();
-	std::size_t responseSize = response_.size();
-	int nbytes;
-
-	while (responseSize > 0)
-	{
-		nbytes = send(fd_, responsePtr, responseSize, 0);
-		if (nbytes == -1)
-		{
-			Log().Get(logERROR) << __FUNCTION__ << " Unable to send response " << strerror(errno);
-			break ;
-		}
-		Log().Get(logDEBUG) << __FUNCTION__  << ">  Client" << fd_ << " -> sent NBYTES: " << nbytes;
-		responsePtr += nbytes;
-		responseSize -= nbytes;
-	}
 }
 
 void Client::setAddr(struct sockaddr_storage addr) {
