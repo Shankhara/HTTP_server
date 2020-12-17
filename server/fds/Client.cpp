@@ -76,15 +76,17 @@ void Client::constructRequest(char buf[], int nbytes) {
 			return ;
 		}
 		CGIExec exec = CGIExec();
-		CGIResponse_ = exec.run("/usr/bin/php-cgi", "/usr/local/wordpress", "/index.php", *this);
+		CGIResponse_ = exec.run("/usr/bin/php-cgi", server_.root, "/index.php", *this);
 		if (CGIResponse_ == 0)
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
-	}else{
+	}
+	// Waiting for issue #17
+	/*else{
 		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " << request_.request_;
 		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
-	}
+	}*/
 }
 
 std::string &Client::getResponse()

@@ -72,7 +72,7 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 	{
 		if (chdir(workingDir.c_str()) == -1)
 		{
-			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno);
+			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << workingDir;
 			exit(EXIT_FAILURE);
 		}
 		pipeSTDOUT_(pfd);
