@@ -38,6 +38,9 @@ void Listener::ListenAndServe() {
 		delete Server::getInstance();
 		exit(EXIT_FAILURE);
 	}
+	int enable = 1;
+	if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+		Log().Get(logERROR) << __FUNCTION__  << " setsockopt failed" << strerror(errno);
 	memset(&server, 0, sizeof(sockaddr_in));
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = ip_;
