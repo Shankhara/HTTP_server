@@ -2,7 +2,7 @@
 
 int main()
 {
-	testRequestParse();
+	testRequest();
 //	testResponseBuild();
 	return 0;
 }
