@@ -56,6 +56,7 @@ void Listener::ListenAndServe() {
 		delete Server::getInstance();
 		exit(EXIT_FAILURE) ;
 	}
+	Log().Get(logINFO) << " listening on port " << port_ << " (maxconn: " << FD_SETSIZE << ")";
 }
 
 uint16_t Listener::htons_(uint16_t hostshort)

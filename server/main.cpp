@@ -11,7 +11,7 @@ void signalHandler(int) {
 	exit(0);
 }
 
-void addListener(const Parsing::server &server, std::vector<Listener*> listeners)
+void addListener(const Parsing::server &server, std::vector<Listener*> &listeners)
 {
 	for (unsigned long i = 0; i < listeners.size(); i++)
 	{
@@ -23,7 +23,7 @@ void addListener(const Parsing::server &server, std::vector<Listener*> listeners
 	listeners.push_back(l);
 }
 
-void startListeners(const std::vector<Listener*> listeners)
+void startListeners(const std::vector<Listener*> &listeners)
 {
 	for (unsigned long i = 0; i < listeners.size(); i++)
 	{
