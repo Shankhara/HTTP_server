@@ -2,6 +2,7 @@
 
 Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s) {
 	CGIResponse_ = 0;
+	location_ = 0;
 	fd_ = fd;
 	Log().Get(logDEBUG) << "Creating Client: " << fd_;
 }
@@ -81,6 +82,42 @@ Request &Client::getRequest(){
 	return request_;
 }
 
-std::vector<Parsing::server> &Client::getServers() const {
-	return servers_;
+Parsing::server 	&Client::matchServer_()
+{
+	for (unsigned long i = 0; i < servers_.size(); i++)
+	{
+		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
+		{
+			if (servers_[i].names[k].compare(request_.getHeaderHost()) == 0)
+			{
+				return (servers_[i]);
+			}
+		}
+	}
+	return (servers_[0]);
+}
+
+void	Client::matchLocation_()
+{
+	Parsing::server &server = matchServer_();
+	for (unsigned long j = 0; j < server.locations.size(); j++)
+	{
+		if (server.locations[j].name.compare(request_.getReqTarget()))
+		{
+			location_ = &server.locations[j];
+			return ;
+		}
+	}
+}
+
+bool 	Client::isAuthorized_()
+{
+	for (unsigned long i = 0; i < location_->methods.size(); i++)
+	{
+		if (location_->methods[i].compare(request_.getMethod()))
+		{
+			return true;
+		}
+	}
+	return false;
 }
