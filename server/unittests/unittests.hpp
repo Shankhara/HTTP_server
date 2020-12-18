@@ -14,29 +14,70 @@
 #define BADHEADER 5
 #define BADBODY 6
 
-void requestLine()
+void badRequestLine()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	
-	Request r;
-	r.request_ = "GET /qwe HTTP/1.1\r\n";
-	assertEqual(r.parse(), 0, "correct line");
+	Request a;
+	std::string str = "GET /qwe HTTP/1.1\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 100, "not double CRLF ended");
 
-	r.clear();
-	r.request_ = "GETGET /qwe HTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), BADMETHOD, "method written twice");
+	Request b;
+	str = "GETGET /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(b.doRequest(const_cast<char*>(str.c_str()), str.size()), 501, "bad method");
 	
-	r.clear();
-	r.request_ = "GET GET /qwe HTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), BADREQUEST, "4 spaces");
+	Request c;
+	str = "GET GET /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(c.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "4 elements");
 
-	r.clear();
-	r.request_ = "GET /qweHTTP/1.1\r\n\r\n";
-	assertEqual(r.parse(), BADREQUEST, "only one space");
+	Request d;
+	str = "GET /qweHTTP/1.1\r\n\r\n";
+	assertEqual(d.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "1 element");
 
-	r.clear();
-	r.request_ = "GET /qwe HTTP1.1\r\n\r\n";
-	assertEqual(r.parse(), BADVERSION, "version badly written");
+	Request e;
+	str = "GET /qwe HTTP1.1\r\n\r\n";
+	assertEqual(e.doRequest(const_cast<char*>(str.c_str()), str.size()), 505, "bad version");
+}
+
+void correctRequestLine()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	
+	Request a;
+	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "double CRLF ending requestline");
+
+	Request b;
+	str = "CONNECT /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(b.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request c;
+	str = "DELETE /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(c.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request d;
+	str = "HEAD /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(d.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request e;
+	str = "OPTIONS /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(e.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request f;
+	str = "PATCH /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(f.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request g;
+	str = "POST /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(g.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request h;
+	str = "PUT /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(h.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
+
+	Request i;
+	str = "TRACE /qwe HTTP/1.1\r\n\r\n";
+	assertEqual(i.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "testing all methods");
 }
 
 void correctSequencialReceive(size_t len)
@@ -51,11 +92,11 @@ void correctSequencialReceive(size_t len)
 	{
   		r.doRequest(const_cast<char*>(str.c_str()) + start, len);
 		start += len;
-  		assertEqual(r.getStatusCode(), 100, "#1 check status code while receiving");
+  		assertEqual(r.getStatusCode(), 100, "status code while receiving");
 	}
 	len = str.size() - start;
   	r.doRequest(const_cast<char*>(str.c_str()) + start, len);
-	assertEqual(r.getStatusCode(), 200, "check status code at end");
+	assertEqual(r.getStatusCode(), 200, "status code at end");
 }
 
 void testConstructRequest()
@@ -72,6 +113,94 @@ void testConstructRequest()
 	assertEqual(ret, 200, "Request over");
 }
 
+void correctHeaders()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+  	Request a;
+	int ret;
+	std::string str = "GET /qwe HTTP/1.1\r\naccept-charsets: utf-8, iso-8859-1;q=0.5\r\n\r\n";
+	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "accept-charsets");
+
+  	Request b;
+	str = "GET /qwe HTTP/1.1\r\naccept-language: en-US,en;q=0.5\r\n\r\n";
+	ret = b.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "accept-language");
+
+  	Request c;
+	str = "GET /qwe HTTP/1.1\r\nallow: GET, POST, HEAD\r\n\r\n";
+	ret = c.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "allow");
+
+  	Request d;
+	str = "GET /qwe HTTP/1.1\r\nauthorization:Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
+	ret = d.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "auth");
+
+  	Request e;
+	str = "GET /qwe HTTP/1.1\r\ncontent-language:de-DE, en-CA\r\n\r\n";
+	ret = e.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "content-language");
+
+  	Request f;
+	str = "GET /qwe HTTP/1.1\r\ncontent-location:/my-first-blog-post\r\n\r\n";
+	ret = f.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "content-location");
+
+  	Request g;
+	str = "GET /qwe HTTP/1.1\r\ncontent-type:/text/html; charset=UTF-8\r\n\r\n";
+	ret = g.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "content-type");
+
+  	Request h;
+	str = "GET /qwe HTTP/1.1\r\ndate:Wed, 21 Oct 2015 07:28:00 GMT\r\n\r\n";
+	ret = h.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "date");
+
+  	Request i;
+	str = "GET /qwe HTTP/1.1\r\nhost:developer.cdn.mozilla.net\r\n\r\n";
+	ret = i.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "host");
+
+  	Request j;
+	str = "GET /qwe HTTP/1.1\r\nlast-modified:Wed, 21 Oct 2015 07:28:00 GMT\r\n\r\n";
+	ret = j.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "last-modified");
+
+  	Request k;
+	str = "GET /qwe HTTP/1.1\r\nlocation:/index.html\r\n\r\n";
+	ret = k.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "location");
+
+  	Request l;
+	str = "GET /qwe HTTP/1.1\r\nreferer:https://developer.mozilla.org/en-US/docs/Web/JavaScript\r\n\r\n";
+	ret = l.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "referer");
+
+  	Request m;
+	str = "GET /qwe HTTP/1.1\r\nuser-agent:Mozilla/5.0\r\n\r\n";
+	ret = m.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "user-agent");
+
+  	Request n;
+	str = "GET /qwe HTTP/1.1\r\ncontent-length:1\r\n\r\na";
+	ret = n.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "content-length");
+}
+
+void badHeaders()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+  	Request r;
+	int ret;
+	std::string str = "GET /qwe HTTP/1.1\r\nReferer: 2\r\nContent-length: 3\r\n\r\n";
+	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 100, "no body despite content-length header");
+	//TODO: manage this error
+}
+
 void receivedAtOnce()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -80,63 +209,64 @@ void receivedAtOnce()
 	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
 	assertEqual(r.parse(), 0, "correct request");
 
-	r.clear();
 	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage";
 	assertEqual(r.parse(), BADBODY, "wrong content-length header");
 
-	r.clear();
 	r.request_ = "GET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
 	assertEqual(r.parse(), BADBODY, "no content-length header");
 
-	r.clear();
 	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
 	assertEqual(r.parse(), BADHEADER, "2 correct request line");
 
-	r.clear();
 	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
 	assertEqual(r.parse(), BADMETHOD, "lowercase method");
 
-	r.clear();
 	r.request_ = "GET /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
 	assertEqual(r.parse(), BADVERSION, "lowercase version");
 
-	r.clear();
 	r.request_ = "GET /qwe HTTP/1.1\r\n\r\nmessage";
 	assertEqual(r.parse(), BADBODY, "1 body no headers");
 
-	r.clear();
 	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	assertEqual(r.parse(), BADHEADER, "no newline bet headers and body");
 
-	r.clear();
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
 	r.parse();
 	assertEqual(r.queryString_parsed, true, "parsing query_string");
 
-	r.clear();
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\n";
 	assertEqual(r.parse(), BADHEADER, "no newline after headers with no body");
 
-	r.clear();
 	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
 	r.parse();
 	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
+}
 
-	r.clear();
-	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
-	assertEqual(r.parse(), 0, "get correct chunked body");
 
-	r.clear();
-	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\r\n\r\n";
-	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad chunk size)");
+void correctChunkedBody()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-	r.clear();
-	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\n\r\n";
-	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad end)");
+  	Request a;
+	std::string str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "2 chunks with newline");
+}
 
-	r.clear();
-	r.request_ = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
-	assertEqual(r.parse(), BADBODY, "get bad chunked body (bad end 2)");
+void badChunkedBody()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+  	Request a;
+	std::string str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad chunk size");
+
+  	Request b;
+	str= "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n0\n\r\n";
+	assertEqual(b.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad end");
+
+  	Request c;
+	str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
+	assertEqual(c.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad end 2");
 }
 
 void testRequestParse()
@@ -144,29 +274,12 @@ void testRequestParse()
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
 	testConstructRequest();
-  	correctSequencialReceive(5);
-	receivedAtOnce();
-	requestLine();
-}
-
-void statusLine()
-{
-	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-	Request r;
-
-	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
-	r.parse();
-
-	Response a(r);
-	a.createResponse();
-
-	std::cout << a.getResponseMsg() << std::endl;
-}
-
-void testResponseBuild()
-{
-	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-	statusLine();
+	correctRequestLine();
+	badRequestLine();
+	correctHeaders();
+	badHeaders();
+	correctSequencialReceive(5);
+	correctSequencialReceive(10);
+	correctChunkedBody();
+	badChunkedBody();
 }
