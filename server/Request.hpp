@@ -28,39 +28,44 @@ class Request
 	std::string msgBody_;
 	std::string queryString_;
 	
+	int headerContentLength_;
 	std::string headerDate_;
 	std::string headerAuth_;
 	std::string headerHost_;
 	std::string headerReferer_;
-	std::string headerContentLength_;
 	std::string headerContentLocation_;
 	std::string headerTransferEncoding_;
-	
+	std::string headerUserAgent_;
+	std::string headerLastModified_;
+	std::string headerLocation_;
+
 	std::vector<std::string> headerAcceptCharset_;
 	std::vector<std::string> headerAcceptLanguage_;
 	std::vector<std::string> headerAllow_;
 	std::vector<std::string> headerContentLanguage_;
 	std::vector<std::string> headerContentType_;
 
+	
+
 	public:
 	Request();
 	~Request();
 	
 	std::string request_;
-	std::string keptLine_;
 	bool requestLine_parsed;
 	bool headers_parsed;
 	bool body_parsed;
 	bool queryString_parsed;
+	bool bodyToParse;
 
 	std::vector<std::string> methods;
-	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
+	enum e_methods { CONNECT, GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
 
 	std::vector<std::string> headersName;
 	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, LAST_MODIFIED, LOCATION, REFERER, \
-		RETRY_AFTER, SERVER, TRANSFER_ENCODING, USER_AGENT, WWW_AUTHENTICATE };
+		TRANSFER_ENCODING, USER_AGENT };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
 	int appendRequest(char [256], int);
@@ -71,17 +76,18 @@ class Request
 	int checkMethod();
 	int checkVersion();
 	int checkHeadersEnd();
-	int getBody();
+	int parseBody();
 	int getChunkedBody();
 	int parseHeadersContent();
 	void parseQueryString();
-	void clear();
+//	void clear();
 	void replaceReturnCarriage(std::string & str);
 
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decode_authorization();
 
 	int getStatusCode() const;
+	int getHeaderContentLength() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
 	std::string getVersion() const;
@@ -89,7 +95,6 @@ class Request
 	std::string getHeaderAuth() const;
 	std::string getHeaderHost() const;
 	std::string getHeaderReferer() const;
-	std::string getHeaderContentLength() const;
 	std::string getHeaderContentLocation() const;
 	std::vector<std::string> getHeaderAcceptCharset() const;
 	std::vector<std::string> getHeaderAcceptLanguage() const;

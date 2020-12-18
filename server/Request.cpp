@@ -4,54 +4,23 @@
 Request::Request()
 {
 	headersRaw_.resize(18);
-	requestLine_parsed = false;
 	headers_parsed = false;
-	body_parsed = false;
-	queryString_parsed = false;
 	statusCode_ = 100;
 
-	static const std::string str_list[8] = {"GET", "HEAD", "POST", "PUT", "DELETE", \
+	static const std::string str_list[9] = { "CONNECT", "GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
-	std::vector<std::string> tmp(str_list, str_list + 8);
+	std::vector<std::string> tmp(str_list, str_list + 9);
 	methods = tmp;
 
-	static const std::string str_list2[18] = { "accept-charsets", "accept-language", "allow", \
+	static const std::string str_list2[15] = { "accept-charsets", "accept-language", "allow", \
 		"authorization", "content-language", "content-length", "content-location", \
 		"content-type", "date", "host", "last-modified", "location", "referer", \
-		"retry-after", "server", "transfer-encoding", "user-agent", "www-authenticate" };
-	std::vector<std::string> tmp2(str_list2, str_list2 + 18);
+		"transfer-encoding", "user-agent" };
+	std::vector<std::string> tmp2(str_list2, str_list2 + 15);
 	headersName = tmp2;
 }
 
 Request::~Request() { }
-
-void Request::clear()
-{
-	requestLine_parsed = false;
-	headers_parsed = false;
-	body_parsed = false;
-	queryString_parsed = false;
-	statusCode_ = 100;
-
-	request_.clear();
-	requestLine_.clear();
-	headersRaw_.clear();
-	msgBody_.clear();
-	queryString_.clear();
-
-	headerDate_.clear();
-	headerAuth_.clear();
-	headerHost_.clear();
-	headerReferer_.clear();
-	headerContentLength_.clear();
-	headerContentLocation_.clear();
-
-	headerAcceptCharset_.clear();
-	headerAcceptLanguage_.clear();
-	headerAllow_.clear();
-	headerContentLanguage_.clear();
-	headerContentType_.clear();
-}
 
 std::string Request::decode_authorization()
 {
@@ -113,7 +82,7 @@ int Request::getChunkedBody()
 		hex_size.assign(request_, start, end);
 		num_size = strHex_to_int(hex_size);
 		if (num_size > MAX_SIZE)
-			break;
+			return 400;
 
 		start = end + 2;
 		if (request_[start + num_size] == '\n')
@@ -126,44 +95,27 @@ int Request::getChunkedBody()
 
 	check.append(request_, start);
 	if (check != "0\r\n\r\n")
-		return (1);
+		return 400;
 
 	msgBody_ = res;
-	return (0);
+	return 200;
 }
 
-int Request::getBody()
+int Request::parseBody()
 {
-	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
-	{
-		statusCode_ = 411;
-		return (BADBODY);
-	}
-
-	size_t pos = headersRaw_[TRANSFER_ENCODING].find("chunked");
+	size_t pos = headerTransferEncoding_.find("chunked");
 	if (pos != std::string::npos)
+		return getChunkedBody();
+	else
 	{
-		if (getChunkedBody())
+		size_t len = headerContentLength_;
+		if (request_.size() == len)
 		{
-			statusCode_ = 400;
-			return (BADBODY);
+			msgBody_ = request_;
+			return 200;
 		}
-		body_parsed = true;
-		statusCode_ = 200;
-		return (0);
 	}
-
-	msgBody_ = request_;
-	size_t len = atoi(headersRaw_[CONTENT_LENGTH].c_str());
-	
-	if (msgBody_.size() == len)
-	{
-		body_parsed = true;
-		statusCode_ = 200;
-		return (0);
-	}
-
-	return (BADBODY);	
+	return 100;	
 }
 
 void Request::parseQueryString()
@@ -175,7 +127,6 @@ void Request::parseQueryString()
 	{
 		queryString_ = requestLine_[REQTARGET].substr(i);
 		requestLine_[REQTARGET].erase(i, std::string::npos);
-		queryString_parsed = 1;
 	}
 }
 
@@ -193,11 +144,8 @@ int Request::parseHeaders()
 		if (headerLine.empty())
 		{
 			if (line == "\r")
-			{
-				headers_parsed = true;
-				return (0);
-			}
-			break;
+				return parseHeadersContent();
+			return 400;
 		}
 
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
@@ -208,15 +156,12 @@ int Request::parseHeaders()
 		if (itx != ite)
 		{
 			dist = std::distance(it, itx);
-			headersRaw_[dist] = headerLine[HEADERCONTENT];
 			if (headerLine[HEADERCONTENT].size() > MAX_SIZE)
-			{
-				statusCode_ = 414;
-				break;
-			}
+				return 414;
+			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
 	}
-	return (BADHEADER);
+	return 400;
 }
 
 int Request::parseHeadersContent()
@@ -234,15 +179,15 @@ int Request::parseHeadersContent()
 	{
 		headerAuth_ = decode_authorization();
 		if (headerAuth_.empty())
-		{
-			statusCode_ = 401;
-			return (1);
-		}
+			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
 		headerHost_ = headersRaw_[HOST];
 	if (!headersRaw_[REFERER].empty())
 		headerReferer_ = headersRaw_[REFERER];
+	if (!headersRaw_[USER_AGENT].empty())
+		headerTransferEncoding_ = headersRaw_[USER_AGENT];
+
 
 	//ENTITY HEADERS
 	if (!headersRaw_[ALLOW].empty())
@@ -251,17 +196,31 @@ int Request::parseHeadersContent()
 		headerContentLanguage_ = explode(headersRaw_[CONTENT_LANGUAGE], ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = atoi(headersRaw_[CONTENT_LENGTH].c_str());
+//	else
+//		return 411;
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
 
 	//RESPONSE HEADERS
-//	LAST_MODIFIED, LOCATION RETRY_AFTER, SERVER, USER_AGENT, WWW_AUTHENTICATE
+	if (!headersRaw_[LAST_MODIFIED].empty())
+		headerTransferEncoding_ = headersRaw_[LAST_MODIFIED];
+	if (!headersRaw_[LOCATION].empty())
+		headerTransferEncoding_ = headersRaw_[LOCATION];
+
 	if (!headersRaw_[TRANSFER_ENCODING].empty())
 		headerTransferEncoding_ = headersRaw_[TRANSFER_ENCODING];
 
-	return (0);
+	headers_parsed = true;
+
+//	if ((atoi(headersRaw_[CONTENT_LENGTH].c_str())) == 0 && headersRaw_[TRANSFER_ENCODING].empty())
+//		return 200;
+
+	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
+		return 200;
+
+	return (100);
 }
 
 int Request::parseRequestLine()
@@ -272,63 +231,34 @@ int Request::parseRequestLine()
 	requestLine_ = workLine(line, ' ');
 
 	if (requestLine_.size() != 3)
-	{
-		statusCode_ = 400;
-		return (BADREQUEST);
-	}
+		return 400;
 	if (checkMethod())
-	{
-		statusCode_ = 501;
-	    return (BADMETHOD);
-	}
+		return 501;
 	if (requestLine_.size() > MAX_SIZE)
-	{
-		statusCode_ = 414;
-		return (BADREQUEST);
-	}
+		return 414;
 	if (checkVersion())
-	{
-		statusCode_ = 505;
-		return (BADVERSION);
-	}
-	requestLine_parsed = true;
-	return (0);
+		return 505;
+
+	parseQueryString();
+
+	if (request_ == "\r\n")
+		return (200);
+
+	return (100);
 }
 
 int Request::parse()
 {
-	int ret = 0;
-
-    if (!requestLine_parsed && boolFind(request_, "\r\n"))
+	if (boolFind(request_, "\r\n\r\n"))
 	{
-		if ((ret = parseRequestLine()))
-			return (ret);
-		if (!queryString_parsed)
-			parseQueryString();
+		statusCode_ = parseRequestLine();
+		if (statusCode_ == 100)
+			statusCode_ = parseHeaders();
 	}
-	
-	if (requestLine_parsed && !headers_parsed && boolFind(keptLine_, "\r\n\r\n"))
-	{
-		if (request_ == "\r\n")
-		{
-			statusCode_ = 200;
-			return (0);
-		}
+	if (headers_parsed && statusCode_ == 100)
+		statusCode_ = parseBody();
 
-		if ((ret = parseHeaders()))
-			return (ret);
-
-		if (headers_parsed)
-			if (parseHeadersContent())
-				return (ret);
-	}
-
-	if (requestLine_parsed && headers_parsed && !body_parsed)
-	{
-		if ((ret = getBody()))
-			return (ret);
-	}
-	return (ret);
+	return (statusCode_);
 }
 
 int Request::appendRequest(char buf[256], int nbytes)
@@ -339,8 +269,6 @@ int Request::appendRequest(char buf[256], int nbytes)
 
 int Request::doRequest(char buf[256], size_t nbytes)
 {
-	keptLine_.append(buf, nbytes);
-
 	request_.append(buf, nbytes);
 
 	parse();
@@ -372,7 +300,7 @@ std::string Request::getHeaderHost() const
 std::string Request::getHeaderReferer() const
 { return (headerReferer_); }
 
-std::string Request::getHeaderContentLength() const
+int Request::getHeaderContentLength() const
 { return (headerContentLength_); }
 
 std::string Request::getHeaderContentLocation() const
