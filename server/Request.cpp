@@ -1,7 +1,6 @@
 #include "Request.hpp"
-#include "Utils.hpp"
 
-Request::Request()
+Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(18);
 	headers_parsed = false;

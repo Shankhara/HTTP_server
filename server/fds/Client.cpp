@@ -1,6 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s) {
+Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s), request_(s) {
 	CGIResponse_ = 0;
 	location_ = 0;
 	fd_ = fd;

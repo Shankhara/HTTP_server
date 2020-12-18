@@ -7,6 +7,8 @@
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
+#include "parsing/Parsing.hpp"
+#include "Utils.hpp"
 
 #define MAX_SIZE 8192
 
@@ -22,6 +24,7 @@ class Request
 	friend class Response;
 
 	private:
+	std::vector<Parsing::server>  		&servers_;
 	std::vector<std::string> requestLine_;
 	std::vector<std::string> headersRaw_;
 	int statusCode_;
@@ -48,7 +51,7 @@ class Request
 	
 
 	public:
-	Request();
+	Request(std::vector<Parsing::server> &);
 	~Request();
 	
 	std::string request_;
