@@ -17,7 +17,7 @@ public:
 	Listener();
 	virtual 			~Listener();
 	void				onEvent();
-	void 				addServer(const Parsing::server &);
+	int 				addServer(const Parsing::server &);
 	void 				ListenAndServe();
 	uint16_t 			htons_(uint16_t hostshort);
 	void				onNewClient();
