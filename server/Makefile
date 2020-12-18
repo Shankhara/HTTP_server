@@ -9,6 +9,7 @@ SRCS	+= fds/Client.cpp
 SRCS	+= fds/CGIResponse.cpp
 SRCS	+= parsing/Parsing.cpp
 SRCS	+= parsing/Ut.cpp
+SRCS	+= Utils.cpp
 
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++

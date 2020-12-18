@@ -1,7 +1,7 @@
 VPATH		= ../:../fds/
 
 NAME		= unittests
-OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o
+OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o Utils.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror #-std=c++98
@@ -12,6 +12,7 @@ $(NAME):	$(OBJS)
 
 unittests.o : unittests.hpp
 Client.o : ../fds/Client.hpp
+Utils.o : ../Utils.hpp
 Request.o : ../Request.hpp 
 Logger.o : ../Logger.hpp
 Server.o : ../Server.hpp
