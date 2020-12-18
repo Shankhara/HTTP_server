@@ -19,23 +19,22 @@
 class Client: public FileDescriptor {
 
 private:
-	Parsing::server 		&server_;
-	struct 					sockaddr_storage addr_;
-	FileDescriptor			*CGIResponse_;
-	std::string				response_;
-	Request					request_;
+	std::vector<Parsing::server> 		&servers_;
+	FileDescriptor						*CGIResponse_;
+	std::string							response_;
+	Request								request_;
 
 public:
-	Client(int, Parsing::server &);
-	virtual ~Client();
-	void 				constructRequest(char [], int);
-	void 				sendResponse() const;
-	void 				appendResponse(char [], int);
-	std::string 		&getResponse();
-	void 				setAddr(struct sockaddr_storage addr);
-	void 				onEvent();
-	Request 			&getRequest();
-	Parsing::server		&getServer() const;
+	Client(int, std::vector<Parsing::server> &);
+	virtual 						~Client();
+	void 							constructRequest(char [], int);
+	void 							sendResponse() const;
+	void 							appendResponse(char [], int);
+	std::string 					&getResponse();
+	void 							setAddr(struct sockaddr_storage addr);
+	void 							onEvent();
+	Request 						&getRequest();
+	std::vector<Parsing::server>	&getServers() const;
 };
 
 

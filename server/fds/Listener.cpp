@@ -24,8 +24,7 @@ void Listener::onNewClient()
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-	Client *client = new Client(newfd, servers_[0]);
-	client->setAddr(remoteaddr);
+	Client *client = new Client(newfd, servers_);
 	Server::getInstance()->addFileDescriptor(client);
 }
 
