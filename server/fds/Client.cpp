@@ -8,7 +8,7 @@ Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s) {
 }
 
 Client::~Client() {
-	Log().Get(logDEBUG) << "Client deleted " << fd_;
+	Log().Get(logDEBUG) << "Client deleted: " << fd_;
 	close(fd_);
 	if (CGIResponse_ != 0)
 		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
@@ -46,7 +46,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 		return ;
 	}
 	status = request_.doRequest(buf, nbytes);
-	Log().Get(logDEBUG) << __FUNCTION__ << fd_ << "parsing status " << status;
+	Log().Get(logDEBUG) << __FUNCTION__ << fd_ << "parsing status: " << status;
 	if (status == 100)
 		return ;
 	else if (status == 200)
@@ -62,7 +62,8 @@ void Client::constructRequest(char buf[], int nbytes) {
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}
-	else{
+	else
+	{
 		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " << request_.request_;
 		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);

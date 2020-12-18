@@ -40,7 +40,7 @@ void CGIExec::build_(Request &request, const std::string &workDir, const std::st
 	setEnv_(REMOTE_IDENT, "");
 	setEnv_(REMOTE_USER, "");
 	setEnv_(REQUEST_METHOD, request.getMethod());
-	setEnv_(REQUEST_URI, request.getReqTarget()); //TODO: rename ReqTarget en URI?
+	setEnv_(REQUEST_URI, request.getReqTarget());
 	setEnv_(SCRIPT_FILENAME, workDir + filename);
 	setEnv_(SCRIPT_NAME, filename);
 	setEnv_(SERVER_NAME, request.getHeaderHost());
