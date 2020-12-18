@@ -31,11 +31,7 @@ CGIExec::CGIExec() {
 
 void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
 	setEnv_(AUTH_TYPE, request.getHeaderAuth());
-<<<<<<< HEAD
-	//setEnv_(CONTENT_LENGTH, request.getHeaderContentLength());
-=======
 	setEnv_(CONTENT_LENGTH, "");
->>>>>>> ed6ca8afa62872ff82de22563b93209878f1da2a
 	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
 	setEnv_(PATH_INFO, "");
 	setEnv_(PATH_TRANSLATED, "");
