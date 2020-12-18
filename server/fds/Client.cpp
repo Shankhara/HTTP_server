@@ -1,7 +1,8 @@
 #include "Client.hpp"
 
-Client::Client(int fd, Parsing::server &s): server_(s) {
+Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s) {
 	CGIResponse_ = 0;
+	location_ = 0;
 	fd_ = fd;
 	Log().Get(logDEBUG) << "Creating Client: " << fd_;
 }
@@ -34,10 +35,6 @@ void Client::sendResponse() const
 {
 }
 
-void Client::setAddr(struct sockaddr_storage addr) {
-	addr_ = addr;
-}
-
 void Client::constructRequest(char buf[], int nbytes) {
 	int status;
 
@@ -60,7 +57,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 			return ;
 		}
 		CGIExec exec = CGIExec();
-		CGIResponse_ = exec.run("/usr/bin/php-cgi", server_.root, "/index.php", *this);
+		CGIResponse_ = exec.run("/usr/bin/php-cgi", servers_[0].root, "/index.php", *this);
 		if (CGIResponse_ == 0)
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->addFileDescriptor(CGIResponse_);
@@ -85,6 +82,42 @@ Request &Client::getRequest(){
 	return request_;
 }
 
-Parsing::server &Client::getServer() const {
-	return server_;
+Parsing::server 	&Client::matchServer_()
+{
+	for (unsigned long i = 0; i < servers_.size(); i++)
+	{
+		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
+		{
+			if (servers_[i].names[k].compare(request_.getHeaderHost()) == 0)
+			{
+				return (servers_[i]);
+			}
+		}
+	}
+	return (servers_[0]);
+}
+
+void	Client::matchLocation_()
+{
+	Parsing::server &server = matchServer_();
+	for (unsigned long j = 0; j < server.locations.size(); j++)
+	{
+		if (server.locations[j].name.compare(request_.getReqTarget()))
+		{
+			location_ = &server.locations[j];
+			return ;
+		}
+	}
+}
+
+bool 	Client::isAuthorized_()
+{
+	for (unsigned long i = 0; i < location_->methods.size(); i++)
+	{
+		if (location_->methods[i].compare(request_.getMethod()))
+		{
+			return true;
+		}
+	}
+	return false;
 }

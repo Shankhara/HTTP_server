@@ -24,8 +24,7 @@ void Listener::onNewClient()
 		Log().Get(logERROR) << "server::onClientConnect " << strerror(errno);
 		exit(8);
 	}
-	Client *client = new Client(newfd, servers_[0]);
-	client->setAddr(remoteaddr);
+	Client *client = new Client(newfd, servers_);
 	Server::getInstance()->addFileDescriptor(client);
 }
 
@@ -57,6 +56,7 @@ void Listener::ListenAndServe() {
 		delete Server::getInstance();
 		exit(EXIT_FAILURE) ;
 	}
+	Log().Get(logINFO) << " listening on port " << port_ << " (maxconn: " << FD_SETSIZE << ")";
 }
 
 uint16_t Listener::htons_(uint16_t hostshort)
@@ -73,12 +73,12 @@ unsigned int Listener::getPort() const {
 	return port_;
 }
 
-void Listener::addServer(const Parsing::server &s) {
+int Listener::addServer(const Parsing::server &s) {
 	in_addr_t  host = inet_addr(s.host.c_str());
 	if (host == INADDR_NONE)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " Unable to add: " << s.host;
-		return;
+		return (0);
 	}
 	if (ip_ == 0 && port_ == 0)
 	{
@@ -88,9 +88,10 @@ void Listener::addServer(const Parsing::server &s) {
 	else if (host != ip_ || port_ != s.port)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " this host:port doesnt belong to this listener: " << s.host << ":" << s.port;
-		return;
+		return (1);
 	}
-	Log().Get(logINFO) << s.names[0] << " started on port " << s.host << ":" << s.port << " (maxconn: " << FD_SETSIZE << ")";
+	Log().Get(logINFO) << __FUNCTION__  << " > " << s.host << ":" << s.port << " add virtualhost: " << s.names[0] << " (maxconn: " << FD_SETSIZE << ")";
 	servers_.push_back(s);
+	return (0);
 }
 

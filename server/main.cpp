@@ -11,15 +11,30 @@ void signalHandler(int) {
 	exit(0);
 }
 
-void addListener(const Parsing::server &server)
+void addListener(const Parsing::server &server, std::vector<Listener*> &listeners)
 {
+	for (unsigned long i = 0; i < listeners.size(); i++)
+	{
+		if (listeners[i]->addServer(server) == 0)
+			return ;
+	}
 	Listener *l = new Listener();
 	l->addServer(server);
-	l->ListenAndServe();
-	Server::getInstance()->addFileDescriptor(l);
+	listeners.push_back(l);
+}
+
+void startListeners(const std::vector<Listener*> &listeners)
+{
+	for (unsigned long i = 0; i < listeners.size(); i++)
+	{
+		listeners[i]->ListenAndServe();
+		Server::getInstance()->addFileDescriptor(listeners[i]);
+	}
 }
 
 int main(int argc, char *argv[]) {
+	std::vector<Listener*> listeners;
+
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
 	std::string conf("./parsing/test/wordpress.conf");
@@ -36,7 +51,8 @@ int main(int argc, char *argv[]) {
 	}
 	Server *webserv = Server::getInstance();
 	for (size_t i = 0; i < p.getServers().size(); i++)
-		addListener(p.getServers()[i]);
+		addListener(p.getServers()[i], listeners);
+	startListeners(listeners);
 	webserv->start();
 }
 

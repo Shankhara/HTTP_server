@@ -19,24 +19,24 @@
 class Client: public FileDescriptor {
 
 private:
-	Parsing::server 		&server_;
-	struct 					sockaddr_storage addr_;
-	FileDescriptor			*CGIResponse_;
-	std::string				response_;
-	Request					request_;
+	std::vector<Parsing::server> 		&servers_;
+	Parsing::location					*location_;
+	FileDescriptor						*CGIResponse_;
+	std::string							response_;
+	Request								request_;
+	void 								matchLocation_();
+	Parsing::server						&matchServer_();
+	bool 								isAuthorized_();
 
 public:
-	Client(int, Parsing::server &);
-	virtual ~Client();
-	void 				constructRequest(char [], int);
-	void 				sendResponse() const;
-	void 				appendResponse(char [], int);
-	std::string 		&getResponse();
-	void 				setAddr(struct sockaddr_storage addr);
-	void 				onEvent();
-	Request 			&getRequest();
-	Parsing::server		&getServer() const;
+	Client(int, std::vector<Parsing::server> &);
+	virtual 						~Client();
+	void 							constructRequest(char [], int);
+	void 							sendResponse() const;
+	void 							appendResponse(char [], int);
+	std::string 					&getResponse();
+	void 							onEvent();
+	Request 						&getRequest();
 };
-
 
 #endif //WEBSERV_CLIENT_HPP

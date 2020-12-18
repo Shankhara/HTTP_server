@@ -15,12 +15,12 @@ private:
 
 public:
 	Listener();
-	virtual 	~Listener();
-	void		onEvent();
-	void 		addServer(const Parsing::server &);
-	void 		ListenAndServe();
-	uint16_t 	htons_(uint16_t hostshort);
-	void		onNewClient();
+	virtual 			~Listener();
+	void				onEvent();
+	int 				addServer(const Parsing::server &);
+	void 				ListenAndServe();
+	uint16_t 			htons_(uint16_t hostshort);
+	void				onNewClient();
 	unsigned int 		getPort() const;
 };
 
