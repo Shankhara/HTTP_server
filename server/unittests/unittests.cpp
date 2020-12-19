@@ -16,7 +16,7 @@ std::vector<Parsing::server> *createVirtualHosts()
 int main()
 {
 	testRequest();
-//	testCGI();
+	testCGI();
 //	testResponseBuild();
 	return 0;
 }
