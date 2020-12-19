@@ -9,22 +9,45 @@
 
 
 
-static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, const std::string &reqTarget, const std::string &testName)
+static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
 {
-	std::vector<Parsing::server> *servers = new std::vector<Parsing::server>();
 	Request r(*servers);
 	int status = r.doRequest(const_cast<char *>(reqStr.c_str()), reqStr.size());
-	assertEqual(status, 200, testName);
-	assertEqual(r.getMethod(), expectedMethod, testName);
-	assertEqual(r.getReqTarget(), reqTarget, testName);
-	delete servers;
+	if (status != expectedStatus)
+	{
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << expectedStatus << " got " << status << std::endl;
+		return ;
+	}
+	if (r.getMethod().compare(expectedMethod) != 0)
+	{
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << expectedMethod << " got " << r.getMethod() << std::endl;
+		return ;
+	}
+	if (r.getReqTarget().compare(reqTarget) != 0)
+	{
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << reqTarget << " got " << r.getReqTarget() << std::endl;
+		return ;
+	}
+	std::cout << "\033[1;32mSuccess\033[0m > " << testName << std::endl;
 }
 
 
+static void testForbiddenMethod()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Parsing::server &server = vhost->at(0);
+	server.locations[0].methods = std::vector<std::string>{"GET"};
+
+	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "GET OK");
+	assertRequest(str, "GET", "/qwe", vhost, "POST NOK", 403);
+}
+
 void badRequestLine()
 {
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request a(*vhost);
 	std::string str = "GET /qwe HTTP/1.1\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 100, "not double CRLF ended");
@@ -57,28 +80,28 @@ void correctRequestLine()
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "double CRLF ending requestline");
 
 	str = "CONNECT /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "CONNECT", "/qwe", "testing CONNECT");
+	assertRequest(str, "CONNECT", "/qwe", vhost, "testing CONNECT");
 
 	str = "DELETE /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "DELETE", "/qwe", "testing DELETE");
+	assertRequest(str, "DELETE", "/qwe", vhost, "testing DELETE");
 
 	str = "HEAD /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "HEAD", "/qwe", "testing HEAD");
+	assertRequest(str, "HEAD", "/qwe", vhost, "testing HEAD");
 
 	str = "OPTIONS /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "OPTIONS", "/qwe", "testing OPTIONS");
+	assertRequest(str, "OPTIONS", "/qwe", vhost, "testing OPTIONS");
 
 	str = "PATCH /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "PATCH", "/qwe", "testing PATCH");
+	assertRequest(str, "PATCH", "/qwe", vhost, "testing PATCH");
 
 	str = "POST /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "POST", "/qwe", "testing POST");
+	assertRequest(str, "POST", "/qwe", vhost, "testing POST");
 
 	str = "PUT /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "PUT", "/qwe", "testing PUT");
+	assertRequest(str, "PUT", "/qwe", vhost, "testing PUT");
 
 	str = "TRACE /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "TRACE", "/qwe", "testing TRACE");
+	assertRequest(str, "TRACE", "/qwe", vhost, "testing TRACE");
 	delete (vhost);
 }
 
@@ -300,4 +323,5 @@ void testRequest()
 	correctSequencialReceive(10);
 	correctChunkedBody();
 	badChunkedBody();
+	testForbiddenMethod();
 }

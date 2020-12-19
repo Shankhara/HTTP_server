@@ -3,15 +3,6 @@
 
 #include "unittests.hpp"
 
-struct serversMock
-{
-	std::vector<std::string>		names;
-	std::string						host;
-	std::string						root;
-	size_t							port;
-	size_t							client_max_body_size;
-};
-
 bool assertHeaderStatus(const std::string &response, const std::string &status, const std::string &name)
 {
 	size_t found = response.find("Status: " + status);

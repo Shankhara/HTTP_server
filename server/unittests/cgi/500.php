@@ -1,3 +1,3 @@
 <?php
-not_real();
+unlikely_a_function();
 ?>
