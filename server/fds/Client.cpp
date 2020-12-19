@@ -20,17 +20,12 @@ void Client::onEvent()
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
-		if (nbytes < 0)
-		{
+		if (nbytes < 0)		
 			Log().Get(logERROR) << __FUNCTION__ << "Client " << fd_ << " recv error" << strerror(errno);
-			Server::getInstance()->deleteFileDescriptor(fd_);
-			return ;
-		}else{
+		else
 			Log().Get(logINFO) << __FUNCTION__ << "Client " << fd_ << " client closed connection";
-			Server::getInstance()->deleteFileDescriptor(fd_);
-			return ;
-
-		}
+		Server::getInstance()->deleteFileDescriptor(fd_);
+		return ;
 	}
 	constructRequest(buf, nbytes);
 }
