@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "parsing/Parsing.hpp"
 #include "Utils.hpp"
+#include "Logger.hpp"
 
 #define MAX_SIZE 8192
 
@@ -30,6 +31,7 @@ class Request
 	int statusCode_;
 	std::string msgBody_;
 	std::string queryString_;
+	Parsing::location *location_;
 	
 	int headerContentLength_;
 	std::string headerDate_;
@@ -48,7 +50,10 @@ class Request
 	std::vector<std::string> headerContentLanguage_;
 	std::vector<std::string> headerContentType_;
 
-	
+	bool isAuthorized_();
+	void setLocation_();
+	Parsing::server &matchServer_();
+
 
 	public:
 	Request(std::vector<Parsing::server> &);

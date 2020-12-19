@@ -4,7 +4,7 @@ NAME		= unittests
 OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o Utils.o testRequest.o testCGI.o Listener.o
 
 CXX			= clang++
-CXXFLAGS	= -Wall -Wextra -Werror #-std=c++98
+CXXFLAGS	= -Wall -Wextra -Werror -g3
 RM			= rm -f
 
 $(NAME):	$(OBJS)
@@ -32,6 +32,6 @@ fclean: 	clean
 re:			fclean $(NAME)
 
 tests: re
-			./unittests
+			./$(NAME)
 
 .PHONY: all clean fclean re

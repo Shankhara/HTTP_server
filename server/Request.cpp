@@ -168,7 +168,6 @@ int Request::parseHeadersContent()
 	//GENERAL HEADERS
 	if (!headersRaw_[DATE].empty())
 		headerDate_ = headersRaw_[DATE];
-
 	//REQUEST HEADERS
 	if (!headersRaw_[ACCEPT_CHARSETS].empty())
 		headerAcceptCharset_ = explode(headersRaw_[ACCEPT_CHARSETS], ',');
@@ -239,10 +238,15 @@ int Request::parseRequestLine()
 		return 505;
 
 	parseQueryString();
-
 	if (request_ == "\r\n")
+	{
+		setLocation_();
+		if (!isAuthorized_())
+		{
+			return 403;
+		}
 		return (200);
-
+	}
 	return (100);
 }
 
@@ -273,6 +277,49 @@ int Request::doRequest(char buf[256], size_t nbytes)
 	parse();
 
 	return (statusCode_);
+}
+
+Parsing::server 	&Request::matchServer_()
+{
+	for (unsigned long i = 0; i < servers_.size(); i++)
+	{
+		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
+		{
+			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
+			{
+				return (servers_[i]);
+			}
+		}
+	}
+	return (servers_[0]);
+}
+
+void	Request::setLocation_()
+{
+	Parsing::server &server = matchServer_();
+	for (unsigned long j = 0; j < server.locations.size(); j++)
+	{
+		if (server.locations[j].name.compare(getReqTarget()))
+		{
+			location_ = &server.locations[j];
+			return ;
+		}
+	}
+}
+
+bool 	Request::isAuthorized_()
+{
+	// TODO: check if location_ is bzero
+	if (location_->methods.size() == 0)
+		return true;
+	for (unsigned long i = 0; i < location_->methods.size(); i++)
+	{
+		if (location_->methods[i].compare(getMethod()) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 int Request::getStatusCode() const

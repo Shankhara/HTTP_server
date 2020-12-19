@@ -41,7 +41,8 @@ static void testForbiddenMethod()
 
 	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
 	assertRequest(str, "GET", "/qwe", vhost, "GET OK");
-	assertRequest(str, "GET", "/qwe", vhost, "POST NOK", 403);
+	str = "HEAD /qwe HTTP/1.1\r\n\r\n";
+	assertRequest(str, "HEAD", "/qwe", vhost, "HEAD FORBIDDEN", 403);
 }
 
 void badRequestLine()
@@ -128,8 +129,8 @@ void correctSequencialReceive(size_t len)
 
 void testConstructRequest()
 {
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request r(*vhost);
 	int ret;
 

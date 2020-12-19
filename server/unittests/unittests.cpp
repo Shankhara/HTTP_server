@@ -8,8 +8,7 @@ std::vector<Parsing::server> *createVirtualHosts()
 	server.port = 8080;
 	server.names = std::vector<std::string>{"localhost"};
 	server.root = "/opt/server";
-	server.locations = std::vector<Parsing::location>();
-	server.locations.push_back(Parsing::location{.name = "/"});
+	server.locations.push_back(Parsing::location());
 	servers->push_back(server);
 	return servers;
 }
@@ -17,7 +16,7 @@ std::vector<Parsing::server> *createVirtualHosts()
 int main()
 {
 	testRequest();
-	testCGI();
+//	testCGI();
 //	testResponseBuild();
 	return 0;
 }
