@@ -14,6 +14,7 @@ type Conf struct {
 	requests	int
 	keepAlive	bool
 	url 		string
+	cut         bool
 	verbose 	bool
 	slowmode	int
 }
@@ -37,6 +38,9 @@ func worker(stats chan *Resp, conf Conf, wg *sync.WaitGroup) {
 		}
 		for i, _ := range strGet {
 			conn.Write([]byte{strGet[i]})
+			if (conf.cut && i > 8) {
+			    conn.Close();
+			}
 			if conf.slowmode > 0 {
 				//fmt.Println("Writing", string(strGet[i]), time.Since(start))
 				time.Sleep(time.Duration(conf.slowmode) * time.Millisecond)
@@ -104,6 +108,7 @@ func main(){
 	flag.IntVar(&configuration.requests, "n", 1, "number of requests performed by each client")
 	flag.BoolVar(&configuration.keepAlive, "k", false, "reuse tcp connection")
 	flag.BoolVar(&configuration.verbose, "v", false, "verbose")
+	flag.BoolVar(&configuration.cut, "i", false, "cut while sending")
 	flag.IntVar(&configuration.slowmode, "s", 0, "slowmode: every char is sent with <slowmode> in MS delay")
 	flag.StringVar(&configuration.url, "u", "http://127.0.0.1","URL")
 	flag.Parse()
