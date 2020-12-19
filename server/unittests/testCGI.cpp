@@ -55,6 +55,7 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, status, name);
 	close(resp->getFd());
+	delete servers;
 	delete listener;
 	delete client;
 	delete resp;
@@ -79,6 +80,7 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	delete listener;
 	delete client;
 	delete resp;
+	delete servers;
 }
 
 

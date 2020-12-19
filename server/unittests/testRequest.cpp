@@ -52,7 +52,6 @@ static void testForbiddenMethod()
 	server.locations[1].name = std::string("/qwe/");
 	assertRequest(str, "HEAD", "/qwe/head", vhost, "HEAD ok", 200);
 	delete (vhost);
-
 }
 
 void badRequestLine()

@@ -1,6 +1,8 @@
 #include "Listener.hpp"
 
-Listener::Listener(): ip_(0), port_(0) {}
+Listener::Listener(): ip_(0), port_(0) {
+	fd_ = 0;
+}
 
 Listener::~Listener(){
 	if (fd_ > 0)
