@@ -305,11 +305,13 @@ void	Request::setLocation_()
 			return ;
 		}
 	}
+	location_ = 0;
 }
 
 bool 	Request::isAuthorized_()
 {
-	// TODO: check if location_ is bzero
+	if (location_ == 0)
+		return false;
 	if (location_->methods.size() == 0)
 		return true;
 	for (unsigned long i = 0; i < location_->methods.size(); i++)
