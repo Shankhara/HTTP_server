@@ -1,9 +1,9 @@
-#pragma once
-
+#ifndef WEBSERV_TESTS_HPP
+#define WEBSERV_TESTS_HPP
 #include <iostream>
 
 template <typename T>
-bool assertEqual(const T &t2, const T &t1, const std::string &testName)
+inline bool assertEqual(const T &t2, const T &t1, const std::string &testName)
 {
 	if (t1 == t2)
 	{
@@ -15,7 +15,7 @@ bool assertEqual(const T &t2, const T &t1, const std::string &testName)
 	return false;
 }
 
-bool assertStringEqual(const std::string &s1, const std::string &s2, const std::string &testName)
+inline bool assertStringEqual(const std::string &s1, const std::string &s2, const std::string &testName)
 {
 	if (s1.compare(s2) == 0)
 	{
@@ -39,3 +39,5 @@ bool assertStringEqual(const std::string &s1, const std::string &s2, const std::
 	}
 	return false;
 }
+
+#endif

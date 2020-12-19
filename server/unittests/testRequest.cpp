@@ -1,9 +1,4 @@
-#include "tests.hpp"
-#include "../fds/Client.hpp"
-#include "../Server.hpp"
-#include "../Request.hpp"
-#include "../Response.hpp"
-//#include "CGI.hpp"
+#include "unittests.hpp"
 
 #define BADREQUEST 1
 #define BADMETHOD 2
@@ -25,19 +20,6 @@ static void assertRequest(const std::string &reqStr, const std::string &expected
 	delete servers;
 }
 
-std::vector<Parsing::server> *createVirtualHosts()
-{
-	std::vector<Parsing::server> *servers = new std::vector<Parsing::server>();
-	Parsing::server server;
-	server.host = "127.0.0.1";
-	server.port = 8080;
-	server.names = std::vector<std::string>{"localhost"};
-	server.root = "/opt/server";
-	server.locations = std::vector<Parsing::location>();
-	server.locations.push_back(Parsing::location{.name = "/"});
-	servers->push_back(server);
-	return servers;
-}
 
 void badRequestLine()
 {

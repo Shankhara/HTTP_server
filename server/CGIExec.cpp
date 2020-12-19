@@ -31,7 +31,7 @@ CGIExec::CGIExec() {
 
 void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
 	setEnv_(AUTH_TYPE, request.getHeaderAuth());
-	setEnv_(CONTENT_LENGTH, "");
+	setEnv_(CONTENT_LENGTH, "0");
 	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
 	setEnv_(PATH_INFO, "");
 	setEnv_(PATH_TRANSLATED, "");
@@ -80,7 +80,7 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 		dupSTDERR_();
 		exec_(cgiBin, workingDir + filename);
 		close(STDOUT_FILENO);
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
 	else
 	{

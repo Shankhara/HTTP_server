@@ -1,7 +1,7 @@
 VPATH		= ../:../fds/
 
 NAME		= unittests
-OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o Utils.o testRequest.o
+OBJS		= unittests.o Client.o Request.o Logger.o Server.o Response.o CGIExec.o CGIResponse.o Utils.o testRequest.o testCGI.o Listener.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror #-std=c++98
@@ -12,11 +12,13 @@ $(NAME):	$(OBJS)
 
 unittests.o : unittests.hpp
 testRequest.o: testRequest.cpp
+testCGI.o: testCGI.cpp
 Client.o : ../fds/Client.hpp
 Utils.o : ../Utils.hpp
 Request.o : ../Request.hpp 
 Logger.o : ../Logger.hpp
 Server.o : ../Server.hpp
+Listener.o : ../fds/Listener.hpp
 Response.o : ../Response.hpp
 CGIExec.o : ../CGIExec.hpp
 CGIResponse.o : ../fds/CGIResponse.hpp
@@ -28,5 +30,8 @@ fclean: 	clean
 			$(RM) $(NAME)
 
 re:			fclean $(NAME)
+
+tests: re
+			./unittests
 
 .PHONY: all clean fclean re

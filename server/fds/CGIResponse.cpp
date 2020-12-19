@@ -61,7 +61,7 @@ void CGIResponse::parseCGIStatus(char *buf, int nbytes) {
 	// TODO: dont use send?
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
-		send(client_.getFd(),"HTTP/1.1 500 Internal Server Error\r\n", 34, 0);
+		send(client_.getFd(),"HTTP/1.1 200 OK\r\n", 17, 0);
 		return ;
 	}
 	//TODO: check if its a valid HTTP code
