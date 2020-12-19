@@ -31,8 +31,7 @@ class Request
 	int statusCode_;
 	std::string msgBody_;
 	std::string queryString_;
-	Parsing::location *location_;
-	
+
 	int headerContentLength_;
 	std::string headerDate_;
 	std::string headerAuth_;
@@ -50,9 +49,9 @@ class Request
 	std::vector<std::string> headerContentLanguage_;
 	std::vector<std::string> headerContentType_;
 
-	bool isAuthorized_();
-	void setLocation_();
-	Parsing::server &matchServer_();
+	bool				isAuthorized_(Parsing::location *);
+	Parsing::location	*matchLocation_();
+	Parsing::server		&matchServer_();
 
 
 	public:

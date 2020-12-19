@@ -36,13 +36,23 @@ static void testForbiddenMethod()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
+
+	// Only allowing GET with location /
 	Parsing::server &server = vhost->at(0);
 	server.locations[0].methods = std::vector<std::string>{"GET"};
 
 	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "GET", "/qwe", vhost, "GET OK");
-	str = "HEAD /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "HEAD", "/qwe", vhost, "HEAD FORBIDDEN", 403);
+	assertRequest(str, "GET", "/qwe", vhost, "GET Ok");
+	// Head is supposed to fail
+	str = "HEAD /qwe/head HTTP/1.1\r\n\r\n";
+	assertRequest(str, "HEAD", "/qwe/head", vhost, "HEAD Forbidden", 403);
+
+	// adding a more specific location without any restriction, head isnt forbidden anymore
+	server.locations.push_back(Parsing::location());
+	server.locations[1].name = std::string("/qwe/");
+	assertRequest(str, "HEAD", "/qwe/head", vhost, "HEAD ok", 200);
+	delete (vhost);
+
 }
 
 void badRequestLine()

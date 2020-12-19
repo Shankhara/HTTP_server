@@ -9,6 +9,7 @@ std::vector<Parsing::server> *createVirtualHosts()
 	server.names = std::vector<std::string>{"localhost"};
 	server.root = "/opt/server";
 	server.locations.push_back(Parsing::location());
+	server.locations[0].name = std::string("/");
 	servers->push_back(server);
 	return servers;
 }

@@ -239,14 +239,7 @@ int Request::parseRequestLine()
 
 	parseQueryString();
 	if (request_ == "\r\n")
-	{
-		setLocation_();
-		if (!isAuthorized_())
-		{
-			return 403;
-		}
 		return (200);
-	}
 	return (100);
 }
 
@@ -261,6 +254,12 @@ int Request::parse()
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
 
+	if (statusCode_ == 200)
+	{
+		Parsing::location *location = matchLocation_();
+		if (!isAuthorized_(location))
+			statusCode_ = 403;
+	}
 	return (statusCode_);
 }
 
@@ -294,29 +293,35 @@ Parsing::server 	&Request::matchServer_()
 	return (servers_[0]);
 }
 
-void	Request::setLocation_()
+Parsing::location *Request::matchLocation_()
 {
 	Parsing::server &server = matchServer_();
+	Parsing::location *location = 0;
+	unsigned long minSize = 0;
+
 	for (unsigned long j = 0; j < server.locations.size(); j++)
 	{
-		if (server.locations[j].name.compare(getReqTarget()))
+		if (getReqTarget().rfind(server.locations[j].name, 0) == 0)
 		{
-			location_ = &server.locations[j];
-			return ;
+			if (server.locations[j].name.size() > minSize)
+			{
+				location = &server.locations[j];
+				minSize = server.locations[j].name.size();
+			}
 		}
 	}
-	location_ = 0;
+	return (location);
 }
 
-bool 	Request::isAuthorized_()
+bool 	Request::isAuthorized_(Parsing::location *location)
 {
-	if (location_ == 0)
+	if (location == 0)
 		return false;
-	if (location_->methods.size() == 0)
+	if (location->methods.size() == 0)
 		return true;
-	for (unsigned long i = 0; i < location_->methods.size(); i++)
+	for (unsigned long i = 0; i < location->methods.size(); i++)
 	{
-		if (location_->methods[i].compare(getMethod()) == 0)
+		if (location->methods[i].compare(getMethod()) == 0)
 		{
 			return true;
 		}
