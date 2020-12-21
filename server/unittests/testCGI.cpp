@@ -96,8 +96,8 @@ void testCGI()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
 	testItoa();
-	assertCGIFailed("/notfound.php", "404", "Status: 404");
-	assertCGIFailed("/500.php", "500", "Status: 500");
+	//assertCGIFailed("/notfound.php", "404", "Status: 404");
+	//assertCGIFailed("/500.php", "500", "Status: 500");
 	//assertCGISuccess("/test.bla", "Status: 200 php_info()");
 }
 
