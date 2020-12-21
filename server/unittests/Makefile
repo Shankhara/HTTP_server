@@ -37,5 +37,6 @@ re:			fclean $(NAME)
 
 tests: re
 			./$(NAME)
+			@$(RM) $(OBJS)
 
 .PHONY: all clean fclean re

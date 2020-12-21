@@ -33,8 +33,8 @@ void testParsing()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
 
-	assertThrow("./parsing/idoexistright", "file does not exit");
-	assertThrow("./parsing/idoexistright.bad", "extension doesnt match .conf");
+	assertThrow("./parsing/idoexistright", "file does not exist");
+	assertThrow("./parsing/nope.nope", "extension doesnt match .conf");
 	assertThrow("./parsing/semicolonMissing.conf", "missing semicolon");
 	assertThrow("./parsing/duplicateLocation.conf", "adding the same location twice");
 	assertThrow("./parsing/duplicateRoot.conf", "adding the same root twice");
