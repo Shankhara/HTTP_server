@@ -26,7 +26,7 @@ std::string Request::decode_authorization()
 	std::vector<std::string> tmp;
 	std::string res;
 
-	tmp = explode(headersRaw_[AUTHORIZATION], ' ');
+	tmp = explode(removeSpaces(headersRaw_[AUTHORIZATION]), ' ');
 	if (tmp[0] == "Basic")
 		res = decode64(tmp[1]);
 	return (res);
@@ -171,13 +171,13 @@ int Request::parseHeadersContent()
 {
 	//GENERAL HEADERS
 	if (!headersRaw_[DATE].empty())
-		headerDate_ = headersRaw_[DATE];
+		headerDate_ = removeSpaces(headersRaw_[DATE]);
 
 	//REQUEST HEADERS
 	if (!headersRaw_[ACCEPT_CHARSETS].empty())
-		headerAcceptCharset_ = explode(headersRaw_[ACCEPT_CHARSETS], ',');
+		headerAcceptCharset_ = explode(removeSpaces(headersRaw_[ACCEPT_CHARSETS]), ',');
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
-		headerAcceptLanguage_ = explode(headersRaw_[ACCEPT_LANGUAGE], ',');
+		headerAcceptLanguage_ = explode(removeSpaces(headersRaw_[ACCEPT_LANGUAGE]), ',');
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
 		headerAuth_ = decode_authorization();
@@ -185,32 +185,32 @@ int Request::parseHeadersContent()
 			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
-		headerHost_ = headersRaw_[HOST];
+		headerHost_ = removeSpaces(headersRaw_[HOST]);
 	if (!headersRaw_[REFERER].empty())
-		headerReferer_ = headersRaw_[REFERER];
+		headerReferer_ = removeSpaces(headersRaw_[REFERER]);
 	if (!headersRaw_[USER_AGENT].empty())
-		headerTransferEncoding_ = headersRaw_[USER_AGENT];
+		headerTransferEncoding_ = removeSpaces(headersRaw_[USER_AGENT]);
 
 	//ENTITY HEADERS
 	if (!headersRaw_[ALLOW].empty())
-		headerAllow_ = explode(headersRaw_[ALLOW], ',');
+		headerAllow_ = explode(removeSpaces(headersRaw_[ALLOW]), ',');
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
-		headerContentLanguage_ = explode(headersRaw_[CONTENT_LANGUAGE], ',');
+		headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = atoi(headersRaw_[CONTENT_LENGTH].c_str());
+		headerContentLength_ = atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
 	if (!headersRaw_[CONTENT_LOCATION].empty())
-		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
+		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
-		headerContentType_ = explode(headersRaw_[CONTENT_TYPE], ';');
+		headerContentType_ = explode(removeSpaces(headersRaw_[CONTENT_TYPE]), ';');
 
 	//RESPONSE HEADERS
 	if (!headersRaw_[LAST_MODIFIED].empty())
-		headerTransferEncoding_ = headersRaw_[LAST_MODIFIED];
+		headerTransferEncoding_ = removeSpaces(headersRaw_[LAST_MODIFIED]);
 	if (!headersRaw_[LOCATION].empty())
-		headerTransferEncoding_ = headersRaw_[LOCATION];
+		headerTransferEncoding_ = removeSpaces(headersRaw_[LOCATION]);
 
 	if (!headersRaw_[TRANSFER_ENCODING].empty())
-		headerTransferEncoding_ = headersRaw_[TRANSFER_ENCODING];
+		headerTransferEncoding_ = removeSpaces(headersRaw_[TRANSFER_ENCODING]);
 
 	headers_parsed = true;
 

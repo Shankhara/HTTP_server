@@ -25,7 +25,7 @@ inline bool assertStringEqual(const std::string &s1, const std::string &s2, cons
 	if (s1.length() != s2.length())
 	{
 		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting len(" \
-		<< s1.length() << ") got len(" << s2.length() << ")" << std::endl;
+		<< s2.length() << ") got len(" << s1.length() << ")" << std::endl;
 		return false;
 	}
 	for (unsigned long i = 0; i < s1.length(); i++)

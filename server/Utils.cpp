@@ -1,5 +1,18 @@
 #include "Utils.hpp"
 
+bool isSpace(char c)
+{
+	if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r')
+		return 1;
+	return 0;
+}
+
+std::string removeSpaces(std::string & str)
+{
+	str.erase(std::remove_if(str.begin(), str.end(), isSpace), str.end());
+	return str;
+}
+
 char ft_tolower(char i) { return std::tolower(i); }
 
 bool boolFind(std::string const & haystack, std::string const & needle)

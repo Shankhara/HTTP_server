@@ -229,6 +229,18 @@ void correctHeaders()
 	str = "GET /qwe HTTP/1.1\r\ncontent-length:1\r\n\r\na";
 	ret = n.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 200, "content-length");
+
+	Request o(*vhost);
+	str = "GET /qwe HTTP/1.1\r\nDate: \t2\r\n\r\n";
+	ret = o.doRequest(const_cast<char *>(str.c_str()), str.size());
+	std::cout << o.getHeaderDate()<< std::endl;
+	assertStringEqual(o.getHeaderDate(), "2", "replace whitespace in header value");
+
+	Request p(*vhost);
+	str = "GET /qwe HTTP/1.1\r\nDate: \t2\r\nHost: mo\fmo \r\n\r\n";
+	ret = p.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertStringEqual(p.getHeaderDate(), "2", "replace whitespace in header value");
+	assertStringEqual(p.getHeaderHost(), "momo", "replace whitespace in header value");
 	delete (vhost);
 }
 
@@ -245,9 +257,10 @@ void badHeaders()
 	assertEqual(ret, 100, "no body despite content-length header");
 	//TODO: manage this error
 
-	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nContent-length: 3\r\n\r\n";
+	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nDate: today\r\n\r\n";
 	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 400, "whitespace between header name and colon");
+
 	delete (vhost);
 }
 

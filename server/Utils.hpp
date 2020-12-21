@@ -2,10 +2,12 @@
 #define WEBSERV_UTILS_HPP
 
 #include <cstring>
-#include <sstream> //TODO: forbidden?
 #include <vector>
 #include <string>
+#include <algorithm>
 
+bool isSpace(char);
+std::string removeSpaces(std::string &);
 char ft_tolower(char);
 bool boolFind(std::string const & haystack, std::string const & needle);
 std::string decode64(std::string const &str);
