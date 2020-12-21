@@ -7,6 +7,7 @@ static void assertThrow(std::string path, std::string testName)
 		p.parseConfig();
 	} catch (Parsing::ParsingException &e) {
 		std::cout << "\033[1;32mSuccess\033[0m > " << testName << " > exception as expected" << std::endl;
+		return ;
 	}
 	std::cout << "\033[1;31mFail\033[0m: > " << testName << " > expected a throw." << std::endl;
 }
