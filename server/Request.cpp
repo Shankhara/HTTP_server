@@ -78,7 +78,7 @@ int Request::getChunkedBody()
 	while (start == 0 || request_[start] != '0')
 	{
 		end = request_.find("\r\n", start);
-		hex_size.assign(request_, start, end);
+		hex_size.assign(request_, start, end - start);
 		num_size = strHex_to_int(hex_size);
 		if (num_size > MAX_SIZE)
 			return 400;
