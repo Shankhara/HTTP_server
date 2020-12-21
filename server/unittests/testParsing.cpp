@@ -38,6 +38,7 @@ void testParsing()
 	assertThrow("./parsing/semicolonMissing.conf", "missing semicolon");
 	assertThrow("./parsing/duplicateLocation.conf", "adding the same location twice");
 	assertThrow("./parsing/duplicateRoot.conf", "adding the same root twice");
+	assertThrow("./parsing/invalidPort.conf", "[emerg] invalid port");
 
 	testDuplicateServerName();
 }

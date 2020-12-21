@@ -5,6 +5,7 @@ Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 	headersRaw_.resize(18);
 	headers_parsed = false;
 	statusCode_ = 100;
+	headerContentLength_ = 0;
 
 	static const std::string str_list[9] = { "CONNECT", "GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
@@ -257,7 +258,7 @@ int Request::parse()
 
 	if (statusCode_ == 200)
 	{
-		Parsing::location *location = matchLocation_();
+		Parsing::location *location = matchLocation_(matchServer_());
 		if (!isAuthorized_(location))
 			statusCode_ = 403;
 	}
@@ -273,7 +274,7 @@ int Request::doRequest(char buf[256], size_t nbytes)
 	return (statusCode_);
 }
 
-Parsing::server & Request::matchServer_()
+Parsing::server & Request::matchServer_() const
 {
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
@@ -286,9 +287,8 @@ Parsing::server & Request::matchServer_()
 	return (servers_[0]);
 }
 
-Parsing::location *Request::matchLocation_()
+Parsing::location *Request::matchLocation_(Parsing::server &server) const
 {
-	Parsing::server &server = matchServer_();
 	Parsing::location *location = 0;
 	unsigned long minSize = 0;
 
@@ -306,7 +306,7 @@ Parsing::location *Request::matchLocation_()
 	return (location);
 }
 
-bool 	Request::isAuthorized_(Parsing::location *location)
+bool 	Request::isAuthorized_(Parsing::location *location) const
 {
 	if (location == 0)
 		return false;
@@ -321,6 +321,9 @@ bool 	Request::isAuthorized_(Parsing::location *location)
 	}
 	return false;
 }
+
+Parsing::server &Request::getServer() const
+{ return matchServer_(); }
 
 int Request::getStatusCode() const
 { return (statusCode_); }

@@ -49,9 +49,9 @@ class Request
 	std::vector<std::string> headerContentLanguage_;
 	std::vector<std::string> headerContentType_;
 
-	bool				isAuthorized_(Parsing::location *);
-	Parsing::location	*matchLocation_();
-	Parsing::server		&matchServer_();
+	bool				isAuthorized_(Parsing::location *) const;
+	Parsing::location	*matchLocation_(Parsing::server &) const;
+	Parsing::server		&matchServer_() const;
 
 
 	public:
@@ -90,6 +90,7 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decode_authorization();
 
+	Parsing::server &getServer() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getRequest() const;

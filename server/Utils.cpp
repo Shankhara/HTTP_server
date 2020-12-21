@@ -1,4 +1,8 @@
 #include "Utils.hpp"
+#include <cstring>
+#include <vector>
+#include <string>
+#include <algorithm>
 
 bool isSpace(char c)
 {
@@ -69,6 +73,35 @@ int ft_atoi(std::string const &str)
 	return res;
 }
 
+static void rec_itoa(unsigned int n, std::string &str, int i)
+{
+	if (n >= 10)
+		rec_itoa(n / 10, str, i - 1);
+	if (i < 0)
+		return ;
+	if (n < 10)
+		str[i] = n + '0';
+	else
+		str[i] = (n % 10) + '0';
+}
+
+std::string ft_itoa(unsigned int nb)
+{
+	std::string str;
+	int i = 0;
+	int tmp = nb;
+
+	if (nb == 0)
+		return (std::string("0"));
+	while (tmp != 0)
+	{
+		tmp /= 10;
+		i++;
+	}
+	rec_itoa(nb, str, i);
+	return (str);
+}
+
 size_t strHex_to_int(std::string const &str)
 {
 	static const std::string baseHexa = "0123456789ABCDEF";
@@ -107,8 +140,7 @@ std::vector<std::string> explode(const std::string & str, const char & delim)
 	return (res);
 }
 
-int getNextLine(std::string & buf, std::string & line)
-{
+int getNextLine(std::string & buf, std::string & line) {
 	size_t pos;
 
 	pos = buf.find("\n");

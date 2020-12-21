@@ -92,7 +92,7 @@ class Parsing
 		stds					root;
 		std::vector<pi>			error_pages;
 		std::vector<location>	locations;
-		size_t					port;
+		unsigned int			port;
 		size_t					client_max_body_size;
 	};
 
