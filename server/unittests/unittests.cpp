@@ -14,11 +14,22 @@ std::vector<Parsing::server> *createVirtualHosts()
 	return servers;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-	testRequest();
-	testCGI();
-	testParsing();
+	if (argc == 2)
+	{
+		std::string arg = std::string(argv[1]);
+		if (arg.compare("-r") == 0)
+			testRequest();
+		else if (arg.compare("-c") == 0)
+			testCGI();
+		else if (arg.compare("-p") == 0)
+			testParsing();
+	}else{
+		testRequest();
+		testCGI();
+		testParsing();
+	}
 //	testResponseBuild();
 	return 0;
 }
