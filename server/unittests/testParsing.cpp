@@ -36,6 +36,8 @@ void testParsing()
 	assertThrow("./parsing/idoexistright", "file does not exit");
 	assertThrow("./parsing/idoexistright.bad", "extension doesnt match .conf");
 	assertThrow("./parsing/semicolonMissing.conf", "missing semicolon");
+	assertThrow("./parsing/duplicateLocation.conf", "adding the same location twice");
+	assertThrow("./parsing/duplicateRoot.conf", "adding the same root twice");
 
 	testDuplicateServerName();
 }
