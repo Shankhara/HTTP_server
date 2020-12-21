@@ -131,14 +131,18 @@ void Request::parseQueryString()
 
 int Request::parseHeaders()
 {
-	int dist, ret;
+	size_t dist, ret;
 	std::string line;
 	std::vector<std::string> headerLine;
 	std::vector<std::string>::iterator itx, it = headersName.begin();
 	std::vector<std::string>::iterator ite = headersName.end();
 	
-	while ((ret = getNextLine(request_, line)) > -1)
+	while ((getNextLine(request_, line)) > -1)
 	{
+		ret = line.find(':', 0);
+		if (ret != std::string::npos && line[ret - 1] < 33)
+			return 400;
+
 		headerLine = workLine(line, ':');
 		if (headerLine.empty())
 		{

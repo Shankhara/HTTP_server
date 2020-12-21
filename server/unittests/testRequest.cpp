@@ -7,24 +7,27 @@
 #define BADHEADER 5
 #define BADBODY 6
 
-
-static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
+static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, \
+const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
 {
 	Request r(*servers);
 	int status = r.doRequest(const_cast<char *>(reqStr.c_str()), reqStr.size());
 	if (status != expectedStatus)
 	{
-		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << expectedStatus << " got " << status << std::endl;
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " \
+		<< expectedStatus << " got " << status << std::endl;
 		return ;
 	}
 	if (r.getMethod().compare(expectedMethod) != 0)
 	{
-		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << expectedMethod << " got " << r.getMethod() << std::endl;
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " \
+		<< expectedMethod << " got " << r.getMethod() << std::endl;
 		return ;
 	}
 	if (r.getReqTarget().compare(reqTarget) != 0)
 	{
-		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " << reqTarget << " got " << r.getReqTarget() << std::endl;
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > Expecting " \
+		<< reqTarget << " got " << r.getReqTarget() << std::endl;
 		return ;
 	}
 	std::cout << "\033[1;32mSuccess\033[0m > " << testName << std::endl;
@@ -241,6 +244,10 @@ void badHeaders()
 	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 100, "no body despite content-length header");
 	//TODO: manage this error
+
+	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nContent-length: 3\r\n\r\n";
+	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 400, "whitespace between header name and colon");
 	delete (vhost);
 }
 
@@ -327,7 +334,7 @@ void testRequest()
 	correctRequestLine();
 	badRequestLine();
 	correctHeaders();
-	badHeaders();
+  	badHeaders();
 	correctSequencialReceive(5);
 	correctSequencialReceive(10);
 	correctChunkedBody();
