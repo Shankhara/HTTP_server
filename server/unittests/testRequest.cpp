@@ -8,7 +8,6 @@
 #define BADBODY 6
 
 
-
 static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
 {
 	Request r(*servers);
@@ -245,49 +244,49 @@ void badHeaders()
 	delete (vhost);
 }
 
-void receivedAtOnce()
-{
-	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
-
-	Request r(*vhost);
-	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
-	assertEqual(r.parse(), 0, "correct request");
-
-	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADBODY, "wrong content-length header");
-
-	r.request_ = "GET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADBODY, "no content-length header");
-
-	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADHEADER, "2 correct request line");
-
-	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADMETHOD, "lowercase method");
-
-	r.request_ = "GET /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-	assertEqual(r.parse(), BADVERSION, "lowercase version");
-
-	r.request_ = "GET /qwe HTTP/1.1\r\n\r\nmessage";
-	assertEqual(r.parse(), BADBODY, "1 body no headers");
-
-	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
-	assertEqual(r.parse(), BADHEADER, "no newline bet headers and body");
-
-	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
-	r.parse();
-	assertEqual(r.queryString_parsed, true, "parsing query_string");
-
-	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\n";
-	assertEqual(r.parse(), BADHEADER, "no newline after headers with no body");
-
-	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
-	r.parse();
-	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
-	delete (vhost);
-}
+//void receivedAtOnce()
+//{
+//	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+//
+//	std::vector<Parsing::server> *vhost = createVirtualHosts();
+//
+//	Request r(*vhost);
+//	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
+//	assertEqual(r.parse(), 0, "correct request");
+//
+//	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADBODY, "wrong content-length header");
+//
+//	r.request_ = "GET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADBODY, "no content-length header");
+//
+//	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADHEADER, "2 correct request line");
+//
+//	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADMETHOD, "lowercase method");
+//
+//	r.request_ = "GET /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADVERSION, "lowercase version");
+//
+//	r.request_ = "GET /qwe HTTP/1.1\r\n\r\nmessage";
+//	assertEqual(r.parse(), BADBODY, "1 body no headers");
+//
+//	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+//	assertEqual(r.parse(), BADHEADER, "no newline bet headers and body");
+//
+//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
+//	r.parse();
+//	assertEqual(r.queryString_parsed, true, "parsing query_string");
+//
+//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\n";
+//	assertEqual(r.parse(), BADHEADER, "no newline after headers with no body");
+//
+//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
+//	r.parse();
+//	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
+//	delete (vhost);
+//}
 
 
 void correctChunkedBody()

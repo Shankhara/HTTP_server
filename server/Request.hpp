@@ -25,12 +25,13 @@ class Request
 	friend class Response;
 
 	private:
-	std::vector<Parsing::server>  		&servers_;
-	std::vector<std::string> requestLine_;
-	std::vector<std::string> headersRaw_;
 	int statusCode_;
+	std::string request_;
 	std::string msgBody_;
 	std::string queryString_;
+	std::vector<std::string> headersRaw_;
+	std::vector<std::string> requestLine_;
+	std::vector<Parsing::server> &servers_;
 
 	int headerContentLength_;
 	std::string headerDate_;
@@ -58,7 +59,6 @@ class Request
 	Request(std::vector<Parsing::server> &);
 	~Request();
 	
-	std::string request_;
 	bool requestLine_parsed;
 	bool headers_parsed;
 	bool body_parsed;
@@ -75,7 +75,6 @@ class Request
 		TRANSFER_ENCODING, USER_AGENT };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
-	int appendRequest(char [256], int);
 	int doRequest(char[256], size_t);
 	int parse();
 	int parseRequestLine();
@@ -87,7 +86,6 @@ class Request
 	int getChunkedBody();
 	int parseHeadersContent();
 	void parseQueryString();
-//	void clear();
 	void replaceReturnCarriage(std::string & str);
 
 	std::vector<std::string> workLine(std::string &, const char &);
@@ -95,6 +93,7 @@ class Request
 
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
+	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
 	std::string getVersion() const;

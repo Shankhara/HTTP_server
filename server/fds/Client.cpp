@@ -52,7 +52,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	{
 		if (CGIResponse_ != 0) {
 			Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
-								<< request_.request_;
+								<< request_.getRequest();
 			return ;
 		}
 		CGIExec exec = CGIExec();
@@ -63,7 +63,8 @@ void Client::constructRequest(char buf[], int nbytes) {
 	}
 	else
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " << request_.request_;
+		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " \
+		<< request_.getRequest();
 		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}

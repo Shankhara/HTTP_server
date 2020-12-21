@@ -168,6 +168,7 @@ int Request::parseHeadersContent()
 	//GENERAL HEADERS
 	if (!headersRaw_[DATE].empty())
 		headerDate_ = headersRaw_[DATE];
+
 	//REQUEST HEADERS
 	if (!headersRaw_[ACCEPT_CHARSETS].empty())
 		headerAcceptCharset_ = explode(headersRaw_[ACCEPT_CHARSETS], ',');
@@ -186,7 +187,6 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[USER_AGENT].empty())
 		headerTransferEncoding_ = headersRaw_[USER_AGENT];
 
-
 	//ENTITY HEADERS
 	if (!headersRaw_[ALLOW].empty())
 		headerAllow_ = explode(headersRaw_[ALLOW], ',');
@@ -194,8 +194,6 @@ int Request::parseHeadersContent()
 		headerContentLanguage_ = explode(headersRaw_[CONTENT_LANGUAGE], ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = atoi(headersRaw_[CONTENT_LENGTH].c_str());
-//	else
-//		return 411;
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = headersRaw_[CONTENT_LOCATION];
 	if (!headersRaw_[CONTENT_TYPE].empty())
@@ -211,9 +209,6 @@ int Request::parseHeadersContent()
 		headerTransferEncoding_ = headersRaw_[TRANSFER_ENCODING];
 
 	headers_parsed = true;
-
-//	if ((atoi(headersRaw_[CONTENT_LENGTH].c_str())) == 0 && headersRaw_[TRANSFER_ENCODING].empty())
-//		return 200;
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
@@ -238,8 +233,10 @@ int Request::parseRequestLine()
 		return 505;
 
 	parseQueryString();
+
 	if (request_ == "\r\n")
 		return (200);
+
 	return (100);
 }
 
@@ -263,12 +260,6 @@ int Request::parse()
 	return (statusCode_);
 }
 
-int Request::appendRequest(char buf[256], int nbytes)
-{
-	request_.append(buf, nbytes);
-	return (parse());
-}
-
 int Request::doRequest(char buf[256], size_t nbytes)
 {
 	request_.append(buf, nbytes);
@@ -278,16 +269,14 @@ int Request::doRequest(char buf[256], size_t nbytes)
 	return (statusCode_);
 }
 
-Parsing::server 	&Request::matchServer_()
+Parsing::server & Request::matchServer_()
 {
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
 			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
-			{
 				return (servers_[i]);
-			}
 		}
 	}
 	return (servers_[0]);
@@ -331,6 +320,9 @@ bool 	Request::isAuthorized_(Parsing::location *location)
 
 int Request::getStatusCode() const
 { return (statusCode_); }
+
+std::string Request::getRequest() const
+{ return (requestLine_[METHOD]); }
 
 std::string Request::getMethod() const
 { return (requestLine_[METHOD]); }

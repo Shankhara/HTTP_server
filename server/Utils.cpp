@@ -12,13 +12,13 @@ bool boolFind(std::string const & haystack, std::string const & needle)
 
 std::string decode64(std::string const &str)
 {
-	size_t len = str.size(), index, ret;
+	size_t index, ret;
 	std::string save, pack, dest, all;
 
 	static const std::string base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	static const std::string binaryBase = "01";
 
-	for (size_t i = 0; i < len; i++)
+	for (size_t i = 0; i < str.size(); i++)
 	{
 		index = base64.find(str[i]);
 		if (index == std::string::npos)
@@ -58,12 +58,27 @@ int ft_atoi(std::string const &str)
 
 size_t strHex_to_int(std::string const &str)
 {
-	size_t x;
-	std::stringstream ss;
+	static const std::string baseHexa = "0123456789ABCDEF";
+	size_t index, res = 0, pow = 0;
+	
+	for (std::string::const_reverse_iterator i = str.rbegin(); i != str.rend(); i++)
+	{
+		index = baseHexa.find(*i);
+		if (index == std::string::npos)
+			return (-1);
 
-	ss << std::hex << str;
-	ss >> x;
-	return x;
+		if (!pow)
+		{
+			res = index;
+			pow++;
+		}
+		else
+		{
+			pow = pow * 16;
+			res += index * pow;
+		}
+	}
+	return (res);
 }
 
 std::vector<std::string> explode(const std::string & str, const char & delim)
