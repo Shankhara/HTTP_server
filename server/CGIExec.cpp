@@ -21,32 +21,33 @@ const std::string CGIExec::vars_[] = {
 };
 
 CGIExec::~CGIExec() {
-	free(envs_[17]);
+	free(envs_[18]);
 }
 
 CGIExec::CGIExec() {
-	setEnv_(17, "REDIRECT_STATUS=200");
-	envs_[18] = 0;
+	setEnv_(18, "REDIRECT_STATUS=200");
+	envs_[19] = 0;
 }
 
 void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
-	setEnv_(AUTH_TYPE, request.getHeaderAuth());
-	setEnv_(CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
-	setEnv_(GATEWAY_INTERFACE, "CGI/1.1");
-	setEnv_(PATH_INFO, "");
-	setEnv_(PATH_TRANSLATED, "");
-	setEnv_(QUERY_STRING, "");
-	setEnv_(REMOTE_ADDR, "127.0.0.1");
-	setEnv_(REMOTE_IDENT, ""); // absolute nightmare.
-	setEnv_(REMOTE_USER, ""); // same.
-	setEnv_(REQUEST_METHOD, request.getMethod());
-	setEnv_(REQUEST_URI, request.getReqTarget());
-	setEnv_(SCRIPT_FILENAME, workDir + filename);
-	setEnv_(SCRIPT_NAME, filename);
-	setEnv_(SERVER_NAME, request.getHeaderHost());
-	setEnv_(SERVER_PORT, ft_itoa(request.getServer().port));
-	setEnv_(SERVER_PROTOCOL, "HTTP/1.1");
-	setEnv_(SERVER_SOFTWARE, "webserv/0.0.0");
+	setEnv_(CGIExec::AUTH_TYPE, request.getHeaderAuth());
+	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
+	setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType());
+	setEnv_(CGIExec::GATEWAY_INTERFACE, "CGI/1.1");
+	setEnv_(CGIExec::QUERY_STRING, ""); //TODO: getQueryString?
+	setEnv_(CGIExec::PATH_INFO, request.getReqTarget());
+	setEnv_(CGIExec::PATH_TRANSLATED, workDir + request.getReqTarget());
+	setEnv_(CGIExec::REMOTE_ADDR, "127.0.0.1");
+	setEnv_(CGIExec::REMOTE_IDENT, ""); // absolute nightmare.
+	setEnv_(CGIExec::REMOTE_USER, ""); // same.
+	setEnv_(CGIExec::REQUEST_METHOD, request.getMethod());
+	setEnv_(CGIExec::REQUEST_URI, request.getReqTarget());
+	setEnv_(CGIExec::SCRIPT_FILENAME, workDir + filename);
+	setEnv_(CGIExec::SCRIPT_NAME, filename);
+	setEnv_(CGIExec::SERVER_NAME, request.getHeaderHost());
+	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request.getServer().port));
+	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");
+	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
 }
 
 FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
@@ -61,6 +62,7 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 		return (0);
 	}
 	CGIResponse *response = new CGIResponse(pfd[0], client);
+	build_(client.getRequest(), workingDir, filename);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -70,7 +72,6 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 	}
 	if (cpid == 0)
 	{
-		build_(client.getRequest(), workingDir, filename);
 		if (chdir(workingDir.c_str()) == -1)
 		{
 			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << workingDir;
@@ -145,6 +146,7 @@ void CGIExec::setEnv_(int name, const std::string &c)
 		envs_[name][i] = buf[i];
 	}
 	envs_[name][i] = '\0';
+	Log().Get(logDEBUG) << envs_[name];
 }
 
 void CGIExec::freeEnvs_()

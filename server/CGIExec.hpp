@@ -20,16 +20,17 @@ class CGIExec {
 private:
 	int							stdoutFD_;
 	static const std::string	vars_[];
-	char *						envs_[19];
+	char *						envs_[20];
 	static CGIExec				*instance_;
 	std::string 				cgiScript_;
 	enum e_envs {
 		AUTH_TYPE,
 		CONTENT_LENGTH,
+		CONTENT_TYPE,
 		GATEWAY_INTERFACE,
 		PATH_INFO,
-		QUERY_STRING,
 		PATH_TRANSLATED,
+		QUERY_STRING,
 		REMOTE_ADDR,
 		REMOTE_IDENT,
 		REMOTE_USER,

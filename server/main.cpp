@@ -39,10 +39,9 @@ int main(int argc, char *argv[]) {
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
 	std::string conf("./parsing/test/wordpress.conf");
-	if (argc > 1 && std::string(argv[1]).compare("-v") == 0){
+	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
 		Log::setLevel(logDEBUG);
-	}
-	else if (argc > 1) {
+	} else if (argc > 1) {
 		conf = std::string(argv[1]);
 	}
 	Parsing p = Parsing(conf);

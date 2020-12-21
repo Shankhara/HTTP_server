@@ -98,7 +98,8 @@ std::string ft_itoa(unsigned int nb)
 		tmp /= 10;
 		i++;
 	}
-	rec_itoa(nb, str, i);
+	str.resize(i);
+	rec_itoa(nb, str, i - 1);
 	return (str);
 }
 
