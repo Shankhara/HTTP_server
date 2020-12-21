@@ -10,6 +10,7 @@
 
 void testRequest();
 void testCGI();
+void testParsing();
 std::vector<Parsing::server> *createVirtualHosts();
 
 #endif

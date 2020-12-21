@@ -119,7 +119,7 @@ private :
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
 		std::vector<server>			getServers() {	return (this->servers_); }
-	
+
 	class ParsingException : public std::exception
 	{
 		private:

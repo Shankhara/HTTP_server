@@ -18,6 +18,7 @@ int main()
 {
 	testRequest();
 	testCGI();
+	testParsing();
 //	testResponseBuild();
 	return 0;
 }
