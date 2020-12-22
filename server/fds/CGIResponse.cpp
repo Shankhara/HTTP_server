@@ -45,6 +45,7 @@ int CGIResponse::pipeToClient() {
 
 void CGIResponse::onEvent()
 {
+	client_.setLastEventTimer();
 	if (pipeToClient() < 0)
 		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
