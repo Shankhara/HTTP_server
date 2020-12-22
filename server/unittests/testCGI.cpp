@@ -47,7 +47,7 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *servers);
-	std::string req = "GET / HTTP1.1\r\n\r\n";
+	std::string req = "GET / HTTP/1.1\r\n\r\n";
 	client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	CGIExec cgi;
 	std::string path = get_working_path() + "/cgi";
@@ -69,13 +69,12 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *servers);
-	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA\r\n\r\n";
+	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA";
 	int status = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (status != 200)
 		Log().Get(logERROR) << "expecting status 200 got " << status;
 	CGIExec cgi;
 	std::string path = get_working_path();
-	Log().setLevel(logDEBUG);
 	FileDescriptor *resp = cgi.run("/usr/local/bin/ubuntu_cgi_tester", path, filename, *client);
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, "200", name);
@@ -94,11 +93,12 @@ void testItoa()
 
 void testCGI()
 {
+	Log().setLevel(logERROR);
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
 	testItoa();
-	//assertCGIFailed("/notfound.php", "404", "Status: 404");
-	//assertCGIFailed("/500.php", "500", "Status: 500");
-	//assertCGISuccess("/test.bla", "Status: 200 php_info()");
+	assertCGIFailed("/notfound.php", "404", "Status: 404");
+	assertCGIFailed("/500.php", "500", "Status: 500");
+	assertCGISuccess("/test.bla", "42 CGI Tester");
 }
 
 #endif //WEBSERV_CGI_HPP

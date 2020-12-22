@@ -328,6 +328,9 @@ Parsing::server &Request::getServer() const
 int Request::getStatusCode() const
 { return (statusCode_); }
 
+std::string Request::getBody() const
+{ return (msgBody_); }
+
 std::string Request::getRequest() const
 { return (requestLine_[METHOD]); }
 

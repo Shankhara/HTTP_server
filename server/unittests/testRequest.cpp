@@ -344,6 +344,19 @@ void badChunkedBody()
 	delete (vhost);
 }
 
+static void testIncorrectContentLength()
+{
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	Request a(*vhost);
+
+	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA IS NOT 4";
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 418, "Content-Length < bodySize");
+
+	delete (vhost);
+}
+
 void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -358,4 +371,5 @@ void testRequest()
 	correctChunkedBody();
 	badChunkedBody();
 	testForbiddenMethod();
+	testIncorrectContentLength();
 }

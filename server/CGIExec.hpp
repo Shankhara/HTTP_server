@@ -19,6 +19,7 @@ class Client;
 class CGIExec {
 private:
 	int							stdoutFD_;
+	int							stdinFD_;
 	static const std::string	vars_[];
 	char *						envs_[20];
 	static CGIExec				*instance_;
@@ -34,8 +35,8 @@ private:
 		REMOTE_ADDR,
 		REMOTE_IDENT,
 		REMOTE_USER,
-		REQUEST_METHOD,
 		REQUEST_URI,
+		REQUEST_METHOD,
 		SCRIPT_FILENAME,
 		SCRIPT_NAME,
 		SERVER_NAME,
@@ -46,6 +47,7 @@ private:
 	void						exec_(const std::string &, const std::string &);
 	void 						setEnv_(int name, const std::string &);
 	void 						pipeSTDOUT_(int pfd[2]);
+	void 						pipeSTDIN_(int pfd[2]);
 	void 						dupSTDERR_();
 	void 						build_(Request &, const std::string &, const std::string &);
 	void						freeEnvs_();

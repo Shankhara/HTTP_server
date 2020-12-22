@@ -93,6 +93,7 @@ class Request
 	Parsing::server &getServer() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
+	std::string getBody() const;
 	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
