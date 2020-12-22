@@ -8,6 +8,9 @@ class FileDescriptor {
 protected:
 	int fd_;
 	unsigned long lastEventTimer_;
+	void setLastEventTimer() {
+		lastEventTimer_ = getTime();
+	}
 
 public:
 	virtual void	onEvent() = 0;
@@ -17,9 +20,6 @@ public:
 	}
 	void setFd(int fd) {
 		fd_ = fd;
-	}
-	void setLastEventTimer() {
-		lastEventTimer_ = getTime();
 	}
 	unsigned long getLastEventTimer() const {
 		return (lastEventTimer_);
