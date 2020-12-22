@@ -106,7 +106,7 @@ void Server::garbageCollector_()
 		{
 			if (fds_[i]->getLastEventTimer() > 0 && (getTime() - fds_[i]->getLastEventTimer()) > READ_TIMEOUT * 1000)
 			{
-				Log().Get(logINFO) << "FD: " << i << " Timeout after " << READ_TIMEOUT << " sec";
+				Log().Get(logINFO) << "FD: " << i << "> Timeout after " << READ_TIMEOUT << " sec";
 				deleteFileDescriptor(i);
 			}
 		}

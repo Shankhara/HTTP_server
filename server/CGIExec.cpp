@@ -30,7 +30,7 @@ CGIExec::CGIExec() {
 	envs_[19] = 0;
 }
 
-void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
+void CGIExec::build_(const Request &request, const std::string &workDir, const std::string &filename) {
 	setEnv_(CGIExec::AUTH_TYPE, request.getHeaderAuth());
 	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
 	setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType());
@@ -51,20 +51,20 @@ void CGIExec::build_(Request &request, const std::string &workDir, const std::st
 	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
 }
 
-FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &workingDir,
-						  const std::string &filename, Client &client)
+FileDescriptor *CGIExec::run(Client &client)
 {
 	int pipeOUT[2];
 	int pipeIN[2];
+	Parsing::location *location = client.getRequest().getLocation();
 
-	Log().Get(logDEBUG) << "CGI: " << cgiBin << " " << workingDir << filename ;
+	Log().Get(logDEBUG) << "CGI: " << location->cgi_path << " " << location->root << client.getRequest().getReqTarget() ;
 	if (pipe(pipeOUT) == -1 || pipe(pipeIN) == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
 		return (0);
 	}
 	CGIResponse *response = new CGIResponse(pipeOUT[0], client);
-	build_(client.getRequest(), workingDir, filename);
+	build_(client.getRequest(), location->root, client.getRequest().getReqTarget());
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -74,15 +74,15 @@ FileDescriptor *CGIExec::run(const std::string &cgiBin, const std::string &worki
 	}
 	if (cpid == 0)
 	{
-		if (chdir(workingDir.c_str()) == -1)
+		if (chdir(location->root.c_str()) == -1)
 		{
-			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << workingDir;
+			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root;
 			exit(EXIT_FAILURE);
 		}
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
 		dupSTDERR_();
-		exec_(cgiBin, workingDir + filename);
+		exec_(location->cgi_path, location->root + client.getRequest().getReqTarget());
 		close(STDOUT_FILENO);
 		close(STDIN_FILENO);
 		close(STDERR_FILENO);

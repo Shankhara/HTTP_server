@@ -47,11 +47,14 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *servers);
-	std::string req = "GET / HTTP/1.1\r\n\r\n";
-	client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
+	std::string req = "GET "+filename+" HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	int httpStatus = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
+	if (httpStatus != 200)
+		Log().Get(logERROR) << "expecting status 200 got " << status;
 	CGIExec cgi;
-	std::string path = get_working_path() + "/cgi";
-	FileDescriptor *resp = cgi.run("/usr/bin/php-cgi", path.c_str(), filename, *client);
+	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
+	servers->at(0).locations.at(0).cgi_path = "/usr/bin/php-cgi";
+	FileDescriptor *resp = cgi.run(*client);
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, status, name);
 	close(resp->getFd());
@@ -69,13 +72,14 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *servers);
-	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA";
+	std::string req = "POST "+filename+" HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA";
 	int status = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (status != 200)
 		Log().Get(logERROR) << "expecting status 200 got " << status;
 	CGIExec cgi;
-	std::string path = get_working_path();
-	FileDescriptor *resp = cgi.run("/usr/local/bin/ubuntu_cgi_tester", path, filename, *client);
+	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
+	servers->at(0).locations.at(0).cgi_path = "/usr/local/bin/ubuntu_cgi_tester";
+	FileDescriptor *resp = cgi.run(*client);
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, "200", name);
 	close(resp->getFd());

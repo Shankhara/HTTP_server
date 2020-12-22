@@ -82,6 +82,7 @@ class Request
 	std::string decode_authorization();
 
 	Parsing::server &getServer() const;
+	Parsing::location *getLocation() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getBody() const;

@@ -20,7 +20,6 @@
 class Client: public FileDescriptor {
 
 private:
-	std::vector<Parsing::server> 		&servers_;
 	FileDescriptor						*CGIResponse_;
 	std::string							response_;
 	Request								request_;
@@ -33,7 +32,7 @@ public:
 	void 							appendResponse(char [], int);
 	std::string 					&getResponse();
 	void 							onEvent();
-	Request 						&getRequest();
+	Request							&getRequest();
 };
 
 #endif //WEBSERV_CLIENT_HPP

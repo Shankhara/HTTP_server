@@ -91,7 +91,7 @@ void correctRequestLine()
 	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "double CRLF ending requestline");
 
-	str = "CONNECT /qwe HTTP/1.1\r\n\r\n";
+	str = "CONNECT /qwe HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	assertRequest(str, "CONNECT", "/qwe", vhost, "testing CONNECT");
 
 	str = "DELETE /qwe HTTP/1.1\r\n\r\n";

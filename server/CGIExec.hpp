@@ -49,13 +49,13 @@ private:
 	void 						pipeSTDOUT_(int pfd[2]);
 	void 						pipeSTDIN_(int pfd[2]);
 	void 						dupSTDERR_();
-	void 						build_(Request &, const std::string &, const std::string &);
+	void 						build_(const Request &, const std::string &, const std::string &);
 	void						freeEnvs_();
 	void 						write500();
 
 public:
 	CGIExec();
-	FileDescriptor				*run(const std::string &, const std::string &, const std::string &, Client &);
+	FileDescriptor				*run(Client & );
 	virtual						~CGIExec();
 };
 

@@ -330,6 +330,9 @@ bool 	Request::isAuthorized_(Parsing::location *location) const
 Parsing::server &Request::getServer() const
 { return matchServer_(); }
 
+Parsing::location *Request::getLocation() const
+{ return matchLocation_(matchServer_()); }
+
 int Request::getStatusCode() const
 { return (statusCode_); }
 
