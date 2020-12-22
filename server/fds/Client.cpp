@@ -3,6 +3,7 @@
 Client::Client(int fd, std::vector<Parsing::server> &s): servers_(s), request_(s) {
 	CGIResponse_ = 0;
 	fd_ = fd;
+	setLastEventTimer();
 	Log().Get(logDEBUG) << "Creating Client: " << fd_;
 }
 
@@ -16,6 +17,8 @@ Client::~Client() {
 void Client::onEvent()
 {
 	static char buf[RECV_BUFFER];
+
+	setLastEventTimer();
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)

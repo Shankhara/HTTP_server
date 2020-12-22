@@ -154,7 +154,13 @@ int getNextLine(std::string & buf, std::string & line) {
 
 	if (pos != std::string::npos)
 		return (1);
-
 	return (0);
 }
 
+unsigned long getTime()
+{
+	struct timeval	current;
+
+	gettimeofday(&current, NULL);
+	return (current.tv_sec * 1000 + current.tv_usec / 1000);
+}

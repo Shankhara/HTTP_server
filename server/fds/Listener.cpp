@@ -2,6 +2,7 @@
 
 Listener::Listener(): ip_(0), port_(0) {
 	fd_ = 0;
+	lastEventTimer_ = 0;
 }
 
 Listener::~Listener(){

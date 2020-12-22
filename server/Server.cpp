@@ -17,12 +17,13 @@ Server::Server()
 void Server::run_()
 {
 	fd_set					conn_fds;
+	struct timeval tv 		= {3, 0};
 
 	FD_ZERO(&conn_fds);
 	for (;;)
 	{
 		conn_fds = master_;
-		if (select(fdmax_+1, &conn_fds, NULL, NULL, NULL) == -1)
+		if (select(fdmax_+1, &conn_fds, NULL, NULL, &tv) == -1)
 		{
 			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
 			exit(EXIT_FAILURE);
@@ -35,6 +36,7 @@ void Server::run_()
 				fds_[i]->onEvent();
 			}
 		}
+		garbageCollector();
 	}
 }
 
@@ -87,6 +89,21 @@ void Server::releaseInstance()
 	{
 		delete instance_;
 		instance_ = 0;
+	}
+}
+
+void Server::garbageCollector()
+{
+	for (int i = 0; i <= fdmax_; i++)
+	{
+		if (FD_ISSET(i, &master_))
+		{
+			if (fds_[i]->getLastEventTimer() > 0 && (getTime() - fds_[i]->getLastEventTimer()) > READ_TIMEOUT * 1000)
+			{
+				Log().Get(logINFO) << "FD: " << i << " Timeout after " << READ_TIMEOUT << " sec";
+				deleteFileDescriptor(i);
+			}
+		}
 	}
 }
 

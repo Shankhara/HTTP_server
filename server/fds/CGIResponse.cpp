@@ -5,6 +5,7 @@ unsigned int CGIResponse::instances = 0;
 CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(false)
 {
 	fd_ = fd;
+	setLastEventTimer();
 	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_ << " From Client " << client_.getFd();
 	instances++;
 }
@@ -44,6 +45,7 @@ int CGIResponse::pipeToClient() {
 
 void CGIResponse::onEvent()
 {
+	setLastEventTimer();
 	if (pipeToClient() < 0)
 		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());

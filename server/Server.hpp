@@ -17,6 +17,8 @@
 #include "Logger.hpp"
 #include "fds/FileDescriptor.hpp"
 
+#define READ_TIMEOUT 60
+
 class Server
 {
 private:
@@ -25,6 +27,7 @@ private:
 	int 							fdmax_;
 	fd_set							master_;
     void 							run_();
+	void 							garbageCollector();
 	Server();
 
 public:

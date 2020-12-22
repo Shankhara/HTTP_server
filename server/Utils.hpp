@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <sys/time.h>
 
 bool isSpace(char);
 std::string removeSpaces(std::string &);
@@ -16,5 +17,6 @@ std::string ft_itoa(unsigned int);
 size_t strHex_to_int(std::string const &str);
 std::vector<std::string> explode(const std::string & str, const char & delim);
 int getNextLine(std::string & buf, std::string & line);
+unsigned long getTime();
 
 #endif
