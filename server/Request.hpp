@@ -43,11 +43,11 @@ class Request
 	std::string headerLastModified_;
 	std::string headerLocation_;
 
-	std::vector<std::string> headerAcceptCharset_;
-	std::vector<std::string> headerAcceptLanguage_;
-	std::vector<std::string> headerAllow_;
-	std::vector<std::string> headerContentLanguage_;
-	std::vector<std::string> headerContentType_;
+	std::string headerAcceptCharset_;
+	std::string headerAcceptLanguage_;
+	std::string headerAllow_;
+	std::string headerContentLanguage_;
+	std::string headerContentType_;
 
 	bool				isAuthorized_(Parsing::location *) const;
 	Parsing::location	*matchLocation_(Parsing::server &) const;
@@ -102,9 +102,9 @@ class Request
 	std::string getHeaderHost() const;
 	std::string getHeaderReferer() const;
 	std::string getHeaderContentLocation() const;
-	std::vector<std::string> getHeaderAcceptCharset() const;
-	std::vector<std::string> getHeaderAcceptLanguage() const;
-	std::vector<std::string> getHeaderAllow() const;
-	std::vector<std::string> getHeaderContentLanguage() const;
-	std::vector<std::string> getHeaderContentType() const;
+	std::string getHeaderAcceptCharset() const;
+	std::string getHeaderAcceptLanguage() const;
+	std::string getHeaderAllow() const;
+	std::string getHeaderContentLanguage() const;
+	std::string getHeaderContentType() const;
 };
