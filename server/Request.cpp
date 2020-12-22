@@ -190,6 +190,8 @@ int Request::parseHeadersContent()
 	}
 	if (!headersRaw_[HOST].empty())
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
+	else
+		return 400;
 	if (!headersRaw_[REFERER].empty())
 		headerReferer_ = removeSpaces(headersRaw_[REFERER]);
 	if (!headersRaw_[USER_AGENT].empty())
