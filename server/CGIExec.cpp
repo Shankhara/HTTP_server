@@ -33,10 +33,7 @@ CGIExec::CGIExec() {
 void CGIExec::build_(Request &request, const std::string &workDir, const std::string &filename) {
 	setEnv_(CGIExec::AUTH_TYPE, request.getHeaderAuth());
 	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
-	if (request.getHeaderContentType().size() > 0)
-		setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType()[0]); // TODO: replace as soon as getHeader return std::string
-	else
-		setEnv_(CGIExec::CONTENT_TYPE, "");
+	setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType());
 	setEnv_(CGIExec::GATEWAY_INTERFACE, "CGI/1.1");
 	setEnv_(CGIExec::QUERY_STRING, ""); //TODO: getQueryString?
 	setEnv_(CGIExec::PATH_INFO, request.getReqTarget());

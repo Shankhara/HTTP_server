@@ -27,9 +27,10 @@ std::string Request::decode_authorization()
 	std::vector<std::string> tmp;
 	std::string res;
 
-	tmp = explode(removeSpaces(headersRaw_[AUTHORIZATION]), ' ');
+	tmp = explode(headersRaw_[AUTHORIZATION], ' ');
+	removeSpaces(tmp[0]);
 	if (tmp[0] == "Basic")
-		res = decode64(tmp[1]);
+		res = decode64(removeSpaces(tmp[1]));
 	return (res);
 }
 
@@ -103,8 +104,7 @@ int Request::getChunkedBody()
 
 int Request::parseBody()
 {
-	size_t pos = headerTransferEncoding_.find("chunked");
-	if (pos != std::string::npos)
+	if (headerTransferEncoding_.compare("chunked") == 0)
 		return getChunkedBody();
 	else
 	{
@@ -176,9 +176,9 @@ int Request::parseHeadersContent()
 
 	//REQUEST HEADERS
 	if (!headersRaw_[ACCEPT_CHARSETS].empty())
-		headerAcceptCharset_ = explode(removeSpaces(headersRaw_[ACCEPT_CHARSETS]), ',');
+		headerAcceptCharset_ = removeSpaces(headersRaw_[ACCEPT_CHARSETS]);
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
-		headerAcceptLanguage_ = explode(removeSpaces(headersRaw_[ACCEPT_LANGUAGE]), ',');
+		headerAcceptLanguage_ = removeSpaces(headersRaw_[ACCEPT_LANGUAGE]);
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
 		headerAuth_ = decode_authorization();
@@ -194,15 +194,15 @@ int Request::parseHeadersContent()
 
 	//ENTITY HEADERS
 	if (!headersRaw_[ALLOW].empty())
-		headerAllow_ = explode(removeSpaces(headersRaw_[ALLOW]), ',');
+		headerAllow_ = removeSpaces(headersRaw_[ALLOW]);
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
-		headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
+		headerContentLanguage_ = removeSpaces(headersRaw_[CONTENT_LANGUAGE]);
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
-		headerContentType_ = explode(removeSpaces(headersRaw_[CONTENT_TYPE]), ';');
+		headerContentType_ = removeSpaces(headersRaw_[CONTENT_TYPE]);
 
 	//RESPONSE HEADERS
 	if (!headersRaw_[LAST_MODIFIED].empty())
@@ -361,17 +361,17 @@ int Request::getHeaderContentLength() const
 std::string Request::getHeaderContentLocation() const
 { return (headerContentLocation_); }
 
-std::vector<std::string> Request::getHeaderAcceptCharset() const
+std::string Request::getHeaderAcceptCharset() const
 { return (headerAcceptCharset_); }
 
-std::vector<std::string> Request::getHeaderAcceptLanguage() const
+std::string Request::getHeaderAcceptLanguage() const
 { return (headerAcceptLanguage_); }
 
-std::vector<std::string> Request::getHeaderAllow() const
+std::string Request::getHeaderAllow() const
 { return (headerAllow_); }
 
-std::vector<std::string> Request::getHeaderContentLanguage() const
+std::string Request::getHeaderContentLanguage() const
 { return (headerContentLanguage_); }
 
-std::vector<std::string> Request::getHeaderContentType() const
+std::string Request::getHeaderContentType() const
 { return (headerContentType_); }

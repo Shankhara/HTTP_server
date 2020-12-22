@@ -336,6 +336,11 @@ void badChunkedBody()
 	Request c(*vhost);
 	str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
 	assertEqual(c.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad end 2");
+
+	Request d(*vhost);
+	str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: joy chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
+	assertEqual(d.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad header");
+
 	delete (vhost);
 }
 
