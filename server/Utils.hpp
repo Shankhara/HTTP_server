@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <sys/time.h>
 
+std::string getStrDate();
 bool isSpace(char);
 std::string removeSpaces(std::string &);
 char ft_tolower(char);

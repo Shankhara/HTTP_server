@@ -12,17 +12,8 @@
 
 #define MAX_SIZE 8192
 
-#define BADREQUEST 1
-#define BADMETHOD 2
-#define BADVERSION 3
-#define BADHEADERNAME 4
-#define BADHEADER 5
-#define BADBODY 6
-
 class Request
 {
-	friend class Response;
-
 	private:
 	int statusCode_;
 	std::string request_;

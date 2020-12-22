@@ -5,16 +5,20 @@
 class Response
 {
 	private:
-	Request request_;
+	Request req_;
 	std::string msg_;
+	int statusCode_;
+
+	std::map<int, std::string> statusMap_;
+	std::vector<std::string> headersToPut_;
 
 	public:
 	Response(const Request &);
 	~Response();
 
 	void createResponse();
-	void statusLine();
-	void statusCode();
+	void setHeaders();
+	void putHeaders();
 
 	std::string getResponseMsg() const;
 

@@ -236,7 +236,7 @@ int Request::parseRequestLine()
 	if (requestLine_.size() != 3)
 		return 400;
 	if (checkMethod())
-		return 501;
+		return 400; //pas 501 car on implemente toutes les methodes
 	if (requestLine_.size() > MAX_SIZE)
 		return 414;
 	if (checkVersion())
