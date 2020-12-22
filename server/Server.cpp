@@ -17,7 +17,9 @@ Server::Server()
 void Server::run_()
 {
 	fd_set					conn_fds;
-	struct timeval tv 		= {3, 0};
+	struct timeval tv 		= {5, 0};
+	unsigned long 			lastGC = getTime();
+	unsigned long 			cur;
 
 	FD_ZERO(&conn_fds);
 	for (;;)
@@ -36,7 +38,11 @@ void Server::run_()
 				fds_[i]->onEvent();
 			}
 		}
-		garbageCollector();
+		if (((cur = getTime()) - lastGC) > 4 * 1000)
+		{
+			garbageCollector();
+			lastGC = cur;
+		}
 	}
 }
 
