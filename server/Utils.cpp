@@ -4,6 +4,21 @@
 #include <string>
 #include <algorithm>
 
+std::string getStrDate()
+{
+	struct timeval tv;
+	struct tm time;
+	char buffer[80];
+	std::string date;
+
+	gettimeofday(&tv, NULL);
+	long int tmp = static_cast<long int>(tv.tv_sec);
+	std::string str = ft_itoa(tmp);
+	strptime(str.c_str(), "%s", &time);
+	strftime(buffer, 80, "%a, %d %b %Y %H:%M:%S GMT", &time);
+	return (buffer);
+}
+
 bool isSpace(char c)
 {
 	if (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r')
