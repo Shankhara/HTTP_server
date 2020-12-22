@@ -47,7 +47,7 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *servers);
-	std::string req = "GET / HTTP1.1\r\n\r\n";
+	std::string req = "GET / HTTP/1.1\r\n\r\n";
 	client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	CGIExec cgi;
 	std::string path = get_working_path() + "/cgi";
@@ -96,8 +96,8 @@ void testCGI()
 	Log().setLevel(logERROR);
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
 	testItoa();
-	//assertCGIFailed("/notfound.php", "404", "Status: 404");
-	//assertCGIFailed("/500.php", "500", "Status: 500");
+	assertCGIFailed("/notfound.php", "404", "Status: 404");
+	assertCGIFailed("/500.php", "500", "Status: 500");
 	assertCGISuccess("/test.bla", "42 CGI Tester");
 }
 
