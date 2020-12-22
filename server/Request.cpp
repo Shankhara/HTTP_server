@@ -104,7 +104,8 @@ int Request::getChunkedBody()
 
 int Request::parseBody()
 {
-	if (headerTransferEncoding_.compare("chunked") == 0)
+	size_t ret = headerTransferEncoding_.find("chunked");
+	if (ret != std::string::npos)
 		return getChunkedBody();
 	else
 	{
@@ -114,6 +115,8 @@ int Request::parseBody()
 			msgBody_ = request_;
 			return 200;
 		}
+		if (request_.size() > len)
+			return 400;
 	}
 	return 100;	
 }

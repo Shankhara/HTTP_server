@@ -250,15 +250,16 @@ void badHeaders()
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-	Request r(*vhost);
+	Request a(*vhost);
 	int ret;
 	std::string str = "GET /qwe HTTP/1.1\r\nReferer: 2\r\nContent-length: 3\r\n\r\n";
-	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
+	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 100, "no body despite content-length header");
 	//TODO: manage this error
 
+	Request b(*vhost);
 	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nDate: today\r\n\r\n";
-	ret = r.doRequest(const_cast<char *>(str.c_str()), str.size());
+	ret = b.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 400, "whitespace between header name and colon");
 
 	delete (vhost);
@@ -337,10 +338,6 @@ void badChunkedBody()
 	str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
 	assertEqual(c.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad end 2");
 
-	Request d(*vhost);
-	str = "GET /qwe HTTP/1.1\r\ntransfer-encoding: joy chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux aaaaaaaaaaaaaaa12\r\nsans saut de ligne\r\n4\r\n\r\n";
-	assertEqual(d.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "bad header");
-
 	delete (vhost);
 }
 
@@ -352,7 +349,8 @@ static void testIncorrectContentLength()
 	Request a(*vhost);
 
 	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA IS NOT 4";
-	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 418, "Content-Length < bodySize");
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 400, "Content-Length < bodySize");
+	// 418 c'est IM A TEAPOT ^^
 
 	delete (vhost);
 }
