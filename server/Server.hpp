@@ -27,7 +27,7 @@ private:
 	int 							fdmax_;
 	fd_set							master_;
     void 							run_();
-	void 							garbageCollector();
+	void 							garbageCollector_();
 	Server();
 
 public:

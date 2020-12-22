@@ -40,7 +40,7 @@ void Server::run_()
 		}
 		if (((cur = getTime()) - lastGC) > 4 * 1000)
 		{
-			garbageCollector();
+			garbageCollector_();
 			lastGC = cur;
 		}
 	}
@@ -98,7 +98,7 @@ void Server::releaseInstance()
 	}
 }
 
-void Server::garbageCollector()
+void Server::garbageCollector_()
 {
 	for (int i = 0; i <= fdmax_; i++)
 	{
