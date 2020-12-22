@@ -14,6 +14,7 @@
 #include "../parsing/Parsing.hpp"
 
 #define MAX_CGI_FORKS 20
+#define RECV_BUFFER	1024
 
 
 class Client: public FileDescriptor {

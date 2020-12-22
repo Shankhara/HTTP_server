@@ -15,7 +15,7 @@ Client::~Client() {
 
 void Client::onEvent()
 {
-	static char buf[1024];
+	static char buf[RECV_BUFFER];
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
