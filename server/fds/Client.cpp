@@ -37,22 +37,45 @@ void Client::sendResponse() const
 {
 }
 
+inline bool ends_with(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
 void Client::constructRequest(char buf[], int nbytes) {
 	int status;
 
-	if (CGIResponse::instances > MAX_CGI_FORKS)
+
+	/*if (CGIResponse::instances > MAX_CGI_FORKS)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Too many CGIRunning, bounce this client: " << fd_;
 		send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
-	}
+	}*/
 	status = request_.doRequest(buf, nbytes);
+
 	Log().Get(logDEBUG) << __FUNCTION__ << fd_ << "parsing status: " << status;
 	if (status == 100)
 		return ;
 	else if (status == 200)
 	{
+		if (request_.getLocation()->cgi_extension.size() > 0 && !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+		{
+			RespGet response(request_);
+			response.build();
+			while ((nbytes = response.getBufSize()) > 0)
+			{
+				if (send(fd_, response.readResponse().c_str(), nbytes, 0) < 0)
+				{
+					Log().Get(logERROR) << " unable to send to client " << strerror(errno);
+					Server::getInstance()->deleteFileDescriptor(fd_);
+					return ;
+				}
+			}
+			return ;
+		}
 		if (CGIResponse_ != 0) {
 			Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
 								<< request_.getRequest();

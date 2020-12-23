@@ -12,8 +12,8 @@ void RespGet::build() {
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno);
-		// TODO: return Response.Send404()
+		Log().Get(logINFO) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		error404();
 		return ;
 	}
 

@@ -18,11 +18,12 @@ class Response
 	virtual ~Response();
 	void createResponse();
 	void setBaseHeaders();
-	void setHeader();
 	void putHeaders();
 	virtual void build() = 0;
 	void setHeaderContentType(std::string );
 	void setHeaderContentLength(long);
+	void error404();
+	u_int64_t getBufSize();
 
-	std::string getResponseMsg() const;
+	std::string readResponse();
 };

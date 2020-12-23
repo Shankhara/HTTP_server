@@ -12,6 +12,7 @@
 #include "../Request.hpp"
 #include "../CGIExec.hpp"
 #include "../parsing/Parsing.hpp"
+#include "../responses/RespGet.hpp"
 
 #define MAX_CGI_FORKS 20
 #define RECV_BUFFER	1024

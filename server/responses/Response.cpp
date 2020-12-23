@@ -28,7 +28,7 @@ Response::~Response() { }
 
 void Response::setBaseHeaders()
 {
-	headersToPut_.push_back("Server: Webserv");
+	headersToPut_.push_back("Server: " + std::string(WEBSERV_ID));
 	headersToPut_.push_back("Date: " + getStrDate());
 }
 
@@ -58,9 +58,32 @@ void Response::createResponse()
 	msg_.append(ft_itoa(statusCode_));
 	msg_.append(" ");
 	msg_.append(statusMap_[statusCode_]);
-	putHeaders();
 }
 
 
-std::string Response::getResponseMsg() const
-{ return msg_; }
+std::string Response::readResponse()
+{
+	std::string resp = msg_;
+	msg_.clear();
+	return resp;
+}
+
+void Response::error404() {
+	statusCode_ = 404;
+	createResponse();
+	std::string body = "<html>"
+					   "<head><title>404 Not Found</title></head>"
+					   "<body bgcolor=\"white\">"
+					   "<center><h1>404 Not Found</h1></center>"
+						"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
+					   "</body>"
+					   "</html>";
+	setHeaderContentLength(body.size());
+	setHeaderContentType("text/html");
+	putHeaders();
+	msg_.append(body);
+}
+
+u_int64_t Response::getBufSize() {
+	return (msg_.size());
+}

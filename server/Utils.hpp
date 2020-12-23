@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <sys/time.h>
 
+#define WEBSERV_ID "webserv/0.0.1"
+
 std::string getStrDate();
 bool isSpace(char);
 std::string removeSpaces(std::string &);
