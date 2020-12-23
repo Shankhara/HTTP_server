@@ -42,12 +42,10 @@ void Response::putHeaders()
 		msg_.append(headersToPut_[i]);
 		msg_.append("\r\n");
 	}
-
 }
 
 void Response::createResponse()
 {
-
 	msg_.append(req_.getVersion());
 	msg_.append(" ");
 	msg_.append(ft_itoa(statusCode_));

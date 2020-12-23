@@ -348,6 +348,9 @@ std::string Request::getMethod() const
 std::string Request::getReqTarget() const
 { return (requestLine_[REQTARGET]); }
 
+std::string Request::getQueryStr() const
+{ return (queryString_); }
+
 std::string Request::getVersion() const
 { return (requestLine_[VERSION]); }
 
