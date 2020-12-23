@@ -61,7 +61,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 		return ;
 	else if (status == 200)
 	{
-		if (request_.getLocation()->cgi_extension.size() > 0 && !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+		if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 		{
 			RespGet response(request_);
 			response.build();
