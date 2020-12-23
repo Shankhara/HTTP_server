@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 			testRequest();
 		else if (arg.compare("-c") == 0)
 			testCGI();
+		else if (arg.compare("-re") == 0)
+			testResponse();
 		else if (arg.compare("-p") == 0)
 			testParsing();
 	}else{

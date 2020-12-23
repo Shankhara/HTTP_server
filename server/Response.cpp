@@ -19,30 +19,39 @@ Response::Response(const Request & r) : req_(r)
 
 Response::~Response() { }
 
-void setHeaders()
+//std::string Response::getContentType()
+//{
+//	
+//}
+
+void Response::setHeaders()
 {
 	headersToPut_.push_back("Server: Webserv");
 	headersToPut_.push_back("Date: " + getStrDate());
-	headersToPut_.push_back("Content-Type: " + getContentType());
-	headersToPut_.push_back("Content-Length: " + getContentLen());
+//	headersToPut_.push_back("Content-Type: " + getContentType());
+//	headersToPut_.push_back("Content-Length: " + getContentLen());
 
 }
 
-void putHeaders()
+void Response::putHeaders()
 {
 	setHeaders();
+	msg_.append("\r\n");
 	for (size_t i = 0; i < headersToPut_.size(); i++)
 	{
-		msg.append(headersToPut_[i]);
-		msg.append("\r\n");
+		msg_.append(headersToPut_[i]);
+		msg_.append("\r\n");
 	}
 
 }
 
 void Response::createResponse()
 {
+
 	msg_.append(req_.getVersion());
-	msg_.append(statusCode_);
+	msg_.append(" ");
+	msg_.append(ft_itoa(statusCode_));
+	msg_.append(" ");
 	msg_.append(statusMap_[statusCode_]);
 	putHeaders();
 }

@@ -4,11 +4,13 @@
 #include "tests.hpp"
 #include "../parsing/Parsing.hpp"
 #include "../CGIExec.hpp"
-#include "../Request.hpp"
+//#include "../Request.hpp"
+#include "../Response.hpp"
 #include "../fds/Client.hpp"
 #include "../fds/Listener.hpp"
 
 void testRequest();
+void testResponse();
 void testCGI();
 void testParsing();
 std::vector<Parsing::server> *createVirtualHosts();

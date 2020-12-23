@@ -2,7 +2,11 @@ VPATH		= ../:../fds/
 VPATH		+= ../:../parsing/
 
 NAME		= unittests
-OBJS		= unittests.o Client.o Request.o Logger.o Server.o CGIExec.o CGIResponse.o Utils.o testRequest.o testCGI.o Listener.o Parsing.o Ut.o testParsing.o
+OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
+			Parsing.o Ut.o testParsing.o \
+			CGIExec.o CGIResponse.o testCGI.o \
+			Request.o testRequest.o \
+			Response.o testResponse.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -g3
@@ -13,6 +17,7 @@ $(NAME):	$(OBJS)
 
 unittests.o : unittests.hpp
 testRequest.o: testRequest.cpp
+testResponse.o: testResponse.cpp
 testParsing.o: testParsing.cpp
 testCGI.o: testCGI.cpp
 Client.o : ../fds/Client.hpp
@@ -21,7 +26,7 @@ Request.o : ../Request.hpp
 Logger.o : ../Logger.hpp
 Server.o : ../Server.hpp
 Listener.o : ../fds/Listener.hpp
-#Response.o : ../Response.hpp
+Response.o : ../Response.hpp
 CGIExec.o : ../CGIExec.hpp
 CGIResponse.o : ../fds/CGIResponse.hpp
 Parsing.o : ../parsing/Parsing.hpp
