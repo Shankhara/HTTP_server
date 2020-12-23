@@ -89,7 +89,7 @@ class Request
 	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
-	std::string getQueryStr() const
+	std::string getQueryStr() const;
 	std::string getVersion() const;
 	std::string getHeaderDate() const;
 	std::string getHeaderAuth() const;

@@ -1,4 +1,7 @@
-server/server
+server/webserv
 server/.objs/
 *.out
 *.swp
+*.o
+ubuntu_cgi_tester
+ubuntu_tester

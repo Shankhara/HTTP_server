@@ -35,7 +35,7 @@ void CGIExec::build_(const Request &request, const std::string &workDir, const s
 	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
 	setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType());
 	setEnv_(CGIExec::GATEWAY_INTERFACE, "CGI/1.1");
-	setEnv_(CGIExec::QUERY_STRING, ""); //TODO: getQueryString?
+	setEnv_(CGIExec::QUERY_STRING, request.getQueryStr());
 	setEnv_(CGIExec::PATH_INFO, request.getReqTarget());
 	setEnv_(CGIExec::PATH_TRANSLATED, workDir + request.getReqTarget());
 	setEnv_(CGIExec::REMOTE_ADDR, "127.0.0.1");
