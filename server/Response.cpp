@@ -15,6 +15,8 @@ Response::Response(const Request & r) : req_(r)
 	statusMap_[413] = "Request Entity Too Large";
 	statusMap_[414] = "Request-URI Too Long";
 	statusMap_[500] = "Internal Server Error";
+
+	setBaseHeaders();
 }
 
 Response::~Response() { }
@@ -24,24 +26,29 @@ Response::~Response() { }
 //	
 //}
 
-void Response::setHeaders()
+void Response::setBaseHeaders()
 {
 	headersToPut_.push_back("Server: Webserv");
 	headersToPut_.push_back("Date: " + getStrDate());
-//	headersToPut_.push_back("Content-Type: " + getContentType());
-//	headersToPut_.push_back("Content-Length: " + getContentLen());
+}
 
+void Response::setHeaderContentType(std::string value) {
+	headersToPut_.push_back("Content-Type: " + value);
+}
+
+void Response::setHeaderContentLength(long value) {
+	headersToPut_.push_back("Content-Length: " + ft_itoa(value));
 }
 
 void Response::putHeaders()
 {
-	setHeaders();
 	msg_.append("\r\n");
 	for (size_t i = 0; i < headersToPut_.size(); i++)
 	{
 		msg_.append(headersToPut_[i]);
 		msg_.append("\r\n");
 	}
+	msg_.append("\r\n");
 }
 
 void Response::createResponse()
@@ -53,6 +60,7 @@ void Response::createResponse()
 	msg_.append(statusMap_[statusCode_]);
 	putHeaders();
 }
+
 
 std::string Response::getResponseMsg() const
 { return msg_; }

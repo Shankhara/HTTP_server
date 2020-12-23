@@ -4,7 +4,7 @@
 
 class Response
 {
-	private:
+	protected:
 	Request req_;
 	std::string msg_;
 	int statusCode_;
@@ -14,12 +14,14 @@ class Response
 
 	public:
 	Response(const Request &);
-	~Response();
-
+	virtual ~Response();
 	void createResponse();
-	void setHeaders();
+	void setBaseHeaders();
+	void setHeader();
 	void putHeaders();
+	virtual void exec() = 0;
+	void setHeaderContentType(std::string );
+	void setHeaderContentLength(long);
 
 	std::string getResponseMsg() const;
-
 };

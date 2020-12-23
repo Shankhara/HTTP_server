@@ -6,7 +6,8 @@ OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o testParsing.o \
 			CGIExec.o CGIResponse.o testCGI.o \
 			Request.o testRequest.o \
-			Response.o testResponse.o
+			GetMethod.o Response.o testResponse.o \
+
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -g3
@@ -21,6 +22,7 @@ testResponse.o: testResponse.cpp
 testParsing.o: testParsing.cpp
 testCGI.o: testCGI.cpp
 Client.o : ../fds/Client.hpp
+GetMethod.o: ../GetMethod.hpp
 Utils.o : ../Utils.hpp
 Request.o : ../Request.hpp 
 Logger.o : ../Logger.hpp

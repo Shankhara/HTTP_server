@@ -6,6 +6,7 @@
 #include "../CGIExec.hpp"
 //#include "../Request.hpp"
 #include "../Response.hpp"
+#include "../GetMethod.hpp"
 #include "../fds/Client.hpp"
 #include "../fds/Listener.hpp"
 
