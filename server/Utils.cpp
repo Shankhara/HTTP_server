@@ -88,7 +88,7 @@ int ft_atoi(std::string const &str)
 	return res;
 }
 
-static void rec_itoa(unsigned int n, std::string &str, int i)
+static void rec_itoa(unsigned long n, std::string &str, int i)
 {
 	if (n >= 10)
 		rec_itoa(n / 10, str, i - 1);
@@ -100,11 +100,11 @@ static void rec_itoa(unsigned int n, std::string &str, int i)
 		str[i] = (n % 10) + '0';
 }
 
-std::string ft_itoa(unsigned int nb)
+std::string ft_itoa(unsigned long nb)
 {
 	std::string str;
 	int i = 0;
-	int tmp = nb;
+	unsigned long tmp = nb;
 
 	if (nb == 0)
 		return (std::string("0"));
