@@ -39,6 +39,7 @@ void testParsing()
 	assertThrow("./parsing/duplicateLocation.conf", "adding the same location twice");
 	assertThrow("./parsing/duplicateRoot.conf", "adding the same root twice");
 	assertThrow("./parsing/invalidPort.conf", "[emerg] invalid port");
+	assertThrow("./parsing/duplicateServerName.conf", " duplicate server name");
 
-	testDuplicateServerName();
+	//testDuplicateServerName();
 }

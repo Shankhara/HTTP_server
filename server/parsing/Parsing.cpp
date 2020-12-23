@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/17 17:59:16 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/23 07:49:45 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,17 @@ Parsing::~Parsing(void) {}
 
 void				Parsing::parseConfig(void)
 {
-	std::__cxx11::basic_string<char>	*ptr = NULL;
 	iterator	first;
 	iterator	next;
 
 	line_ = 1;
 	char_ = 1;
-	if (this->file_.length() < 6)
-	{
-		*ptr = this->file_.substr(this->file_.length() - 5);
-		if (*ptr != ".conf")
+	if (this->file_.length() < 6 ||
+		this->file_.substr(this->file_.length() - 5).compare(stds(".conf")) != 0)
 			throw (PpE(this->file_, stds("File should have the .conf extension")));
-	}
-	free(ptr);
 	std::ifstream	file(this->file_.c_str());
+	if (file.is_open() == false)
+		throw (PpE(this->file_, stds("File doesn't exist")));
 	content = stds((ist(file)), (ist()));
 	first = content.begin();
 	file.close();
@@ -96,6 +93,9 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			else
 				this->skipWhite(&first, end, true);
 			server.locations.push_back(this->parseLocation(line[1], first, next));
+			for (size_t i = 0; i < server.locations.size() - 1; i++)
+				if (server.locations[i].name == line[1])
+					throw (PpE(this->file_, stds(" duplicated locations ")));
 			first = next + 1;
 			this->skipWhite(&first, end, true);
 			continue;
@@ -141,7 +141,7 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		if (pos != stds::npos)
 		{
 			listen = line[1].substr(pos + 1, line[1].size());		
-			if (to_int(listen.c_str(), listen.size()) == 0)
+			if (to_int(listen.c_str(), listen.size()) < 0 || to_int(listen.c_str(), listen.size()) > 65535)
 				throw (PpE(this->file_, stds("Port can't be 0")));
 			server.port = to_int(listen.c_str(), listen.size());
 		}
@@ -162,10 +162,20 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			throw (PpE(this->file_, stds("error_page need at least 2 arguments")));
 	}
 	else if (line[0] == "server_name")
+	{
+		for (size_t k = 0; k < line.size() - 1; k++)
+			for (size_t i = 0; i < this->getServers().size(); i++)
+				for (size_t j = 0; j < this->getServers()[i].names.size(); j++)
+					if (line[k + 1] == this->getServers()[i].names[j])
+						throw (PpE(this->file_, stds(" duplicated server_name ")));
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
+	}
 	else if (line[0] == "root")
 	{
+		for (size_t i = 0; i < this->getServers().size(); i++)
+			if (this->getServers()[i].root == line[1])
+				throw (PpE(this->file_, stds(" duplicated root in server")));	
 		if (line[1][0] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		server.root = line[1];
@@ -188,6 +198,8 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "root")
 	{
+		if (line[1] == location.root)
+			throw (PpE(this->file_, stds(stds(" duplicated root in location ") + line[0])));
 		if (line[1][0] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		location.root = line[1];
