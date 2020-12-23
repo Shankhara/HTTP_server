@@ -14,7 +14,7 @@ char ft_tolower(char);
 bool boolFind(std::string const & haystack, std::string const & needle);
 std::string decode64(std::string const &str);
 int ft_atoi(std::string const &str);
-std::string ft_itoa(unsigned int);
+std::string ft_itoa(unsigned long);
 size_t strHex_to_int(std::string const &str);
 std::vector<std::string> explode(const std::string & str, const char & delim);
 int getNextLine(std::string & buf, std::string & line);
