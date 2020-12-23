@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Request.hpp"
+#include "../Request.hpp"
+#include <errno.h>
 
 class Response
 {
@@ -19,7 +20,7 @@ class Response
 	void setBaseHeaders();
 	void setHeader();
 	void putHeaders();
-	virtual void exec() = 0;
+	virtual void build() = 0;
 	void setHeaderContentType(std::string );
 	void setHeaderContentLength(long);
 

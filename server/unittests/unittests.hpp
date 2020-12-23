@@ -5,8 +5,8 @@
 #include "../parsing/Parsing.hpp"
 #include "../CGIExec.hpp"
 //#include "../Request.hpp"
-#include "../Response.hpp"
-#include "../GetMethod.hpp"
+#include "../responses/Response.hpp"
+#include "../responses/RespGet.hpp"
 #include "../fds/Client.hpp"
 #include "../fds/Listener.hpp"
 

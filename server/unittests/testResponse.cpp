@@ -8,8 +8,8 @@ void testResponse()
 	Request ra(*vhost);
 	std::string str = "GET /index.html HTTP/1.1\r\n\r\n";
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-	GetMethod a(ra);
+	RespGet respGet(ra);
 
-	a.exec();
-	std::cout << a.getResponseMsg() << std::endl;
+	respGet.build();
+	std::cout << respGet.getResponseMsg() << std::endl;
 }

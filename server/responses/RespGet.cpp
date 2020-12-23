@@ -1,22 +1,23 @@
-#include "GetMethod.hpp"
+#include "RespGet.hpp"
 
-GetMethod::GetMethod(const Request &r): Response(r) {
+RespGet::RespGet(const Request &r): Response(r) {
 }
 
-GetMethod::~GetMethod() {}
+RespGet::~RespGet() {}
 
-void GetMethod::exec() {
+void RespGet::build() {
 	Parsing::location *location = req_.getLocation();
-	struct stat st;
 	std::string path = location->root + req_.getReqTarget();
 	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno);
-		// TODO: return 404
+		// TODO: return Response.Send404()
 		return ;
 	}
+
+	struct stat st;
 	fstat(fd, &st);
 	setHeaderContentLength(st.st_size);
 	Log().Get(logDEBUG) << __FUNCTION__ << "Filesize: " << st.st_size;
