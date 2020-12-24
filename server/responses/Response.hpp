@@ -26,4 +26,6 @@ class Response
 	u_int64_t getBufSize();
 
 	std::string readResponse();
+	std::string getResponseMsg() const;
+
 };

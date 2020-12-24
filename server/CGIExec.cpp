@@ -46,7 +46,7 @@ void CGIExec::build_(const Request &request, const std::string &workDir, const s
 	setEnv_(CGIExec::SCRIPT_FILENAME, workDir + filename);
 	setEnv_(CGIExec::SCRIPT_NAME, filename);
 	setEnv_(CGIExec::SERVER_NAME, request.getHeaderHost());
-	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request.getServer().port));
+	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request.getServer()->port));
 	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");
 	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
 }

@@ -22,6 +22,8 @@ class Request
 	std::vector<std::string> headersRaw_;
 	std::vector<std::string> requestLine_;
 	std::vector<Parsing::server> &servers_;
+	Parsing::location *location_;
+	static Parsing::server *server_;
 
 	int headerContentLength_;
 	std::string headerDate_;
@@ -41,8 +43,8 @@ class Request
 	std::string headerContentType_;
 
 	bool				isAuthorized_(Parsing::location *) const;
-	Parsing::location	*matchLocation_(Parsing::server &) const;
-	Parsing::server		&matchServer_() const;
+	Parsing::location	*matchLocation_(Parsing::server *) const;
+	Parsing::server		*matchServer_() const;
 
 
 	public:
@@ -81,7 +83,7 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decode_authorization();
 
-	Parsing::server &getServer() const;
+	Parsing::server *getServer() const;
 	Parsing::location *getLocation() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;

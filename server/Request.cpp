@@ -1,5 +1,7 @@
 #include "Request.hpp"
 
+Parsing::server * Request::server_ = NULL;
+
 Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(18);
@@ -263,8 +265,8 @@ int Request::parse()
 
 	if (statusCode_ == 200)
 	{
-		Parsing::location *location = matchLocation_(matchServer_());
-		if (!isAuthorized_(location))
+		location_ = matchLocation_(matchServer_());
+		if (!isAuthorized_(location_))
 			statusCode_ = 403;
 	}
 	return (statusCode_);
@@ -279,32 +281,32 @@ int Request::doRequest(char buf[256], size_t nbytes)
 	return (statusCode_);
 }
 
-Parsing::server & Request::matchServer_() const
+Parsing::server *Request::matchServer_() const
 {
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
 			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
-				return (servers_[i]);
+				return (server_ = &servers_[i]);
 		}
 	}
-	return (servers_[0]);
+	return (&servers_[0]);
 }
 
-Parsing::location *Request::matchLocation_(Parsing::server &server) const
+Parsing::location *Request::matchLocation_(Parsing::server *server) const
 {
 	Parsing::location *location = 0;
 	unsigned long minSize = 0;
 
-	for (unsigned long j = 0; j < server.locations.size(); j++)
+	for (unsigned long j = 0; j < server->locations.size(); j++)
 	{
-		if (getReqTarget().rfind(server.locations[j].name, 0) == 0)
+		if (getReqTarget().rfind(server->locations[j].name, 0) == 0)
 		{
-			if (server.locations[j].name.size() > minSize)
+			if (server->locations[j].name.size() > minSize)
 			{
-				location = &server.locations[j];
-				minSize = server.locations[j].name.size();
+				location = &server->locations[j];
+				minSize = server->locations[j].name.size();
 			}
 		}
 	}
@@ -327,11 +329,11 @@ bool 	Request::isAuthorized_(Parsing::location *location) const
 	return false;
 }
 
-Parsing::server &Request::getServer() const
-{ return matchServer_(); }
+Parsing::server *Request::getServer() const
+{ return server_; }
 
 Parsing::location *Request::getLocation() const
-{ return matchLocation_(matchServer_()); }
+{ return location_; }
 
 int Request::getStatusCode() const
 { return (statusCode_); }

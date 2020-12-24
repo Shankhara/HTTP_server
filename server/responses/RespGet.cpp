@@ -9,6 +9,7 @@ void RespGet::build() {
 	Parsing::location *location = req_.getLocation();
 	std::string path = location->root + req_.getReqTarget();
 	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
+
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd == -1)
 	{

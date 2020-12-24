@@ -21,11 +21,6 @@ Response::Response(const Request & r) : req_(r)
 
 Response::~Response() { }
 
-//std::string Response::getContentType()
-//{
-//	
-//}
-
 void Response::setBaseHeaders()
 {
 	headersToPut_.push_back("Server: " + std::string(WEBSERV_ID));
@@ -60,7 +55,6 @@ void Response::createResponse()
 	msg_.append(statusMap_[statusCode_]);
 }
 
-
 std::string Response::readResponse()
 {
 	std::string resp = msg_;
@@ -87,3 +81,6 @@ void Response::error404() {
 u_int64_t Response::getBufSize() {
 	return (msg_.size());
 }
+
+std::string Response::getResponseMsg() const
+{ return msg_; }
