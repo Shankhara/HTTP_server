@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/23 15:04:07 by cbouleng         ###   ########.fr       */
+/*   Updated: 2020/12/24 11:15:00 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,16 @@ void				Parsing::parseConfig(void)
 		first = next + 1;		
 		this->skipWhite(&first, content.end(), true);
 	}
+	if (this->servers_.empty())
+		throw (PpE(this->file_, stds("No server defined")));
 	return;
 }
 
 Parsing::server	Parsing::parseProps(iterator first, iterator end)
 {
-	Parsing::server	server = this->getDefaultServer();
+	Parsing::server		server = this->getDefaultServer();
 	std::vector<stds>	line;
+	std::vector<int>	prop = this->getTableDef();
 	stds				tmp;
 	iterator			next;
 
@@ -102,7 +105,7 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 		}	
 		else	
 			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
-		server = this->returnProps(server, line);
+		server = this->returnProps(server, line, &prop);
 	}
 	return server;
 }
@@ -110,6 +113,7 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 {
 	Parsing::location	location = this->getDefaultLocation();
 	std::vector<stds>	line;
+	std::vector<int>	prop = this->getTableDef();
 	stds				tmp;
 	
 	location.name = name;
@@ -121,12 +125,12 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		if (tmp[tmp.size() - 1] != ';')
 			throw (PpE(this->file_, stds("Expected token ;")));
 		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
-		location = this->returnLocation(location, line);
+		location = this->returnLocation(location, line, &prop);
 	}
 	return location;
 }
 
-Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> line)
+Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> line, std::vector<int> *prop)
 {
 	stds	listen;
 	size_t	pos;
@@ -137,6 +141,10 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "listen")
 	{
+		if ((*prop)[0] == 0)
+			(*prop)[0] = 1;
+		else
+			throw (PpE(this->file_, stds(" listen duplicated ")));
 		pos = line[1].find(stds(":"));
 		if (pos != stds::npos)
 		{
@@ -156,6 +164,10 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 	}
 	else if (line[0] == "error_page")
 	{
+		if ((*prop)[1] == 0)
+			(*prop)[1] = 1;
+		else
+			throw (PpE(this->file_, stds(" error_page duplicated ")));
 		if (line.size() == 3)
 			server.error_pages.push_back(pi(to_int(line[1].c_str(), line[1].size()), line[2]));
 		else
@@ -163,6 +175,10 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 	}
 	else if (line[0] == "server_name")
 	{
+		if ((*prop)[2] == 0)
+			(*prop)[2] = 1;
+		else
+			throw (PpE(this->file_, stds(" server_name duplicated ")));
 		for (size_t k = 0; k < line.size() - 1; k++)
 			for (size_t i = 0; i < this->getServers().size(); i++)
 				for (size_t j = 0; j < this->getServers()[i].names.size(); j++)
@@ -173,6 +189,10 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 	}
 	else if (line[0] == "root")
 	{
+		if ((*prop)[3] == 0)
+			(*prop)[3] = 1;
+		else
+			throw (PpE(this->file_, stds(" root duplicated ")));
 		for (size_t i = 0; i < this->getServers().size(); i++)
 			if (this->getServers()[i].root == line[1])
 				throw (PpE(this->file_, stds(" duplicated root in server")));	
@@ -181,11 +201,17 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		server.root = line[1];
 	}
 	else if (line [0] == "client_max_body_size")
+	{
+		if ((*prop)[4] == 0)
+			(*prop)[4] = 1;
+		else
+			throw (PpE(this->file_, stds(" client_max_body_size duplicated ")));
 		server.client_max_body_size = getMcbs(line[1]);
+	}
 	return server;
 }
 
-Parsing::location		Parsing::returnLocation(Parsing::location location, std::vector<stds> line)
+Parsing::location		Parsing::returnLocation(Parsing::location location, std::vector<stds> line, std::vector<int> *prop)
 {
 	iterator	first;
 	iterator	second;
@@ -198,21 +224,33 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[0])));
 	if (line[0] == "root")
 	{
-		if (line[1] == location.root)
-			throw (PpE(this->file_, stds(stds(" duplicated root in location ") + line[0])));
+		if ((*prop)[0] == 0)
+			(*prop)[0] = 1;
+		else
+			throw (PpE(this->file_, stds(" root duplicated ")));	
 		if (line[1][0] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		location.root = line[1];
 	}
 	else if (line[0] == "method")
+	{
+		if ((*prop)[1] == 0)
+			(*prop)[1] = 1;
+		else
+			throw (PpE(this->file_, stds(" method duplicated ")));	
 		for (size_t i = 0; i < line.size() - 1; i++)
 		{
 			if (valid(line[i + 1], methods_) == false)
 				throw (PpE(this->file_, stds(stds("Unknown identifier ") + line[i + 1])));
 			location.methods.push_back(line[i + 1]);
 		}
+	}
 	else if (line[0] == "autoindex")
 	{
+		if ((*prop)[2] == 0)
+			(*prop)[2] = 1;
+		else
+			throw (PpE(this->file_, stds(" autoindex duplicated ")));	
 		if (compString(&first, line[1].end(), stds("off")))
 			location.autoindex = false;
 		else if (compString(&second, line[1].end(), stds("on")))
@@ -221,14 +259,36 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
 	}
 	else if (line[0] == "index")
+	{
+		if ((*prop)[3] == 0)
+			(*prop)[3] = 1;
+		else
+			throw (PpE(this->file_, stds(" root duplicated ")));	
 		location.index = line[1];
+	}
 	else if (line[0] == "cgi_extension")
+	{	
+		if ((*prop)[4] == 0)
+			(*prop)[4] = 1;
+		else
+			throw (PpE(this->file_, stds(" cgi_extension duplicated ")));
 		for (size_t i = 0; i < line.size() - 1; i++)
 			location.cgi_extension.push_back(line[i + 1]);	
+	}
 	else if (line[0] == "cgi_path")
+	{
+		if ((*prop)[5] == 0)
+			(*prop)[5] = 1;
+		else
+			throw (PpE(this->file_, stds(" cgi_path duplicated ")));	
 		location.cgi_path = line[1];
+	}
 	else if (line[0] == "upload_enable")
 	{
+		if ((*prop)[6] == 0)
+			(*prop)[6] = 1;
+		else
+			throw (PpE(this->file_, stds(" upload_enable duplicated ")));
 		if (compString(&first, line[1].end(), stds("off")))
 			location.upload_enable = false;
 		else if (compString(&second, line[1].end(), stds("on")))
@@ -237,9 +297,21 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
 	}	
 	else if (line [0] == "upload_path")
+	{	
+		if ((*prop)[7] == 0)
+			(*prop)[7] = 1;
+		else
+			throw (PpE(this->file_, stds(" upload_path duplicated ")));	
 		location.upload_path = line[1];
+	}
 	else if (line [0] == "client_max_body_size")
+	{
+		if ((*prop)[8] == 0)
+			(*prop)[8] = 1;
+		else
+			throw (PpE(this->file_, stds(" root duplicated ")));
 		location.client_max_body_size = getMcbs(line[1]);
+	}
 	return (location);	
 }
 
@@ -291,7 +363,7 @@ stds				Parsing::getNextLine(iterator *first, iterator end)
 	return line;
 }
 
-Parsing::server	Parsing::getDefaultServer()
+Parsing::server		Parsing::getDefaultServer()
 {
 	Parsing::server server;
 
@@ -315,6 +387,15 @@ Parsing::location	Parsing::getDefaultLocation()
 	location.upload_path = "";
 	location.client_max_body_size = 1048576;
 	return (location);
+}
+
+std::vector<int>	Parsing::getTableDef()
+{
+	std::vector<int>	vec(9);
+
+	for (size_t i = 0; i < vec.size(); i++)
+		vec[i] = 0;	
+	return (vec);
 }
 
 bool              	Parsing::compString(iterator *first, iterator end, stds src) 
