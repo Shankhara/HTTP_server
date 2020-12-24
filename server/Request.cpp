@@ -265,7 +265,8 @@ int Request::parse()
 
 	if (statusCode_ == 200)
 	{
-		location_ = matchLocation_(matchServer_());
+		server_ = matchServer_();
+		location_ = matchLocation_(server_);
 		if (!isAuthorized_(location_))
 			statusCode_ = 403;
 	}
@@ -283,15 +284,17 @@ int Request::doRequest(char buf[256], size_t nbytes)
 
 Parsing::server *Request::matchServer_() const
 {
-	for (unsigned long i = 0; i < servers_.size(); i++)
+	size_t i = 0;
+	while (i < servers_.size())
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
 			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
-				return (server_ = &servers_[i]);
+				break;
 		}
+		i++;
 	}
-	return (&servers_[0]);
+	return (&servers_[i]);
 }
 
 Parsing::location *Request::matchLocation_(Parsing::server *server) const

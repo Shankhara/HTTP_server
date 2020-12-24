@@ -29,7 +29,6 @@ int RespGet::readResponse() {
 			Log().Get(logINFO) << __FUNCTION__  << " unable to open: " << strerror(errno);
 			return (error404());
 		}
-
 		struct stat st;
 		fstat(fd_, &st);
 		setHeaderContentLength(st.st_size);
