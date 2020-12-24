@@ -1,7 +1,6 @@
 #include "RespGet.hpp"
 
-RespGet::RespGet(const Request &r): Response(r) {
-}
+RespGet::RespGet(const Request &r): Response(r) {}
 
 RespGet::~RespGet() {}
 
@@ -20,8 +19,10 @@ void RespGet::build() {
 
 	struct stat st;
 	fstat(fd, &st);
+
 	setHeaderContentLength(st.st_size);
 	Log().Get(logDEBUG) << __FUNCTION__ << "Filesize: " << st.st_size;
+
 	setHeaderContentType(std::string("text/html")); //TODO
 	putHeaders();
 
