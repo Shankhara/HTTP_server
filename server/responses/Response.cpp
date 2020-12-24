@@ -49,11 +49,11 @@ int Response::writeErrorPage(int statusCode) {
 	appendBaseHeaders();
 	std::string body = "<html>"
 					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
-					   "<body bgcolor=\"white\">"
-						"<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"
-						"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
-					   "</body>"
-					   "</html>";
+					"<body bgcolor=\"white\">"
+					"<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"
+					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
+				    "</body>"
+		 			"</html>";
 	setHeaderContentLength(body.size());
 	setHeaderContentType("text/html");
 	appendHeadersEnd();
