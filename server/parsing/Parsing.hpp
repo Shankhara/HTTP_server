@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 16:12:52 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/24 10:27:57 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,13 @@ private :
 		void						parseConfig();
 		void						parseServer();
 		Parsing::server				parseProps(iterator first, iterator end);
-		Parsing::server				returnProps(Parsing::server server, std::vector<stds> line);
+		Parsing::server				returnProps(Parsing::server server, std::vector<stds> line, std::vector<int> *prop);
 		Parsing::location			parseLocation(stds name, iterator first, iterator end);
-		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line);
+		Parsing::location			returnLocation(Parsing::location location, std::vector<stds> line, std::vector<int> *prop);
 		Parsing::server				getDefaultServer();
 		Parsing::location			getDefaultLocation();
-		bool                		compString(iterator *first, iterator end, stds src);
+		std::vector<int>			getTableDef();
+		bool           	    		compString(iterator *first, iterator end, stds src);
 		bool                		parseSemi(stds *src);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);

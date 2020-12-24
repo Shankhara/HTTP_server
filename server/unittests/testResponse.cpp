@@ -11,5 +11,5 @@ void testResponse()
 	RespGet respGet(ra);
 
 	respGet.build();
-	std::cout << respGet.getResponseMsg() << std::endl;
+//	std::cout << respGet.getResponseMsg() << std::endl;
 }
