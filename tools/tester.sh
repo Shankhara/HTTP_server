@@ -25,7 +25,7 @@ echo "server {
 	}
 	location /post_body {
 		cgi_extension .bla;
-		cgi_path ${DIR};
+		cgi_path ${WEBSERV};
 		method POST;
 		client_max_body_size 100;
 	}
@@ -37,5 +37,4 @@ echo "server {
 }" > ${WEBSERV}/servers.conf
 
 cd ../server && make && cd ../tools
-pwd
 ../server/webserv ${WEBSERV}/servers.conf

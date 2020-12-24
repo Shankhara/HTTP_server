@@ -17,7 +17,6 @@ int RespGet::readResponse() {
 		openFile_();
 		if (fd_ == -1)
 			return (writeErrorPage(404));
-
 	}
 	return(readFile_());
 }
@@ -42,7 +41,12 @@ void RespGet::openFile_() {
 	stat(path.c_str(), &st);
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir)
-		path += location->index;
+	{
+		if (location->index.size() == 0) //TODO: conf should have default settings available in every location
+			path += "index.html";
+		else
+			path += location->index;
+	}
 	fd_ = open(path.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
