@@ -284,17 +284,15 @@ int Request::doRequest(char buf[256], size_t nbytes)
 
 Parsing::server *Request::matchServer_() const
 {
-	size_t i = 0;
-	while (i < servers_.size())
+	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
 			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
-				break;
+				return (&servers_[i]);
 		}
-		i++;
 	}
-	return (&servers_[i]);
+	return (&servers_[0]);
 }
 
 Parsing::location *Request::matchLocation_(Parsing::server *server) const
