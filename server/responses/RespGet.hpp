@@ -7,11 +7,12 @@
 #include <fcntl.h>
 
 class RespGet: public Response {
-public:
-	RespGet(const Request &r);
-	~RespGet();
-	void build();
 private:
+	int fd_;
+public:
+	RespGet(const Request &r, char[], unsigned int);
+	~RespGet();
+	int readResponse();
 
 };
 

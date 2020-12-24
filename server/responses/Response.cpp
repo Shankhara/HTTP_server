@@ -1,9 +1,9 @@
 #include "Response.hpp"
 
-Response::Response(const Request & r) : req_(r)
+Response::Response(const Request & r, char buf[], unsigned int bufSize) : req_(r), buf_(buf), bufSize_(bufSize)
 {
+	headersBuilt_ = false;
 	statusCode_ = req_.getStatusCode();
-
 	statusMap_[200] = "OK";
 	statusMap_[201] = "Created";
 	statusMap_[202] = "Accepted";
@@ -37,34 +37,29 @@ void Response::setHeaderContentLength(long value) {
 
 void Response::putHeaders()
 {
-	msg_.append("\r\n");
+	append_("\r\n");
 	for (size_t i = 0; i < headersToPut_.size(); i++)
 	{
-		msg_.append(headersToPut_[i]);
-		msg_.append("\r\n");
+		append_(headersToPut_[i]);
+		append_("\r\n");
 	}
-	msg_.append("\r\n");
+	append_("\r\n");
 }
 
-void Response::createResponse()
+void Response::appendStatusCode()
 {
-	msg_.append(req_.getVersion());
-	msg_.append(" ");
-	msg_.append(ft_itoa(statusCode_));
-	msg_.append(" ");
-	msg_.append(statusMap_[statusCode_]);
+	append_(req_.getVersion());
+	append_(" ");
+	append_(ft_itoa(statusCode_));
+	append_(" ");
+	append_(statusMap_[statusCode_]);
 }
 
-std::string Response::readResponse()
-{
-	std::string resp = msg_;
-	msg_.clear();
-	return resp;
-}
 
-void Response::error404() {
+int Response::error404() {
+	nbytes_ = 0;
 	statusCode_ = 404;
-	createResponse();
+	appendStatusCode();
 	std::string body = "<html>"
 					   "<head><title>404 Not Found</title></head>"
 					   "<body bgcolor=\"white\">"
@@ -75,12 +70,19 @@ void Response::error404() {
 	setHeaderContentLength(body.size());
 	setHeaderContentType("text/html");
 	putHeaders();
-	msg_.append(body);
+	append_(body);
+	return (nbytes_);
 }
 
-u_int64_t Response::getBufSize() {
-	return (msg_.size());
+void Response::append_(std::string str) {
+	//TODO: check size ofc
+	strncpy(buf_ + nbytes_, str.c_str(), str.size());
+	nbytes_ += str.size();
 }
 
-std::string Response::getResponseMsg() const
-{ return msg_; }
+void Response::append_(char str[], int size) {
+	//TODO: check size ofc
+	strncpy(buf_ + nbytes_, str, size);
+	nbytes_ += size;
+}
+

@@ -15,7 +15,8 @@
 #include "../responses/RespGet.hpp"
 
 #define MAX_CGI_FORKS 20
-#define RECV_BUFFER	1024
+#define CLIENT_RECV_BUFFER	32768
+#define CLIENT_READ_BUFFER	32768
 
 
 class Client: public FileDescriptor {
@@ -24,6 +25,7 @@ private:
 	FileDescriptor						*CGIResponse_;
 	std::string							response_;
 	Request								request_;
+	char 								responseBuf_[CLIENT_READ_BUFFER];
 
 public:
 	Client(int, std::vector<Parsing::server> &);

@@ -1,35 +1,45 @@
 #include "RespGet.hpp"
 
-RespGet::RespGet(const Request &r): Response(r) {
+RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): Response(r, buf, bufSize) {
+	fd_ = 0;
 }
 
-RespGet::~RespGet() {}
+RespGet::~RespGet() {
+	if (fd_ > 0)
+		close(fd_);
+}
 
-void RespGet::build() {
-	Parsing::location *location = req_.getLocation();
-	std::string path = location->root + req_.getReqTarget();
-	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
-
-	int fd = open(path.c_str(), O_RDONLY);
-	if (fd == -1)
+int RespGet::readResponse() {
+	if (fd_ == -1)
+		return 0;
+	if (headersBuilt_ == false)
 	{
-		Log().Get(logINFO) << __FUNCTION__  << " unable to open: " << strerror(errno);
-		error404();
-		return ;
+		Parsing::location *location = req_.getLocation();
+		if (location == 0)
+		{
+			Log().Get(logERROR) << __FUNCTION__  << "Location is null";
+			return (0);
+		}
+		std::string path = location->root + req_.getReqTarget();
+		Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
+
+		fd_ = open(path.c_str(), O_RDONLY);
+		if (fd_ == -1)
+		{
+			Log().Get(logINFO) << __FUNCTION__  << " unable to open: " << strerror(errno);
+			return (error404());
+		}
+
+		struct stat st;
+		fstat(fd_, &st);
+		setHeaderContentLength(st.st_size);
+		Log().Get(logDEBUG) << __FUNCTION__ << "Filesize: " << st.st_size;
+		setHeaderContentType(std::string("text/html")); //TODO
+		putHeaders();
+		headersBuilt_ = true;
 	}
-
-	struct stat st;
-	fstat(fd, &st);
-	setHeaderContentLength(st.st_size);
-	Log().Get(logDEBUG) << __FUNCTION__ << "Filesize: " << st.st_size;
-	setHeaderContentType(std::string("text/html")); //TODO
-	putHeaders();
-
-	char buf[256];
-	int nbytes;
-	while ((nbytes = read(fd, buf, 255)) > 0)
-		msg_.append(buf, nbytes);
+	int nbytes = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
 	if (nbytes < 0)
 		Log().Get(logERROR) << __FUNCTION__  << " read error " << strerror(errno);
-	close(fd);
+	return (nbytes);
 }

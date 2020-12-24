@@ -16,7 +16,7 @@ Client::~Client() {
 
 void Client::onEvent()
 {
-	static char buf[RECV_BUFFER];
+	static char buf[CLIENT_RECV_BUFFER];
 
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf, sizeof(buf), 0);
@@ -63,17 +63,16 @@ void Client::constructRequest(char buf[], int nbytes) {
 	{
 		if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 		{
-			RespGet response(request_);
-			response.build();
-			while ((nbytes = response.getBufSize()) > 0)
+			RespGet response(request_, responseBuf_, CLIENT_READ_BUFFER);
+			while ((nbytes = response.readResponse()) > 0)
 			{
-				if (send(fd_, response.readResponse().c_str(), nbytes, 0) < 0)
+				if (send(fd_, responseBuf_, nbytes, 0) < 0)
 				{
 					Log().Get(logERROR) << " unable to send to client " << strerror(errno);
-					Server::getInstance()->deleteFileDescriptor(fd_);
-					return ;
+					break ;
 				}
 			}
+			Server::getInstance()->deleteFileDescriptor(fd_);
 			return ;
 		}
 		if (CGIResponse_ != 0) {
@@ -83,9 +82,9 @@ void Client::constructRequest(char buf[], int nbytes) {
 		}
 		CGIExec exec = CGIExec();
 		CGIResponse_ = exec.run(*this);
+		Server::getInstance()->addFileDescriptor(CGIResponse_);
 		if (CGIResponse_ == 0)
 			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
-		Server::getInstance()->addFileDescriptor(CGIResponse_);
 	}
 	else
 	{

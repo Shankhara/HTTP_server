@@ -8,8 +8,12 @@ void testResponse()
 	Request ra(*vhost);
 	std::string str = "GET /index.html HTTP/1.1\r\n\r\n";
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-	RespGet respGet(ra);
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+	RespGet respGet(ra, buf, bufsize);
 
-	respGet.build();
-	std::cout << respGet.getResponseMsg() << std::endl;
+	int readSize = respGet.readResponse();
+	Log().Get(logDEBUG) << "READ " << readSize;
+	buf[readSize] = '\0';
+	std::cout << buf << std::endl;
 }

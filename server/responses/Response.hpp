@@ -3,29 +3,33 @@
 #include "../Request.hpp"
 #include <errno.h>
 
+#define READ_BUFFER_SIZE 16384
+
 class Response
 {
 	protected:
-	Request req_;
-	std::string msg_;
-	int statusCode_;
+	const Request		&req_;
+	//std::string	msg_;
+	int			statusCode_;
+	char 		*buf_;
+	unsigned int bufSize_;
+	int			nbytes_;
+	bool 		headersBuilt_;
 
 	std::map<int, std::string> statusMap_;
 	std::vector<std::string> headersToPut_;
 
+	void append_(std::string );
+	void append_(char [], int);
+
 	public:
-	Response(const Request &);
+	Response(const Request &, char[], unsigned int bufSize);
 	virtual ~Response();
-	void createResponse();
+	void appendStatusCode();
 	void setBaseHeaders();
 	void putHeaders();
-	virtual void build() = 0;
+	virtual int readResponse() = 0;
 	void setHeaderContentType(std::string );
 	void setHeaderContentLength(long);
-	void error404();
-	u_int64_t getBufSize();
-
-	std::string readResponse();
-	std::string getResponseMsg() const;
-
+	int error404();
 };
