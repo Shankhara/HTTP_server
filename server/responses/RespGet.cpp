@@ -14,31 +14,42 @@ int RespGet::readResponse() {
 		return 0;
 	if (headersBuilt_ == false)
 	{
-		Parsing::location *location = req_.getLocation();
-		if (location == 0)
-		{
-			Log().Get(logERROR) << __FUNCTION__  << "Location is null";
-			return (0);
-		}
-		std::string path = location->root + req_.getReqTarget();
-		Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
-
-		fd_ = open(path.c_str(), O_RDONLY);
+		openFile_();
 		if (fd_ == -1)
-		{
-			Log().Get(logINFO) << __FUNCTION__  << " unable to open: " << strerror(errno);
-			return (error404());
-		}
-		struct stat st;
-		fstat(fd_, &st);
-		setHeaderContentLength(st.st_size);
-		Log().Get(logDEBUG) << __FUNCTION__ << "Filesize: " << st.st_size;
-		setHeaderContentType(std::string("text/html")); //TODO
-		putHeaders();
-		headersBuilt_ = true;
+			return (writeErrorPage(404));
+
 	}
-	int nbytes = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
-	if (nbytes < 0)
+	return(readFile_());
+}
+
+int RespGet::readFile_() {
+	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
+	Log().Get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " << nbytes_ << " BUFSIZE " << bufSize_;
+	if (currentRead < 0)
 		Log().Get(logERROR) << __FUNCTION__  << " read error " << strerror(errno);
-	return (nbytes);
+	currentRead += nbytes_;
+	nbytes_ = 0;
+	return (currentRead);
+}
+
+void RespGet::openFile_() {
+	Parsing::location *location = req_.getLocation();
+	std::string path = location->root + req_.getReqTarget();
+	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
+
+	fd_ = open(path.c_str(), O_RDONLY);
+	if (fd_ == -1)
+	{
+		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		return ;
+	}
+	struct stat st;
+	fstat(fd_, &st);
+	Log().Get(logDEBUG) << "STATUS: " << nbytes_;
+	appendStatusCode(200);
+	appendBaseHeaders();
+	setHeaderContentLength(st.st_size);
+	setHeaderContentType(std::string("text/html")); //TODO
+	appendHeadersEnd();
+	headersBuilt_ = true;
 }

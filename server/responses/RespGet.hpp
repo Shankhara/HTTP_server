@@ -9,6 +9,8 @@
 class RespGet: public Response {
 private:
 	int fd_;
+	void openFile_();
+	int readFile_();
 public:
 	RespGet(const Request &r, char[], unsigned int);
 	~RespGet();

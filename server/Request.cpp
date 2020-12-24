@@ -273,7 +273,7 @@ int Request::parse()
 	return (statusCode_);
 }
 
-int Request::doRequest(char buf[256], size_t nbytes)
+int Request::doRequest(char buf[], size_t nbytes)
 {
 	request_.append(buf, nbytes);
 
