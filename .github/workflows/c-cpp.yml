@@ -16,5 +16,4 @@ jobs:
     - name: tests
       run: cd server/unittests && make tests
     - name: build
-      run: cd server && make && timeout 30 ./webserv
-
+      run: cd server && make && timeout -s SIGINT --preserve-status 5 ./webserv
