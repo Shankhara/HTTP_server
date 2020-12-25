@@ -51,9 +51,6 @@ void CGIResponse::onEvent()
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
 
-pid_t CGIResponse::getPid() const {
-	return pid_;
-}
 
 void CGIResponse::setPid(pid_t pid) {
 	pid_ = pid;

@@ -8,6 +8,7 @@ OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			CGIExec.o CGIResponse.o testCGI.o \
 			Request.o testRequest.o \
 			RespGet.o Response.o testResponse.o \
+			autoIndex.o
 
 
 CXX			= clang++
@@ -24,6 +25,7 @@ testParsing.o: testParsing.cpp
 testCGI.o: testCGI.cpp
 Client.o : ../fds/Client.hpp
 RespGet.o: ../responses/RespGet.hpp
+autoIndex.o: ../responses/autoIndex.cpp
 Utils.o : ../Utils.hpp
 Request.o : ../Request.hpp 
 Logger.o : ../Logger.hpp

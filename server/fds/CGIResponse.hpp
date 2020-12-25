@@ -27,7 +27,6 @@ public:
 	virtual		~CGIResponse();
 	void		onEvent();
 	int			pipeToClient();
-	pid_t		getPid() const;
 	void		setPid(pid_t pid);
 };
 
