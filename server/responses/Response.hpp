@@ -26,5 +26,6 @@ class Response
 	void			setHeaderContentLength(long);
 	int				writeErrorPage(int);
 	void 			appendHeadersEnd();
+	void 			appendHeaders(std::string, unsigned int);
 	virtual int		readResponse() = 0;
 };

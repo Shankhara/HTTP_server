@@ -77,3 +77,13 @@ void Response::append_(char str[], unsigned int size) {
 	nbytes_ += size;
 }
 
+void Response::appendHeaders(std::string contentType, unsigned int contentLength) {
+	nbytes_ = 0;
+	appendStatusCode(200);
+	appendBaseHeaders();
+	setHeaderContentType(contentType);
+	setHeaderContentLength(contentLength);
+	appendHeadersEnd();
+
+}
+

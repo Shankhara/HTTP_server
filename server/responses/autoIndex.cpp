@@ -11,13 +11,8 @@ std::string RespGet::doAutoIndexTemplate_() {
 }
 
 int RespGet::writeAutoIndex_() {
-	nbytes_ = 0;
-	appendStatusCode(200);
-	appendBaseHeaders();
-	setHeaderContentType("text/html");
 	std::string body = doAutoIndexTemplate_();
-	setHeaderContentLength(body.size());
-	appendHeadersEnd();
+	appendHeaders("text/html", body.size());
 	append_(body); //TODO: tterrail if body.size > BUFFER_SIZE content-Length will not match body sent;
 	return (nbytes_);
 }
