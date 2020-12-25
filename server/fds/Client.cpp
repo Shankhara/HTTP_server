@@ -1,5 +1,7 @@
 #include "Client.hpp"
 
+char Client::buf_[CLIENT_BUFFER_SIZE];
+
 Client::Client(int fd, std::vector<Parsing::server> &s): request_(s) {
 	CGIResponse_ = 0;
 	fd_ = fd;
@@ -16,10 +18,8 @@ Client::~Client() {
 
 void Client::onEvent()
 {
-	static char buf[CLIENT_RECV_BUFFER];
-
 	setLastEventTimer();
-	int nbytes = recv(fd_, buf, sizeof(buf), 0);
+	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE, 0);
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
@@ -30,11 +30,7 @@ void Client::onEvent()
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
-	constructRequest(buf, nbytes);
-}
-
-void Client::sendResponse() const
-{
+	constructRequest(buf_, nbytes);
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)
@@ -63,10 +59,10 @@ void Client::doResponse_() {
 	unsigned int nbytes;
 	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 	{
-		RespGet response(request_, responseBuf_, CLIENT_READ_BUFFER);
+		RespGet response(request_, buf_, CLIENT_BUFFER_SIZE);
 		while ((nbytes = response.readResponse()) > 0)
 		{
-			if (send(fd_, responseBuf_, nbytes, 0) < 0)
+			if (send(fd_, buf_, nbytes, 0) < 0)
 			{
 				Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
 				break ;
@@ -95,9 +91,9 @@ void Client::doResponse_() {
 }
 
 void Client::sendErrorPage(int statusCode) {
-	RespGet err(request_, responseBuf_, CLIENT_READ_BUFFER);
+	RespGet err(request_, buf_, CLIENT_BUFFER_SIZE);
 	unsigned int nbytes = err.writeErrorPage(statusCode);
-	send(fd_, responseBuf_, nbytes, 0);
+	send(fd_, buf_, nbytes, 0);
 	Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
