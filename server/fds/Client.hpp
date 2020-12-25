@@ -26,6 +26,8 @@ private:
 	std::string							response_;
 	Request								request_;
 	char 								responseBuf_[CLIENT_READ_BUFFER];
+	void 								doResponse_();
+	void 								sendErrorPage(int);
 
 public:
 	Client(int, std::vector<Parsing::server> &);

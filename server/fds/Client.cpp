@@ -46,7 +46,45 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 void Client::constructRequest(char buf[], int nbytes) {
 	int status;
 
+	status = request_.doRequest(buf, nbytes);
+	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << status;
+	if (status == 100)
+		return ;
+	else if (status == 200)
+		doResponse_();
+	else
+	{
+		Log().Get(logERROR) << __FUNCTION__  << "Client: " << fd_ << " Parse Error code: " << status;
+		sendErrorPage(400);
+	}
+}
 
+void Client::doResponse_() {
+	unsigned int nbytes;
+	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+	{
+		RespGet response(request_, responseBuf_, CLIENT_READ_BUFFER);
+		while ((nbytes = response.readResponse()) > 0)
+		{
+			if (send(fd_, responseBuf_, nbytes, 0) < 0)
+			{
+				Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
+				break ;
+			}
+		}
+		Server::getInstance()->deleteFileDescriptor(fd_);
+		return ;
+	}
+	if (CGIResponse_ != 0) {
+		Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
+							<< request_.getRequest();
+		return ;
+	}
+	CGIExec exec = CGIExec();
+	CGIResponse_ = exec.run(*this);
+	Server::getInstance()->addFileDescriptor(CGIResponse_);
+	if (CGIResponse_ == 0)
+		send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
 	/*if (CGIResponse::instances > MAX_CGI_FORKS)
 	{
 		Log().Get(logERROR) << __FUNCTION__  << "Too many CGIRunning, bounce this client: " << fd_;
@@ -54,45 +92,13 @@ void Client::constructRequest(char buf[], int nbytes) {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}*/
-	status = request_.doRequest(buf, nbytes);
+}
 
-	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << status;
-	if (status == 100)
-		return ;
-	else if (status == 200)
-	{
-		if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
-		{
-			RespGet response(request_, responseBuf_, CLIENT_READ_BUFFER);
-			while ((nbytes = response.readResponse()) > 0)
-			{
-				if (send(fd_, responseBuf_, nbytes, 0) < 0)
-				{
-					Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
-					break ;
-				}
-			}
-			Server::getInstance()->deleteFileDescriptor(fd_);
-			return ;
-		}
-		if (CGIResponse_ != 0) {
-			Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
-								<< request_.getRequest();
-			return ;
-		}
-		CGIExec exec = CGIExec();
-		CGIResponse_ = exec.run(*this);
-		Server::getInstance()->addFileDescriptor(CGIResponse_);
-		if (CGIResponse_ == 0)
-			send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
-	}
-	else
-	{
-		Log().Get(logERROR) << __FUNCTION__  << " Parse Error code: " << status << " REQ BODY: " \
-		<< request_.getRequest();
-		send(fd_, "HTTP/1.1 400 Bad Request\r\n", 26, 0);
-		Server::getInstance()->deleteFileDescriptor(fd_);
-	}
+void Client::sendErrorPage(int statusCode) {
+	RespGet err(request_, responseBuf_, CLIENT_READ_BUFFER);
+	unsigned int nbytes = err.writeErrorPage(statusCode);
+	send(fd_, responseBuf_, nbytes, 0);
+	Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
 std::string &Client::getResponse()

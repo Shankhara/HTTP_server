@@ -37,7 +37,7 @@ void Response::setHeaderContentLength(long value) {
 
 void Response::appendStatusCode(int statusCode)
 {
-	append_(req_.getVersion() + " " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
+	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
 }
 
 void Response::appendHeadersEnd()
