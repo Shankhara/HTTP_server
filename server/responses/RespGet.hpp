@@ -9,8 +9,10 @@
 class RespGet: public Response {
 private:
 	int fd_;
-	void openFile_();
+	void openFile_(Parsing::location *location);
 	int readFile_();
+	int writeAutoIndex_();
+	std::string doAutoIndexTemplate_();
 public:
 	RespGet(const Request &r, char[], unsigned int);
 	~RespGet();

@@ -12,9 +12,13 @@ RespGet::~RespGet() {
 int RespGet::readResponse() {
 	if (fd_ == -1)
 		return 0;
-	if (headersBuilt_ == false)
+	if (fd_ == 0)
 	{
-		openFile_();
+		fd_ = -1;
+		Parsing::location *location = req_.getLocation();
+		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
+			return (writeAutoIndex_());
+		openFile_(location);
 		if (fd_ == -1)
 			return (writeErrorPage(404));
 	}
@@ -31,8 +35,7 @@ int RespGet::readFile_() {
 	return (currentRead);
 }
 
-void RespGet::openFile_() {
-	Parsing::location *location = req_.getLocation();
+void RespGet::openFile_(Parsing::location *location) {
 	std::string path = location->root + req_.getReqTarget();
 	bool isDir;
 
@@ -42,7 +45,7 @@ void RespGet::openFile_() {
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir)
 	{
-		if (location->index.size() == 0) //TODO: conf should have default settings available in every location
+		if (location->index.size() == 0) //TODO: conf should have default settings available in every location #33
 			path += "index.html";
 		else
 			path += location->index;
@@ -55,7 +58,6 @@ void RespGet::openFile_() {
 	}
 	if (isDir)
 		fstat(fd_, &st);
-	Log().Get(logDEBUG) << "STATUS: " << nbytes_;
 	appendStatusCode(200);
 	appendBaseHeaders();
 	setHeaderContentLength(st.st_size);

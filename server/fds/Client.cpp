@@ -56,7 +56,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	}*/
 	status = request_.doRequest(buf, nbytes);
 
-	Log().Get(logDEBUG) << __FUNCTION__ << fd_ << "parsing status: " << status;
+	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << status;
 	if (status == 100)
 		return ;
 	else if (status == 200)
@@ -68,7 +68,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 			{
 				if (send(fd_, responseBuf_, nbytes, 0) < 0)
 				{
-					Log().Get(logERROR) << " unable to send to client " << strerror(errno);
+					Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
 					break ;
 				}
 			}

@@ -17,7 +17,7 @@
 #include "Logger.hpp"
 #include "fds/FileDescriptor.hpp"
 
-#define READ_TIMEOUT 60
+#define READ_TIMEOUT 10
 
 class Server
 {

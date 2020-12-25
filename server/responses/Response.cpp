@@ -15,6 +15,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : req_(r
 	statusMap_[413] = "Request Entity Too Large";
 	statusMap_[414] = "Request-URI Too Long";
 	statusMap_[500] = "Internal Server Error";
+	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
 Response::~Response() { }
@@ -23,6 +24,7 @@ void Response::appendBaseHeaders()
 {
 	append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
 	append_("Date: " + getStrDate() + "\r\n");
+	append_("Connection: close\r\n");
 }
 
 void Response::setHeaderContentType(std::string value) {
