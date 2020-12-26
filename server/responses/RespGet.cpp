@@ -37,15 +37,23 @@ int RespGet::readFile_() {
 }
 
 void RespGet::openFile_(Parsing::location *location) {
-	std::string path = location->root + req_.getReqTarget();
+	std::string path;
+	if (!location->root.empty())
+		path = location->root + req_.getReqTarget();
+	else
+		path = req_.getServer()->root + req_.getReqTarget();
 	int isDir;
 
-	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
 	struct stat st;
 	stat(path.c_str(), &st);
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir != 0)
+	{
+		if (path[path.size() -1] != '/')
+			path += '/';
 		path += location->index;
+	}
+	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path << " IS_DIR " << isDir << " INDEX " << location->index;
 	fd_ = open(path.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{

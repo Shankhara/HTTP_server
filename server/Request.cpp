@@ -274,6 +274,13 @@ int Request::parse()
 		else if (!isMethodAuthorized_(location_))
 			statusCode_ = 405;
 	}
+
+	if (statusCode_ == 200 && !location_->root.empty())
+	{
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET].empty())
+			requestLine_[REQTARGET] = "/";
+	}
 	return (statusCode_);
 }
 

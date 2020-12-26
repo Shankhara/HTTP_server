@@ -6,7 +6,7 @@ wget -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_test
 wget -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester -o ${WEBSERV}/ubuntu_cgi_tester
 
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
-touch ${DIR}/youpi.bad_extension
+echo "<h1>index</h1>" > ${DIR}/youpi.bad_extension
 touch ${DIR}/youpi.bla
 touch ${DIR}/nop/youpi.bad_extension
 touch ${DIR}/nop/other.pouic
