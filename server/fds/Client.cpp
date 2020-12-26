@@ -20,7 +20,8 @@ void Client::onEvent()
 {
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
-	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
+	buf_[nbytes] = '\0';
+	Log().Get(logERROR) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes << " BUF [" << buf_ << "]";
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)		
@@ -61,9 +62,14 @@ void Client::doResponse_() {
 	{
 		Response *resp;
 		if (request_.getMethod() == "GET")
-				resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+			resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+		else if (request_.getMethod() == "POST")
+		{
+			resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+			resp->writeErrorPage(405);
+		}
 		else
-				resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+			resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE - 1);
 		while ((nbytes = resp->readResponse()) > 0)
 		{
 			if (send(fd_, buf_, nbytes, 0) < 0)

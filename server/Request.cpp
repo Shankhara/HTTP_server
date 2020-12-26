@@ -79,6 +79,8 @@ int Request::getChunkedBody()
 	std::string hex_size, res, check;
 	size_t start = 0, end = 0, num_size = 0, total_size = 0;
 
+	if (request_.size() == 0)
+		return 200;
 	while (start == 0 || request_[start] != '0')
 	{
 		end = request_.find("\r\n", start);

@@ -47,7 +47,7 @@ static void testForbiddenMethod()
 	assertRequest(str, "GET", "/qwe", vhost, "GET Ok");
 	// Head is supposed to fail
 	str = "HEAD /qwe/head HTTP/1.1\r\n\r\n";
-	assertRequest(str, "HEAD", "/qwe/head", vhost, "HEAD Forbidden", 403);
+	assertRequest(str, "HEAD", "/qwe/head", vhost, "HEAD Forbidden", 405);
 
 	// adding a more specific location without any restriction, head isnt forbidden anymore
 	server.locations.push_back(Parsing::location());
@@ -317,6 +317,10 @@ void correctChunkedBody()
 	Request a(*vhost);
 	std::string str = "GET /qwe HTTP/1.1\r\nhost: hop\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "2 chunks with newline");
+
+	Request b(*vhost);
+	std::string tester = "POST / HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Go-http-client/1.1\r\nTransfer-Encoding: chunked\r\nContent-Type: test/file\r\nAccept-Encoding: gzip\r\n\r\n";
+	assertEqual(b.doRequest(const_cast<char*>(tester.c_str()), tester.size()), 200, "42 tester");
 	delete (vhost);
 }
 
