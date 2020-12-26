@@ -42,7 +42,7 @@ class Request
 	std::string headerContentLanguage_;
 	std::string headerContentType_;
 
-	bool				isAuthorized_(Parsing::location *) const;
+	bool				isMethodAuthorized_(Parsing::location *) const;
 	Parsing::location	*matchLocation_(Parsing::server *) const;
 	Parsing::server		*matchServer_() const;
 

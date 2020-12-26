@@ -267,8 +267,10 @@ int Request::parse()
 	{
 		server_ = matchServer_();
 		location_ = matchLocation_(server_);
-		if (!isAuthorized_(location_))
+		if (location_ == 0)
 			statusCode_ = 403;
+		else if (!isMethodAuthorized_(location_))
+			statusCode_ = 405;
 	}
 	return (statusCode_);
 }
@@ -314,10 +316,8 @@ Parsing::location *Request::matchLocation_(Parsing::server *server) const
 	return (location);
 }
 
-bool 	Request::isAuthorized_(Parsing::location *location) const
+bool 	Request::isMethodAuthorized_(Parsing::location *location) const
 {
-	if (location == 0)
-		return false;
 	if (location->methods.size() == 0)
 		return true;
 	for (unsigned long i = 0; i < location->methods.size(); i++)
