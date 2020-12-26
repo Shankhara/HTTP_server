@@ -17,6 +17,8 @@ std::string	RespGet::returnLineTemplate_(stds body, std::list<stds>::iterator fi
 	space.resize(51 - size, ' ');	
     body += "<a href=\"";
 	body += first->substr(0, first->size() - 1);
+	if ((*first)[first->size() - 1] == DT_DIR)
+		body += "/";
 	body += "\">";
 	body += tmp;
 	body += "</a>";
