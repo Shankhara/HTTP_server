@@ -10,9 +10,9 @@ RespGet::~RespGet() {
 }
 
 int RespGet::readResponse() {
-	nbytes_ = 0;
 	if (fd_ == -1)
 		return 0;
+	nbytes_ = 0;
 	if (fd_ == 0)
 	{
 		fd_ = -1;

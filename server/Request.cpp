@@ -276,11 +276,7 @@ int Request::parse()
 	}
 
 	if (statusCode_ == 200 && !location_->root.empty())
-	{
-		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], location_->name.size(), requestLine_[REQTARGET].size() - 1);
-		if (requestLine_[REQTARGET].empty())
-			requestLine_[REQTARGET] = "/";
-	}
+		requestLine_[REQTARGET] = "/" + std::string(requestLine_[REQTARGET], location_->name.size(), requestLine_[REQTARGET].size() - 1);
 	return (statusCode_);
 }
 
