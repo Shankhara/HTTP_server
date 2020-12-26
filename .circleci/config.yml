@@ -1,0 +1,22 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: "ubuntu:18.04"
+    steps:
+      - checkout
+      - run:
+          name: Installing Build Tools
+          command: 'apt-get update && apt-get install -y clang make'
+      - run:
+          name: Creating Build Files
+          command: 'cd server && make'
+notifications:
+  email:
+    recipients:
+      - terrail@42.student.fr
+      - racohen@42.student.fr
+      - cbouleng@42.student.fr
+    on_success: never
+    on_failure: always
