@@ -14,6 +14,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : req_(r
 		statusMap_[204] = "No Content";
 		statusMap_[400] = "Bad Request";
 		statusMap_[401] = "Unauthorized";
+		statusMap_[403] = "Forbidden";
 		statusMap_[404] = "Not Found";
 		statusMap_[405] = "Method Not Allowed";
 		statusMap_[413] = "Request Entity Too Large";
@@ -50,6 +51,7 @@ void Response::writeStatusCode_(int statusCode)
 void Response::writeHeadersEnd_()
 {
 	append_("\r\n");
+	headersBuilt_ = true;
 }
 
 int Response::writeErrorPage(int statusCode) {
@@ -61,7 +63,7 @@ int Response::writeErrorPage(int statusCode) {
 					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
 				    "</body>"
 		 			"</html>";
-	appendHeaders("text/html", body.size());
+	appendHeaders(statusCode, "text/html", body.size());
 	append_(body);
 	return (nbytes_);
 }
@@ -80,8 +82,8 @@ void Response::append_(char str[], unsigned int size) {
 	nbytes_ += size;
 }
 
-void Response::appendHeaders(std::string contentType, unsigned int contentLength) {
-	writeStatusCode_(200);
+void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength) {
+	writeStatusCode_(statusCode);
 	writeBaseHeaders_();
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);

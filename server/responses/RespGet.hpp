@@ -11,7 +11,7 @@
 #include <time.h>
 
 class RespGet: public Response {
-private:
+protected:
 	int			fd_;
 	void 		openFile_(Parsing::location *location);
 	int		 	readFile_();
@@ -21,7 +21,7 @@ private:
 public:
 	RespGet(const Request &r, char[], unsigned int);
 	~RespGet();
-	int readResponse();
+	virtual int readResponse();
 
 };
 

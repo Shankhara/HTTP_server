@@ -11,6 +11,7 @@ SRCS	+= fds/CGISocket.cpp
 SRCS	+= parsing/Parsing.cpp
 SRCS	+= parsing/Ut.cpp
 SRCS	+= responses/RespGet.cpp
+SRCS	+= responses/RespHead.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
 

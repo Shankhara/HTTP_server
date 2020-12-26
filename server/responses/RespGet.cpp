@@ -54,6 +54,6 @@ void RespGet::openFile_(Parsing::location *location) {
 	}
 	if (isDir)
 		fstat(fd_, &st);
-	appendHeaders("text/html", st.st_size);
+	appendHeaders(200, "text/html", st.st_size);
 	headersBuilt_ = true;
 }

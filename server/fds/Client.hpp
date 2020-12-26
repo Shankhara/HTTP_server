@@ -13,6 +13,7 @@
 #include "../CGIExec.hpp"
 #include "../parsing/Parsing.hpp"
 #include "../responses/RespGet.hpp"
+#include "../responses/RespHead.hpp"
 
 #define MAX_CGI_FORKS 20
 #define CLIENT_BUFFER_SIZE	32768

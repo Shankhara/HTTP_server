@@ -59,8 +59,12 @@ void Client::doResponse_() {
 	unsigned int nbytes;
 	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 	{
-		RespGet response(request_, buf_, CLIENT_BUFFER_SIZE - 1);
-		while ((nbytes = response.readResponse()) > 0)
+		Response *resp;
+		if (request_.getMethod() == "GET")
+				resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+		else
+				resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE - 1);
+		while ((nbytes = resp->readResponse()) > 0)
 		{
 			if (send(fd_, buf_, nbytes, 0) < 0)
 			{
@@ -68,6 +72,7 @@ void Client::doResponse_() {
 				break ;
 			}
 		}
+		delete (resp);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
