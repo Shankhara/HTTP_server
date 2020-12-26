@@ -63,7 +63,7 @@ FileDescriptor *CGIExec::run(Client &client)
 		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
 		return (0);
 	}
-	CGIResponse *response = new CGIResponse(pipeOUT[0], client);
+	CGISocket *response = new CGISocket(pipeOUT[0], client);
 	build_(client.getRequest(), location->root, client.getRequest().getReqTarget());
 	pid_t cpid = fork();
 	if (cpid < 0)

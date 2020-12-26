@@ -19,7 +19,7 @@ Client::~Client() {
 void Client::onEvent()
 {
 	setLastEventTimer();
-	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE, 0);
+	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
@@ -40,18 +40,18 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 }
 
 void Client::constructRequest(char buf[], int nbytes) {
-	int status;
+	int statusCode;
 
-	status = request_.doRequest(buf, nbytes);
-	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << status;
-	if (status == 100)
+	statusCode = request_.doRequest(buf, nbytes);
+	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode;
+	if (statusCode == 100)
 		return ;
-	else if (status == 200)
+	else if (statusCode == 200)
 		doResponse_();
 	else
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Client: " << fd_ << " Parse Error code: " << status;
-		sendErrorPage(400);
+		Log().Get(logERROR) << __FUNCTION__  << "Client: " << fd_ << " Parse Error code: " << statusCode;
+		sendErrorPage(statusCode);
 	}
 }
 
@@ -59,7 +59,7 @@ void Client::doResponse_() {
 	unsigned int nbytes;
 	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 	{
-		RespGet response(request_, buf_, CLIENT_BUFFER_SIZE);
+		RespGet response(request_, buf_, CLIENT_BUFFER_SIZE - 1);
 		while ((nbytes = response.readResponse()) > 0)
 		{
 			if (send(fd_, buf_, nbytes, 0) < 0)
@@ -102,11 +102,8 @@ std::string &Client::getResponse()
 	return response_;
 }
 
-void Client::appendResponse(char buf[], int nbytes) { 
-	response_.append(buf, nbytes);					 
-}
-
 Request &Client::getRequest(){
 	return request_;
 }
+
 

@@ -10,6 +10,7 @@ RespGet::~RespGet() {
 }
 
 int RespGet::readResponse() {
+	nbytes_ = 0;
 	if (fd_ == -1)
 		return 0;
 	if (fd_ == 0)
@@ -28,11 +29,11 @@ int RespGet::readResponse() {
 int RespGet::readFile_() {
 	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
 	Log().Get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " << nbytes_ << " BUFSIZE_ " << bufSize_;
-	if (currentRead < 0)
+	if (currentRead < 0) {
 		Log().Get(logERROR) << __FUNCTION__  << " read error " << strerror(errno);
-	currentRead += nbytes_;
-	nbytes_ = 0;
-	return (currentRead);
+		return (nbytes_);
+	}
+	return (currentRead + nbytes_);
 }
 
 void RespGet::openFile_(Parsing::location *location) {
@@ -58,10 +59,6 @@ void RespGet::openFile_(Parsing::location *location) {
 	}
 	if (isDir)
 		fstat(fd_, &st);
-	appendStatusCode(200);
-	appendBaseHeaders();
-	setHeaderContentLength(st.st_size);
-	setHeaderContentType(std::string("text/html")); //TODO
-	appendHeadersEnd();
+	appendHeaders("text/html", st.st_size);
 	headersBuilt_ = true;
 }

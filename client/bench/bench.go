@@ -12,7 +12,7 @@ import (
 type Conf struct {
 	clients 	int
 	requests	int
-	keepAlive	bool
+	standby     bool
 	url 		string
 	cut         bool
 	verbose 	bool
@@ -33,8 +33,12 @@ func worker(stats chan *Resp, conf Conf, wg *sync.WaitGroup) {
 		start := time.Now()
 		conn, err := net.Dial("tcp", conf.url)
 		if err != nil {
-			fmt.Println("Unable to connect to ", conf.url)
+			//fmt.Println("Unable to connect to ", conf.url)
+		    stats <- &Resp{status: 0, elapsedTime: time.Since(start)}
 			return
+		}
+		if (conf.standby){
+		    time.Sleep(time.Duration(1<<63 - 1))
 		}
 		for i, _ := range strGet {
 			conn.Write([]byte{strGet[i]})
@@ -54,6 +58,7 @@ func worker(stats chan *Resp, conf Conf, wg *sync.WaitGroup) {
 			fmt.Println("RECV: ", status)
 		}
 		stats <- &Resp{status: 200, elapsedTime: time.Since(start)}
+		conn.Close();
 	}
 	/*client := &http.Client{}
 		resp, err := client.Get(url)
@@ -72,10 +77,13 @@ func spawnWorkers(stats chan *Resp, conf *Conf, wg *sync.WaitGroup) {
 	}
 }
 
-func generateStats(stats chan *Resp, over chan bool, verbose bool) {
+func generateStats(stats chan *Resp, over chan bool, verbose bool, wg *sync.WaitGroup) {
 	var totalTime time.Duration
 	var totalRequests int64
 	var totalFailedRequests int64
+
+	defer wg.Done();
+	wg.Add(1);
 	totalTime = 0
 	for {
 		select {
@@ -95,27 +103,31 @@ func generateStats(stats chan *Resp, over chan bool, verbose bool) {
 				if totalFailedRequests > 0 {
 					fmt.Println("Failed requests:", totalFailedRequests , "over", totalRequests, "requests")
 				}
+				return ;
 		}
 	}
+
 }
 
 func main(){
 	var wg sync.WaitGroup
+	var stat sync.WaitGroup
 	var configuration Conf
 	stats := make(chan *Resp)
 	done := make(chan bool)
 	flag.IntVar(&configuration.clients, "c", 5, "number of concurrent clients")
 	flag.IntVar(&configuration.requests, "n", 1, "number of requests performed by each client")
-	flag.BoolVar(&configuration.keepAlive, "k", false, "reuse tcp connection")
+	flag.BoolVar(&configuration.standby, "k", false, "dont send anything :o)")
 	flag.BoolVar(&configuration.verbose, "v", false, "verbose")
 	flag.BoolVar(&configuration.cut, "i", false, "cut while sending")
 	flag.IntVar(&configuration.slowmode, "s", 0, "slowmode: every char is sent with <slowmode> in MS delay")
 	flag.StringVar(&configuration.url, "u", "http://127.0.0.1","URL")
 	flag.Parse()
 	fmt.Printf("Target (%s): %d clients running %d requests (verbose: %t, slowmode: %d)\n",
-		configuration.url, configuration.clients, configuration.requests, configuration.keepAlive, configuration.slowmode)
+		configuration.url, configuration.clients, configuration.requests, configuration.standby, configuration.slowmode)
 	spawnWorkers(stats, &configuration, &wg)
-	go generateStats(stats, done, configuration.verbose)
+	go generateStats(stats, done, configuration.verbose, &stat)
 	wg.Wait()
 	done <- true
+	stat.Wait();
 }

@@ -1,8 +1,8 @@
-#include "CGIResponse.hpp"
+#include "CGISocket.hpp"
 
-unsigned int CGIResponse::instances = 0;
+unsigned int CGISocket::instances = 0;
 
-CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(false)
+CGISocket::CGISocket(int fd, Client &client): client_(client), httpStatus_(false)
 {
 	fd_ = fd;
 	lastEventTimer_ = 0;
@@ -10,7 +10,7 @@ CGIResponse::CGIResponse(int fd, Client &client): client_(client), httpStatus_(f
 	instances++;
 }
 
-CGIResponse::~CGIResponse()
+CGISocket::~CGISocket()
 {
 	int status;
 
@@ -22,7 +22,7 @@ CGIResponse::~CGIResponse()
 	instances--;
 }
 
-int CGIResponse::pipeToClient() {
+int CGISocket::pipeToClient() {
 	char 	buf[BUFFER_SIZE + 1];
 	int		nbytes;
 
@@ -43,7 +43,7 @@ int CGIResponse::pipeToClient() {
 	return nbytes;
 }
 
-void CGIResponse::onEvent()
+void CGISocket::onEvent()
 {
 	client_.setLastEventTimer();
 	if (pipeToClient() < 0)
@@ -52,11 +52,11 @@ void CGIResponse::onEvent()
 }
 
 
-void CGIResponse::setPid(pid_t pid) {
+void CGISocket::setPid(pid_t pid) {
 	pid_ = pid;
 }
 
-void CGIResponse::parseCGIStatus(char *buf, int nbytes) {
+void CGISocket::parseCGIStatus(char *buf, int nbytes) {
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
 		send(client_.getFd(),"HTTP/1.1 200 OK\r\n", 17, 0);

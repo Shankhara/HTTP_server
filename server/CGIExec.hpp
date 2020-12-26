@@ -12,7 +12,7 @@
 #include "Server.hpp"
 #include "fds/Client.hpp"
 #include "fds/Listener.hpp"
-#include "fds/CGIResponse.hpp"
+#include "fds/CGISocket.hpp"
 
 class Client;
 

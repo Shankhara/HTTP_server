@@ -21,5 +21,6 @@ size_t strHex_to_int(std::string const &str);
 std::vector<std::string> explode(const std::string & str, const char & delim);
 int getNextLine(std::string & buf, std::string & line);
 unsigned long getTime();
+char	*ft_strncpy(char *dest, const char *src, size_t n);
 
 #endif

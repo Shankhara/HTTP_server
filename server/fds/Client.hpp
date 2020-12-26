@@ -32,7 +32,6 @@ public:
 	Client(int, std::vector<Parsing::server> &);
 	virtual 						~Client();
 	void 							constructRequest(char [], int);
-	void 							appendResponse(char [], int);
 	std::string 					&getResponse();
 	void 							onEvent();
 	Request							&getRequest();

@@ -1,5 +1,5 @@
-#ifndef WEBSERV_CGIRESPONSE_HPP
-#define WEBSERV_CGIRESPONSE_HPP
+#ifndef WEBSERV_CGISOCKET_HPP
+#define WEBSERV_CGISOCKET_HPP
 
 #include "FileDescriptor.hpp"
 #include <errno.h>
@@ -9,12 +9,13 @@
 #include "../Server.hpp"
 #include "../Logger.hpp"
 #include "Client.hpp"
+#include "../responses/Response.hpp"
 
 #define BUFFER_SIZE 32768
 
 class Client;
 
-class CGIResponse: public FileDescriptor {
+class CGISocket: public FileDescriptor {
 private:
 	Client 				&client_;
 	pid_t  				pid_;
@@ -23,8 +24,8 @@ private:
 
 public:
 	static unsigned int instances;
-	CGIResponse(int, Client &);
-	virtual		~CGIResponse();
+	CGISocket(int, Client &);
+	virtual		~CGISocket();
 	void		onEvent();
 	int			pipeToClient();
 	void		setPid(pid_t pid);

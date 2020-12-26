@@ -3,6 +3,7 @@
 Server* Server::instance_ = 0;
 
 Server::~Server() {
+	Log().Get(logINFO) << "FD_MAX at shutdown: " << fdmax_;
 	stop();
 }
 

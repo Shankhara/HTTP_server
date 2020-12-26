@@ -5,7 +5,7 @@ VPATH		+= ../:../responses/
 NAME		= unittests
 OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o testParsing.o \
-			CGIExec.o CGIResponse.o testCGI.o \
+			CGIExec.o CGISocket.o testCGI.o \
 			Request.o testRequest.o \
 			RespGet.o Response.o testResponse.o \
 			autoIndex.o
@@ -33,7 +33,7 @@ Server.o : ../Server.hpp
 Listener.o : ../fds/Listener.hpp
 Response.o : ../responses/Response.hpp
 CGIExec.o : ../CGIExec.hpp
-CGIResponse.o : ../fds/CGIResponse.hpp
+CGISocket.o : ../fds/CGISocket.hpp
 Parsing.o : ../parsing/Parsing.hpp
 Ut.o: ../parsing/Ut.hpp
 
