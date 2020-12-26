@@ -17,7 +17,7 @@ int RespGet::readResponse() {
 	{
 		fd_ = -1;
 		Parsing::location *location = req_.getLocation();
-		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
+		if (req_.getLocation()->autoindex && req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
 			return (writeAutoIndex_(location->root + req_.getReqTarget()));
 		openFile_(location);
 		if (fd_ == -1)
@@ -38,19 +38,14 @@ int RespGet::readFile_() {
 
 void RespGet::openFile_(Parsing::location *location) {
 	std::string path = location->root + req_.getReqTarget();
-	bool isDir;
+	int isDir;
 
 	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path;
 	struct stat st;
 	stat(path.c_str(), &st);
 	isDir = S_ISDIR(st.st_mode);
-	if (isDir)
-	{
-		if (location->index.size() == 0) //TODO: conf should have default settings available in every location #33
-			path += "index.html";
-		else
-			path += location->index;
-	}
+	if (isDir != 0)
+		path += location->index;
 	fd_ = open(path.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
