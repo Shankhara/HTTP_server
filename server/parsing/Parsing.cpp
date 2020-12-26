@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/24 11:15:00 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/26 01:26:56 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			else
 				this->skipWhite(&first, end, true);
 			server.locations.push_back(this->parseLocation(line[1], first, next));
+			if (server.locations[server.locations.size() - 1].root == "")
+				server.locations[server.locations.size() - 1].root = server.root;
 			for (size_t i = 0; i < server.locations.size() - 1; i++)
 				if (server.locations[i].name == line[1])
 					throw (PpE(this->file_, stds(" duplicated locations ")));

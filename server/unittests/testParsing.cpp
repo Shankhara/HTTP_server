@@ -46,5 +46,5 @@ void testParsing()
 	assertThrow("./parsing/missingBrackets.conf", " missing brackets");
 
 
-	//testDuplicateServerName();
+//	testDuplicateServerName();
 }
