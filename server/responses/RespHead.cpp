@@ -2,17 +2,15 @@
 
 void RespHead::append_(std::string str) {
 
-	if (headersBuilt_ || str.size() + nbytes_ > bufSize_)
+	if (headersBuilt_)
 		return ;
-	ft_strncpy(buf_ + nbytes_, str.c_str(), str.size());
-	nbytes_ += str.size();
+	Response::append_(str);
 }
 
 void RespHead::append_(char str[], unsigned int size) {
-	if (headersBuilt_ || size + nbytes_ > bufSize_)
+	if (headersBuilt_)
 		return ;
-	ft_strncpy(buf_ + nbytes_, str, size);
-	nbytes_ += size;
+	Response::append_(str, size);
 }
 
 int RespHead::readResponse() {
