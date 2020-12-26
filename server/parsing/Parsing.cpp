@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/24 11:15:00 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/26 02:18:00 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,19 +69,19 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 	Parsing::server		server = this->getDefaultServer();
 	std::vector<stds>	line;
 	std::vector<int>	prop = this->getTableDef();
-	stds				tmp;
+	stds				*tmp;
 	iterator			next;
 
 	while (first != end)
 	{
 		this->skipWhite(&first, end, true);
-		tmp = getNextLine(&first, end);
+		tmp = new stds(getNextLine(&first, end));
 		this->skipWhite(&first, end, true);
-		if (this->parseSemi(&tmp) == false && tmp.find("location") == stds::npos)
+		if (this->parseSemi(tmp) == false && tmp->find("location") == stds::npos)
 			throw (PpE(this->file_, stds("Expected token ;")));
-		if (tmp.find("location") != stds::npos)
+		if (tmp->find("location") != stds::npos)
 		{
-			line = splitWhitespace(stds(tmp, 0, tmp.size()));
+			line = splitWhitespace(stds(*tmp, 0, tmp->size()));
 			if (line.size() < 2)
 				throw (PpE(this->file_, stds("Expected at least 1 argument")));
 			if (line[line.size() - 1] != "{" && *first != '{')
@@ -96,15 +96,19 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			else
 				this->skipWhite(&first, end, true);
 			server.locations.push_back(this->parseLocation(line[1], first, next));
+			if (server.locations[server.locations.size() - 1].root == "")
+				server.locations[server.locations.size() - 1].root = server.root;
 			for (size_t i = 0; i < server.locations.size() - 1; i++)
 				if (server.locations[i].name == line[1])
 					throw (PpE(this->file_, stds(" duplicated locations ")));
 			first = next + 1;
 			this->skipWhite(&first, end, true);
+			delete tmp;
 			continue;
 		}	
 		else	
-			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
+			line = splitWhitespace(stds(*tmp, 0, tmp->size() - 1));
+		delete tmp;
 		server = this->returnProps(server, line, &prop);
 	}
 	return server;
@@ -114,18 +118,19 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 	Parsing::location	location = this->getDefaultLocation();
 	std::vector<stds>	line;
 	std::vector<int>	prop = this->getTableDef();
-	stds				tmp;
+	stds				*tmp;
 	
 	location.name = name;
 	while (first != end)
 	{
 		this->skipWhite(&first, end, true);
-		tmp = getNextLine(&first, end);
+		tmp = new stds(getNextLine(&first, end));
 		this->skipWhite(&first, end, true);
-		if (tmp[tmp.size() - 1] != ';')
+		if (this->parseSemi(tmp) == false)
 			throw (PpE(this->file_, stds("Expected token ;")));
-		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
+		line = splitWhitespace(stds(*tmp, 0, tmp->size() - 1));
 		location = this->returnLocation(location, line, &prop);
+		delete tmp;
 	}
 	return location;
 }
@@ -317,11 +322,11 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 
 bool				Parsing::parseSemi(stds *src)
 {
-	iterator first = src->begin();
-	iterator end = src->end();
+	iterator	first = src->begin();
+	iterator	end = src->end();
+	bool		seen = false;
+	size_t		i = 0;
 
-	stds	*tmp = new stds();
-	bool	seen = false;
 	while (first != end)
 	{
 		if (*first == ';' && seen == false)
@@ -338,12 +343,12 @@ bool				Parsing::parseSemi(stds *src)
 	first = src->begin();
 	while (first != end)
 	{
-		(*tmp) += *first;
+		i++;
 		if (*first == ';')
 			break;
 		first++;
 	}
-	src = tmp;
+	*src = src->substr(0, i);
 	return (true);
 }
 
