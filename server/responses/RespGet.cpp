@@ -17,7 +17,7 @@ int RespGet::readResponse() {
 		fd_ = -1;
 		Parsing::location *location = req_.getLocation();
 		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
-			return (writeAutoIndex_());
+			return (writeAutoIndex_(location->root));
 		openFile_(location);
 		if (fd_ == -1)
 			return (writeErrorPage(404));
