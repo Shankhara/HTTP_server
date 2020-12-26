@@ -82,6 +82,7 @@ std::string RespGet::doAutoIndexTemplate_(stds path) {
 	}	
 	body += "</pre><hr></body>";
 	body += "</html>";
+	free(dir);
 	return body;
 }
 
