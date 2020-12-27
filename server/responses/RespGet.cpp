@@ -42,8 +42,8 @@ void RespGet::openFile_(Parsing::location *location) {
 		path = location->root + req_.getReqTarget();
 	else
 		path = req_.getServer()->root + req_.getReqTarget();
-	int isDir;
 
+	int isDir;
 	struct stat st;
 	stat(path.c_str(), &st);
 	isDir = S_ISDIR(st.st_mode);

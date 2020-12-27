@@ -254,7 +254,6 @@ void badHeaders()
 	std::string str = "GET /qwe HTTP/1.1\r\nHost: 2\r\nContent-length: 3\r\n\r\n";
 	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 100, "no body despite content-length header");
-	//TODO: manage this error
 
 	Request b(*vhost);
 	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nDate: today\r\n\r\n";
@@ -263,51 +262,6 @@ void badHeaders()
 
 	delete (vhost);
 }
-
-//void receivedAtOnce()
-//{
-//	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-//
-//	std::vector<Parsing::server> *vhost = createVirtualHosts();
-//
-//	Request r(*vhost);
-//	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage-body";
-//	assertEqual(r.parse(), 0, "correct request");
-//
-//	r.request_ = "GET /qwe HTTP/1.1\r\nContent-length: 12\r\nReferer: 2\r\nContent-Type: 3\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADBODY, "wrong content-length header");
-//
-//	r.request_ = "GET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADBODY, "no content-length header");
-//
-//	r.request_ = "GET /qwe HTTP/1.1\r\nGET /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADHEADER, "2 correct request line");
-//
-//	r.request_ = "get /qwe HTTP/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADMETHOD, "lowercase method");
-//
-//	r.request_ = "GET /qwe http/1.1\r\nreferer: 2\r\ncontent-type: 3\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADVERSION, "lowercase version");
-//
-//	r.request_ = "GET /qwe HTTP/1.1\r\n\r\nmessage";
-//	assertEqual(r.parse(), BADBODY, "1 body no headers");
-//
-//	r.request_ = "GET /qwe HTTP/1.1\r\nhost: url\r\nuser-agent: hop\r\ndate: today\r\ncontent-length: 7\r\nmessage";
-//	assertEqual(r.parse(), BADHEADER, "no newline bet headers and body");
-//
-//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\ncontent-length: 7\r\nmessage";
-//	r.parse();
-//	assertEqual(r.queryString_parsed, true, "parsing query_string");
-//
-//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\ndate: today\r\n";
-//	assertEqual(r.parse(), BADHEADER, "no newline after headers with no body");
-//
-//	r.request_ = "GET /qwe?name=client&date=today HTTP/1.1\r\nauthorization: Basic YWxhZGRpbjpvcGVuc2VzYW1l\r\n\r\n";
-//	r.parse();
-//	assertStringEqual(r.getHeaderAuth(), "aladdin:opensesame", "correct parsing authorization");
-//	delete (vhost);
-//}
-
 
 void correctChunkedBody()
 {
@@ -353,7 +307,6 @@ static void testIncorrectContentLength()
 
 	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA IS NOT 4";
 	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 400, "Content-Length < bodySize");
-	// 418 c'est IM A TEAPOT ^^
 
 	delete (vhost);
 }

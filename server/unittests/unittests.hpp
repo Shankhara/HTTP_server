@@ -18,4 +18,3 @@ void testParsing();
 std::vector<Parsing::server> *createVirtualHosts();
 
 #endif
-

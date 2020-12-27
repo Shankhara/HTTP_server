@@ -10,19 +10,20 @@
 #include <sys/stat.h>
 #include <time.h>
 
-class RespGet: public Response {
-protected:
+class RespGet: public Response
+{
+	protected:
 	int			fd_;
 	void 		openFile_(Parsing::location *location);
 	int		 	readFile_();
 	int 		writeAutoIndex_(stds path);
 	std::string doAutoIndexTemplate_(stds path);
 	std::string	returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat);
-public:
+	
+	public:
 	RespGet(const Request &r, char[], unsigned int);
 	~RespGet();
 	virtual int readResponse();
-
 };
 
 

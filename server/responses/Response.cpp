@@ -21,9 +21,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 		statusMap_[413] = "Request Entity Too Large";
 		statusMap_[414] = "Request-URI Too Long";
 		statusMap_[500] = "Internal Server Error";
-
 	}
-
 	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
@@ -90,4 +88,3 @@ void Response::appendHeaders(int statusCode, std::string contentType, unsigned i
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();
 }
-
