@@ -46,12 +46,13 @@ std::string Mime::getExtension(std::string & filename) const
 	end = filename.find('.', start);
 	if (start == dead)
 		return (res); // no extension
-	return filename.substr(start, end);
+	return filename.substr(start + 1, end - 1);
 }
 
 std::string Mime::getContentType(std::string & filename) const
 {
 	std::string ext = getExtension(filename);
+	std::cout << "a: " << ext << std::endl;
 
 	for (size_t i = 0; i < extensions_.size(); i++)
 	{

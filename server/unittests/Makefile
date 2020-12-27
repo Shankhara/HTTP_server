@@ -8,8 +8,7 @@ OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			CGIExec.o CGISocket.o testCGI.o \
 			Request.o testRequest.o \
 			RespGet.o RespHead.o Response.o testResponse.o \
-			autoIndex.o
-
+			autoIndex.o Mime.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -g3
@@ -37,6 +36,7 @@ CGIExec.o : ../CGIExec.hpp
 CGISocket.o : ../fds/CGISocket.hpp
 Parsing.o : ../parsing/Parsing.hpp
 Ut.o: ../parsing/Ut.hpp
+Mime.o : ../Mime.hpp
 
 clean:
 			$(RM) $(OBJS)

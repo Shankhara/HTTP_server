@@ -24,4 +24,5 @@ class Mime {
 
 	void parseMimeFile();
 	std::string getContentType(std::string &) const;
-}
+	std::string getExtension(std::string & filename) const;
+};

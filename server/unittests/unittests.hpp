@@ -9,6 +9,7 @@
 #include "../responses/RespGet.hpp"
 #include "../fds/Client.hpp"
 #include "../fds/Listener.hpp"
+#include "../Mime.hpp"
 
 void testRequest();
 void testResponse();
