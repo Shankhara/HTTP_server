@@ -1,17 +1,22 @@
 #!/bin/bash
 
-cp build/virtualhost.conf build/webserv
-cp build/virtualhost.conf build/nginx
+#cp build/virtualhost.conf build/webserv
+#cp build/virtualhost.conf build/nginx
 
-cd ../server/ && make re
+cd ../server/ && make
 cp webserv ../client/build/webserv
-cd ../client/build/nginx
-docker build -t ft_nginx .
+cd ../client/build/ft_ubuntu
+docker build -t ft_ubuntu .
+cd ../nginx
+#docker build -t ft_nginx .
 cd ../webserv
 docker build -t ft_webserv .
 
-docker stop ft_nginx > /dev/null 2>&1
-docker stop ft_webserv > /dev/null 2>&1
+docker stop ft_ngi > /dev/null 2>&1
+docker stop ft_web > /dev/null 2>&1
 
-docker run -d --rm --name ft_nginx -p 9090:8080 ft_nginx
-docker run -d --rm --name ft_webserv -p 9091:8080 ft_webserv
+#docker run -it --rm -d -p 8082:8082 --name ft_ngi ft_nginx
+#docker run -it --rm -d -p 8082:8082 --name ft_web ft_webserv
+#docker run -it --rm -d -p 8082:8082 --name ft_ngi ft_nginx
+docker run -it --rm -d -p 8081:8081 --name ft_web ft_webserv
+
