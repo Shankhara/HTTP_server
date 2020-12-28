@@ -57,7 +57,7 @@ void Response::writeStatusLine_()
 	append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
 }
 
-void Response::writeThisHeader(std::string name, std::string value)
+void Response::writeThisHeader_(std::string name, std::string value)
 {
 	append_(name + ": " + value + "\r\n");
 }

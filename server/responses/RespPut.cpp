@@ -8,8 +8,6 @@ RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(
 	payload_ = req_.getBody();
 
 	setPath_();
-	if (reachResource_())
-		putPayload_();
 }
 
 RespPut::~RespPut() { }
@@ -50,7 +48,7 @@ int RespPut::compareFiles_()
 	size_t nbytes; 
 	std::string str;
 
-	while ((nbytes = read(fd_, &buff, 254)) > 0)
+	while ((nbytes = read(fd_, buff, 254)) > 0)
 	{
 		buff[nbytes] = '\0';
 		str.append(buff);
@@ -62,7 +60,7 @@ void RespPut::putPayload_()
 {
 	size_t len = payload_.size(), nbytes;
 
-	if ((nbytes = write(fd_, payload_.data(), len)) != len)
+	if ((nbytes = write(fd_, payload_.c_str(), len)) < 0)
 		statusCode_ = 500;
 	else if (fileExists_)
 		statusCode_ = 200;
@@ -73,7 +71,8 @@ void RespPut::putPayload_()
 void RespPut::makeResponse_()
 {
 	writeStatusLine_(statusCode_);
-	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
+	//writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
+	writeContentType_("text/html"); // dans mon tcpdump le contentType etait vide
 	writeThisHeader_("Content-location", path_);
 	if (!compareFiles_())
 		writeThisHeader_("Last-Modified", getStrDate());
@@ -82,5 +81,12 @@ void RespPut::makeResponse_()
 
 int RespPut::readResponse()
 {
-	return 0;
+	nbytes_ = 0;
+	if (fd_ == 0)
+	{
+		if (reachResource_())
+			putPayload_();
+		makeResponse_();
+	}
+	return nbytes_;
 }

@@ -5,6 +5,7 @@ echo "boostraping in ${WEBSERV}"
 wget -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester -o ${WEBSERV}/ubuntu_tester
 wget -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester -o ${WEBSERV}/ubuntu_cgi_tester
 
+rm -rf ${DIR}/put_test/
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
 echo "<h1>index</h1>" > ${DIR}/youpi.bad_extension
 touch ${DIR}/youpi.bla

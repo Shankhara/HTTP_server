@@ -90,6 +90,8 @@ void Client::doStaticFile_() {
 		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "POST")
 		resp = new RespError(405, request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_.getMethod() == "PUT")
+		resp = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
 	else
 		resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
 	sendResponse_(resp);

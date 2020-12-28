@@ -23,6 +23,9 @@ class Response
 
 	virtual void append_(std::string);
 	virtual void append_(char [], unsigned int);
+	void writeThisHeader_(std::string name, std::string value);
+	void writeStatusLine_();
+	void writeContentType_();
 
 	public:
 	Response(const Request &, char[], unsigned int bufSize);
@@ -32,7 +35,4 @@ class Response
 	virtual int		readResponse() = 0;
 
 	void appendIntro();
-	void writeThisHeader(std::string name, std::string value);
-	void writeStatusLine_();
-	void writeContentType_();
 };
