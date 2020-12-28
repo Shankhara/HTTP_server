@@ -34,12 +34,6 @@ void Client::onEvent()
 	constructRequest(buf_, nbytes);
 }
 
-inline bool ends_with(std::string const & value, std::string const & ending)
-{
-	if (ending.size() > value.size()) return false;
-	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
-
 void Client::constructRequest(char buf[], int nbytes) {
 	int statusCode;
 
@@ -51,10 +45,15 @@ void Client::constructRequest(char buf[], int nbytes) {
 		doResponse_();
 	else
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Client: " << fd_ << " Parse Error code: " << statusCode;
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
+}
+
+inline bool ends_with(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 void Client::doResponse_() {
@@ -100,6 +99,11 @@ void Client::doStaticFile_() {
 }
 
 void Client::doCGI_() {
+	if (CGIResponse_ != 0)
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " CGIResponse is already set for client " << fd_;
+		return ;
+	}
 	if (CGISocket::instances > MAX_CGI_FORKS) {
 		Log().Get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_;
 		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
@@ -107,7 +111,7 @@ void Client::doCGI_() {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
-	CGIExec exec = CGIExec();
+	CGIExec exec = CGIExec(request_);
 	CGIResponse_ = exec.run(*this);
 	Server::getInstance()->addFileDescriptor(CGIResponse_);
 	if (CGIResponse_ == 0) {

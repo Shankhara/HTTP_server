@@ -13,11 +13,12 @@
 #include "fds/Client.hpp"
 #include "fds/Listener.hpp"
 #include "fds/CGISocket.hpp"
-
+#include "responses/RespError.hpp"
 class Client;
 
 class CGIExec {
 private:
+	const Request				&request_;
 	int							stdoutFD_;
 	int							stdinFD_;
 	static const std::string	vars_[];
@@ -49,12 +50,12 @@ private:
 	void 						pipeSTDOUT_(int pfd[2]);
 	void 						pipeSTDIN_(int pfd[2]);
 	void 						dupSTDERR_();
-	void 						build_(const Request &, const std::string &, const std::string &);
+	void 						build_(const std::string &, const std::string &);
 	void						freeEnvs_();
 	void 						write500();
 
 public:
-	CGIExec();
+	CGIExec(const Request &);
 	FileDescriptor				*run(Client & );
 	virtual						~CGIExec();
 };
