@@ -7,35 +7,34 @@ RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(
 	fileExists_ = false;
 	payload_ = req_.getBody();
 
-	setPath();
-
-	if (reachResource());
-		putPayload();
+	setPath_();
+	if (reachResource_())
+		putPayload_();
 }
 
 RespPut::~RespPut() { }
 
-void ResPut::setPath()
+void RespPut::setPath_()
 {
 	location_ = req_.getLocation();
 	reqTarget_ = req_.getReqTarget();
 
-	if (!location->root.empty())
-		path_ = location->root + reqTarget();
+	if (!location_->root.empty())
+		path_ = location_->root + reqTarget_;
 	else
-		path_ = req_.getServer()->root + reqTarget(); 
-
-//	struct stat st;
-//	stat(path_.c_str(), &st);
+		path_ = req_.getServer()->root + reqTarget_; 
 }
 
-bool reachResource()
+bool RespPut::reachResource_()
 {
+	if (path_[path_.size() - 1] == '/')
+		return false;
+
 	struct stat buffer;
-	if (!stat(path_, &buffer))
+	if (!stat(path_.c_str(), &buffer))
 		fileExists_ = true;
 
-	fd_ = open(path_, O_CREAT, 0664);
+	fd_ = open(path_.c_str(), O_CREAT, 0664);
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
@@ -45,11 +44,25 @@ bool reachResource()
 	return (true);
 }
 
-void RespPut::putPayload()
+int RespPut::compareFiles_()
 {
-	static size_t len = payload_.size();
+	char buff[255];
+	size_t nbytes; 
+	std::string str;
 
-	if ((nbytes = write(fd_, payload_, len)) != len)
+	while ((nbytes = read(fd_, &buff, 254)) > 0)
+	{
+		buff[nbytes] = '\0';
+		str.append(buff);
+	}
+	return (str.compare(payload_) == 0);
+}
+
+void RespPut::putPayload_()
+{
+	size_t len = payload_.size(), nbytes;
+
+	if ((nbytes = write(fd_, payload_.data(), len)) != len)
 		statusCode_ = 500;
 	else if (fileExists_)
 		statusCode_ = 200;
@@ -57,12 +70,17 @@ void RespPut::putPayload()
 		statusCode_ = 201;
 }
 
-int RespPut::makeResponse()
+void RespPut::makeResponse_()
 {
-	append_
+	writeStatusLine_(statusCode_);
+	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
+	writeThisHeader_("Content-location", path_);
+	if (!compareFiles_())
+		writeThisHeader_("Last-Modified", getStrDate());
+	writeHeadersEnd_();
 }
 
 int RespPut::readResponse()
 {
-
+	return 0;
 }

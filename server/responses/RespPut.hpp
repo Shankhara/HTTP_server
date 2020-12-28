@@ -11,9 +11,16 @@ class RespPut: public Response
 	std::string payload_;
 	int fd_;
 	int fileExists_;
+
+	void setPath_();
+	void putPayload_();
+	bool reachResource_();
+	void makeResponse_();
+	int compareFiles_();
 	
 	public:
 	RespPut(const Request &r, char[], unsigned int);
 	~RespPut();
+	virtual int readResponse();
 
 };
