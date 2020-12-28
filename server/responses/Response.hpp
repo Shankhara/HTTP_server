@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Request.hpp"
+#include "../Mime.hpp"
 #include <errno.h>
 
 class Response
@@ -29,4 +30,9 @@ class Response
 	int				writeErrorPage(int);
 	void 			appendHeaders(int, std::string, unsigned int);
 	virtual int		readResponse() = 0;
+
+	void appendIntro();
+	void writeThisHeader(std::string name, std::string value);
+	void writeStatusLine_();
+	void writeContentType_();
 };
