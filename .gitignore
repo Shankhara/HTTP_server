@@ -5,3 +5,4 @@ server/.objs/
 *.o
 ubuntu_cgi_tester
 ubuntu_tester
+webserv

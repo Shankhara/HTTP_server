@@ -58,7 +58,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 void Client::doResponse_() {
 	unsigned int nbytes;
-	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 	{
 		Response *resp;
 		if (request_.getMethod() == "GET")
