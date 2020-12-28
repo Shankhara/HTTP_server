@@ -50,6 +50,18 @@ void testMimeType()
 	fileName = "image.tiff.fr.DE.GE";
 	ret = m.getContentType(fileName);
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
+
+	fileName = "dir/image.tiff";
+	ret = m.getContentType(fileName);
+	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
+
+	fileName = "/path/dir/image.tiff";
+	ret = m.getContentType(fileName);
+	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
+
+	fileName = "/path/dir/image/";
+	ret = m.getContentType(fileName);
+	assertStringEqual(ret, "", "fileName: " + fileName);
 }
 
 void testResponse()
