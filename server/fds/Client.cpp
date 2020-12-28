@@ -85,7 +85,6 @@ std::string &Client::getResponse()
 Request &Client::getRequest() {
 	return request_;
 }
-<<<<<<< HEAD
 
 void Client::doStaticFile_() {
 	// TODO: factory just like CPPdays to avoid if else branching?
@@ -116,5 +115,3 @@ void Client::doCGI_() {
 		sendResponse_(&resp);
 	}
 }
-=======
->>>>>>> 8c345cbfcd95bb901f571557266d37af1e796f5e
