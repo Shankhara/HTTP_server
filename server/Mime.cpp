@@ -52,7 +52,7 @@ void Mime::parseMimeFile()
 	}
 }
 
-std::string Mime::getExtension(std::string & filename) const
+std::string Mime::getExtension(const std::string & filename) const
 {
 	size_t start, end;
 	size_t dead = std::string::npos;
@@ -61,14 +61,23 @@ std::string Mime::getExtension(std::string & filename) const
 	start = filename.find('.', 0);
 	end = filename.find('.', start);
 	if (start == dead)
-		return (res); // no extension
+		return (res);
 	return filename.substr(start + 1, end - 1);
 }
 
-std::string Mime::getContentType(std::string & filename) const
+std::string Mime::getFilename(std::string & param) const
 {
-	std::string ext = getExtension(filename);
-	std::cout << "a: " << ext << std::endl;
+	size_t start = param.rfind("/");
+	if (start != std::string::npos)
+		return param.substr(start);
+	return param;
+}
+
+std::string Mime::getContentType(std::string & param) const
+{
+	std::string ext = getExtension(getFilename(param));
+	if (ext.empty())
+		return (ext);
 
 	for (size_t i = 0; i < extensions_.size(); i++)
 	{
