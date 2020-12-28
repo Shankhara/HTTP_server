@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 			testParsing();
 	}else{
 		testRequest();
-		testCGI();
+		//testCGI();
 		testParsing();
 	}
 //	testResponseBuild();

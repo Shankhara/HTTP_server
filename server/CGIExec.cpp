@@ -83,11 +83,6 @@ FileDescriptor *CGIExec::run()
 		pipeSTDIN_(pipeIN);
 		dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
-		close(STDOUT_FILENO);
-		close(STDIN_FILENO);
-		close(STDERR_FILENO);
-		freeEnvs_();
-		exit(EXIT_FAILURE);
 	}
 	else
 	{
