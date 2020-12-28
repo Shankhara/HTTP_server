@@ -39,11 +39,9 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 	statusCode = request_.doRequest(buf, nbytes);
 	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode;
-	if (statusCode == 100)
-		return ;
-	else if (statusCode == 200)
+	if (statusCode == 200)
 		doResponse_();
-	else
+	else if (statusCode != 100)
 	{
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
@@ -111,8 +109,8 @@ void Client::doCGI_() {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
-	CGIExec exec = CGIExec(request_);
-	CGIResponse_ = exec.run(*this);
+	CGIExec exec = CGIExec(*this);
+	CGIResponse_ = exec.run();
 	Server::getInstance()->addFileDescriptor(CGIResponse_);
 	if (CGIResponse_ == 0) {
 		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
