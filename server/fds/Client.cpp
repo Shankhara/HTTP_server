@@ -116,5 +116,3 @@ std::string &Client::getResponse()
 Request &Client::getRequest(){
 	return request_;
 }
-
-

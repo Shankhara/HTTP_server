@@ -1,14 +1,30 @@
 #include "Mime.hpp"
 
+Mime * Mime::instance_ = 0;
+
+Mime * Mime::getInstance()
+{
+	if (!instance_)
+		new Mime();
+	return instance_;
+}
+
+void Mime::releaseInstance()
+{
+	if (instance_)
+	{
+		delete instance_;
+		instance_ = 0;
+	}
+}
+
 Mime::Mime()
 {
 	parseMimeFile();
+	instance_ = this;
 }
 
-Mime::~Mime()
-{
-
-}
+Mime::~Mime() { }
 
 void Mime::parseMimeFile()
 {

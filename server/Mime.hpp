@@ -17,6 +17,7 @@ class Mime {
 	std::vector<std::vector<std::string> > extensions_;
 
 	std::string getExtension(std::string &);
+	static Mime * instance_;
 
 	public:
 	Mime();
@@ -25,4 +26,7 @@ class Mime {
 	void parseMimeFile();
 	std::string getContentType(std::string &) const;
 	std::string getExtension(std::string & filename) const;
+
+	static Mime * getInstance();
+	static void releaseInstance();
 };

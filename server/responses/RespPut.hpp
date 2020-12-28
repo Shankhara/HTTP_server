@@ -2,16 +2,14 @@
 
 #include "Response.hpp"
 
-#define BUFFER_SIZE 32768
-
 class RespPut: public Response
 {
 	private:
 	Parsing::location *location_;
 	std::string reqTarget_;
 	std::string path_;
+	std::string payload_;
 	int fd_;
-	int statusCode_;
 	int fileExists_;
 	
 	public:

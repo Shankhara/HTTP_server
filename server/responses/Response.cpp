@@ -42,7 +42,7 @@ void Response::writeContentLength_(long value) {
 	append_("Content-Length: " + ft_itoa(value) + "\r\n");
 }
 
-void Response::writeStatusCode_(int statusCode)
+void Response::writeStatusLine_(int statusCode)
 {
 	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
 }
@@ -82,9 +82,17 @@ void Response::append_(char str[], unsigned int size) {
 }
 
 void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength) {
-	writeStatusCode_(statusCode);
+	writeStatusLine_(statusCode);
 	writeBaseHeaders_();
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();
 }
+
+//void Response::appendHeaders()
+//{
+//	writeStatusLine_();
+//	writeBaseHeaders_();
+//	//... Partie modulable pour chaque classe derivee
+//	writeHeadersEnd_();
+//}

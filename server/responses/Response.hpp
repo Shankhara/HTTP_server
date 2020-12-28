@@ -11,12 +11,14 @@ class Response
 	unsigned int				bufSize_;
 	int							nbytes_;
 	bool 						headersBuilt_;
-	void						writeStatusCode_(int);
+	void						writeStatusLine_(int);
 	void						writeBaseHeaders_();
-	void						writeContentType_(std::string );
+	void						writeContentType_(std::string);
 	void						writeContentLength_(long);
 	void 						writeHeadersEnd_();
 	static std::map<int, std::string> statusMap_;
+	int statusCode_;
+	std::string response_;
 
 	virtual void append_(std::string);
 	virtual void append_(char [], unsigned int);
