@@ -1,10 +1,10 @@
 server {
-    listen	8082 default_server;
+    listen *:8082;
     server_name localhost;
     root /tmp;
-    location / {
-        index index.html;
-        root /tmp;
-        autoindex on;
-    }
+	location / {
+		index index.html;
+		root /tmp;
+		autoindex on;
+	}
 }
