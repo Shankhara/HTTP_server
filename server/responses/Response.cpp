@@ -3,7 +3,7 @@
 std::map<int, std::string> Response::statusMap_;
 
 Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
-	req_(r), buf_(buf), bufSize_(bufSize)
+	req_(r), buf_(buf), bufSize_(bufSize - 1)
 {
 	nbytes_= 0;
 	headersBuilt_ = false;
