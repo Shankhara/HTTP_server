@@ -31,7 +31,7 @@ echo "server {
 		client_max_body_size 100;
 	}
 	location /directory {
-		method GET;
+		method GET POST;
 		root ${DIR};
 		index youpi.bad_extension;
 	}
