@@ -34,12 +34,6 @@ void Client::onEvent()
 	constructRequest(buf_, nbytes);
 }
 
-inline bool ends_with(std::string const & value, std::string const & ending)
-{
-	if (ending.size() > value.size()) return false;
-	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
-}
-
 void Client::constructRequest(char buf[], int nbytes) {
 	int statusCode;
 
@@ -51,60 +45,34 @@ void Client::constructRequest(char buf[], int nbytes) {
 		doResponse_();
 	else
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Client: " << fd_ << " Parse Error code: " << statusCode;
-		sendErrorPage(statusCode);
+		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
+		sendResponse_(&resp);
 	}
+}
+
+inline bool ends_with(std::string const & value, std::string const & ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
 void Client::doResponse_() {
-	unsigned int nbytes;
-	if (request_.getLocation()->cgi_extension.size() == 0 || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
-	{
-		Response *resp;
-		if (request_.getMethod() == "GET")
-			resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
-		else if (request_.getMethod() == "POST")
-		{
-			resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE - 1);
-			resp->writeErrorPage(405);
-		}
-		else
-			resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE - 1);
-		while ((nbytes = resp->readResponse()) > 0)
-		{
-			if (send(fd_, buf_, nbytes, 0) < 0)
-			{
-				Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
-				break ;
-			}
-		}
-		delete (resp);
-		Server::getInstance()->deleteFileDescriptor(fd_);
-		return ;
-	}
-	if (CGIResponse_ != 0) {
-		Log().Get(logERROR) << " parse returned 200 but CGIResponse was already set: "
-							<< request_.getRequest();
-		return ;
-	}
-	CGIExec exec = CGIExec();
-	CGIResponse_ = exec.run(*this);
-	Server::getInstance()->addFileDescriptor(CGIResponse_);
-	if (CGIResponse_ == 0)
-		send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
-	/*if (CGIResponse::instances > MAX_CGI_FORKS)
-	{
-		Log().Get(logERROR) << __FUNCTION__  << "Too many CGIRunning, bounce this client: " << fd_;
-		send(fd_, "HTTP/1.1 500 Internal Server Error\r\n", 36, 0);
-		Server::getInstance()->deleteFileDescriptor(fd_);
-		return ;
-	}*/
+	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+		doStaticFile_();
+	else
+		doCGI_();
 }
 
-void Client::sendErrorPage(int statusCode) {
-	RespGet err(request_, buf_, CLIENT_BUFFER_SIZE);
-	unsigned int nbytes = err.writeErrorPage(statusCode);
-	send(fd_, buf_, nbytes, 0);
+void Client::sendResponse_(Response *resp) {
+	int nbytes;
+	while ((nbytes = resp->readResponse()) > 0)
+	{
+		if (send(fd_, buf_, nbytes, 0) < 0)
+		{
+			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
+			break ;
+		}
+	}
 	Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
@@ -113,6 +81,41 @@ std::string &Client::getResponse()
 	return response_;
 }
 
-Request &Client::getRequest(){
+Request &Client::getRequest() {
 	return request_;
+}
+
+void Client::doStaticFile_() {
+	// TODO: factory just like CPPdays to avoid if else branching?
+	Response *resp;
+	if (request_.getMethod() == "GET")
+		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_.getMethod() == "POST")
+		resp = new RespError(405, request_, buf_, CLIENT_BUFFER_SIZE);
+	else
+		resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
+	sendResponse_(resp);
+	delete(resp);
+}
+
+void Client::doCGI_() {
+	if (CGIResponse_ != 0)
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " CGIResponse is already set for client " << fd_;
+		return ;
+	}
+	if (CGISocket::instances > MAX_CGI_FORKS) {
+		Log().Get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_;
+		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
+		sendResponse_(&resp);
+		Server::getInstance()->deleteFileDescriptor(fd_);
+		return ;
+	}
+	CGIExec exec = CGIExec(request_);
+	CGIResponse_ = exec.run(*this);
+	Server::getInstance()->addFileDescriptor(CGIResponse_);
+	if (CGIResponse_ == 0) {
+		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
+		sendResponse_(&resp);
+	}
 }

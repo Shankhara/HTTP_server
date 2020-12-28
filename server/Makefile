@@ -12,6 +12,7 @@ SRCS	+= parsing/Parsing.cpp
 SRCS	+= parsing/Ut.cpp
 SRCS	+= responses/RespGet.cpp
 SRCS	+= responses/RespHead.cpp
+SRCS	+= responses/RespError.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
 SRCS	+= Mime.cpp

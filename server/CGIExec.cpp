@@ -25,28 +25,28 @@ CGIExec::~CGIExec() {
 	free(envs_[18]);
 }
 
-CGIExec::CGIExec() {
+CGIExec::CGIExec(const Request &r): request_(r) {
 	setEnv_(18, "REDIRECT_STATUS=200");
 	envs_[19] = 0;
 }
 
-void CGIExec::build_(const Request &request, const std::string &workDir, const std::string &filename) {
-	setEnv_(CGIExec::AUTH_TYPE, request.getHeaderAuth());
-	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request.getHeaderContentLength()));
-	setEnv_(CGIExec::CONTENT_TYPE, request.getHeaderContentType());
+void CGIExec::build_(const std::string &workDir, const std::string &filename) {
+	setEnv_(CGIExec::AUTH_TYPE, request_.getHeaderAuth());
+	setEnv_(CGIExec::CONTENT_LENGTH, ft_itoa(request_.getHeaderContentLength()));
+	setEnv_(CGIExec::CONTENT_TYPE, request_.getHeaderContentType());
 	setEnv_(CGIExec::GATEWAY_INTERFACE, "CGI/1.1");
-	setEnv_(CGIExec::QUERY_STRING, request.getQueryStr());
-	setEnv_(CGIExec::PATH_INFO, request.getReqTarget());
-	setEnv_(CGIExec::PATH_TRANSLATED, workDir + request.getReqTarget());
+	setEnv_(CGIExec::QUERY_STRING, request_.getQueryStr());
+	setEnv_(CGIExec::PATH_INFO, request_.getReqTarget());
+	setEnv_(CGIExec::PATH_TRANSLATED, workDir + request_.getReqTarget());
 	setEnv_(CGIExec::REMOTE_ADDR, "");
 	setEnv_(CGIExec::REMOTE_IDENT, "");
 	setEnv_(CGIExec::REMOTE_USER, "");
-	setEnv_(CGIExec::REQUEST_METHOD, request.getMethod());
-	setEnv_(CGIExec::REQUEST_URI, request.getReqTarget());
+	setEnv_(CGIExec::REQUEST_METHOD, request_.getMethod());
+	setEnv_(CGIExec::REQUEST_URI, request_.getReqTarget());
 	setEnv_(CGIExec::SCRIPT_FILENAME, workDir + filename);
 	setEnv_(CGIExec::SCRIPT_NAME, filename);
-	setEnv_(CGIExec::SERVER_NAME, request.getHeaderHost());
-	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request.getServer()->port));
+	setEnv_(CGIExec::SERVER_NAME, request_.getHeaderHost());
+	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request_.getServer()->port));
 	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");
 	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
 }
@@ -64,7 +64,7 @@ FileDescriptor *CGIExec::run(Client &client)
 		return (0);
 	}
 	CGISocket *response = new CGISocket(pipeOUT[0], client);
-	build_(client.getRequest(), location->root, client.getRequest().getReqTarget());
+	build_(location->root, client.getRequest().getReqTarget()); //TODO rewrite since we got request in scope
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -190,7 +190,12 @@ void CGIExec::freeEnvs_()
 }
 
 void CGIExec::write500() {
-	write(STDOUT_FILENO, "Status: 500 Internal Server Error\r\n", 36);
+	char buf[1024];
+	int nbytes;
+
+	RespError err(500, request_, buf, 1024);
+	nbytes = err.readResponse();
+	write(STDOUT_FILENO, buf, nbytes);
 	exit(EXIT_FAILURE);
 }
 

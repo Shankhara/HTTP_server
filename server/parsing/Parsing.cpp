@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/26 02:18:00 by racohen          ###   ########.fr       */
+/*   Updated: 2020/12/28 12:13:52 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,7 +186,8 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			for (size_t i = 0; i < this->getServers().size(); i++)
 				for (size_t j = 0; j < this->getServers()[i].names.size(); j++)
 					if (line[k + 1] == this->getServers()[i].names[j])
-						throw (PpE(this->file_, stds(" duplicated server_name ")));
+						return server;
+					//	throw (PpE(this->file_, stds(" duplicated server_name ")));
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	}

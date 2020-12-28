@@ -14,6 +14,7 @@
 #include "../parsing/Parsing.hpp"
 #include "../responses/RespGet.hpp"
 #include "../responses/RespHead.hpp"
+#include "../responses/RespError.hpp"
 
 #define MAX_CGI_FORKS 20
 #define CLIENT_BUFFER_SIZE	32768
@@ -27,7 +28,9 @@ private:
 	Request								request_;
 	static char 						buf_[CLIENT_BUFFER_SIZE];
 	void 								doResponse_();
-	void 								sendErrorPage(int);
+	void 								sendResponse_(Response *);
+	void 								doStaticFile_();
+	void 								doCGI_();
 
 public:
 	Client(int, std::vector<Parsing::server> &);
