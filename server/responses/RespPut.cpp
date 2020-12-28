@@ -2,10 +2,15 @@
 
 RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-	setPath();
 	fd_ = 0;
 	statusCode_ = 200;
 	fileExists_ = false;
+	payload_ = req_.getBody();
+
+	setPath();
+
+	if (reachResource());
+		putPayload();
 }
 
 RespPut::~RespPut() { }
@@ -20,21 +25,11 @@ void ResPut::setPath()
 	else
 		path_ = req_.getServer()->root + reqTarget(); 
 
-	// est-ce que initialement, le root du location s'ajoute a celui du serveur ?
-
-	struct stat st;
-	stat(path.c_str(), &st);
-
-	int isDir = S_ISDIR(st.st_mode);
-	if (isDir != 0)
-	{
-		if (path_[path_.size() -1] != '/')
-			path_ += '/';
-		path_ += location->index;
-	}
+//	struct stat st;
+//	stat(path_.c_str(), &st);
 }
 
-void reachResource()
+bool reachResource()
 {
 	struct stat buffer;
 	if (!stat(path_, &buffer))
@@ -44,17 +39,30 @@ void reachResource()
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
-		return;
+		statusCode_ = 500;
+		return (false);
 	}
+	return (true);
+}
 
-	size_t len = req_.getBody().size();
-	if ((nbytes = write(fd_, req_.getBody(), len)) != len)
-		statusCode = 500; // whole file not written
-	
-	//WIP ...
+void RespPut::putPayload()
+{
+	static size_t len = payload_.size();
+
+	if ((nbytes = write(fd_, payload_, len)) != len)
+		statusCode_ = 500;
+	else if (fileExists_)
+		statusCode_ = 200;
+	else
+		statusCode_ = 201;
+}
+
+int RespPut::makeResponse()
+{
+	append_
 }
 
 int RespPut::readResponse()
 {
-	reachResource();
+
 }

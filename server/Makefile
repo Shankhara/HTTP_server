@@ -15,6 +15,7 @@ SRCS	+= responses/RespHead.cpp
 SRCS	+= responses/RespError.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
+SRCS	+= Mime.cpp
 
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
 CC		= clang++
