@@ -79,6 +79,11 @@ void badRequestLine()
 	Request e(*vhost);
 	str = "GET /qwe HTTP1.1\r\n\r\n";
 	assertEqual(e.doRequest(const_cast<char*>(str.c_str()), str.size()), 505, "bad version");
+
+	Request f(*vhost);
+	str = "GET NOPE HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "invalid target NOPE");
+
 	delete (vhost);
 }
 
@@ -311,6 +316,25 @@ static void testIncorrectContentLength()
 	delete (vhost);
 }
 
+static void testMatchLocation()
+{
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	vhost->at(0).locations.push_back(Parsing::location());
+	vhost->at(0).locations[1].name = std::string("/restricted/");
+	vhost->at(0).locations[1].methods.push_back("POST");
+
+	Request a(*vhost);
+	std::string req = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 200, "matchLocation GET /");
+
+	Request b(*vhost);
+	std::string req2 = "GET /restricted/toto HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(req2.c_str()), req2.size()), 405, "matchLocation GET /restricted");
+
+
+	delete (vhost);
+}
+
 void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -325,5 +349,6 @@ void testRequest()
 	correctChunkedBody();
 	badChunkedBody();
 	testForbiddenMethod();
+	testMatchLocation();
 	testIncorrectContentLength();
 }

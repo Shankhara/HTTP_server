@@ -8,6 +8,7 @@ void signalHandler(int) {
 	std::cerr << "\b\b";
 	Log().Get(logINFO) << "Webserver exiting gracefully.";
 	delete (Server::getInstance());
+	delete (Mime::getInstance());
 	exit(0);
 }
 

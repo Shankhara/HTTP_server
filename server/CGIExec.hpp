@@ -19,12 +19,11 @@ class Client;
 class CGIExec {
 private:
 	const Request				&request_;
+	Client	 					&client_;
 	int							stdoutFD_;
 	int							stdinFD_;
 	static const std::string	vars_[];
 	char *						envs_[20];
-	static CGIExec				*instance_;
-	std::string 				cgiScript_;
 	enum e_envs {
 		AUTH_TYPE,
 		CONTENT_LENGTH,
@@ -50,13 +49,13 @@ private:
 	void 						pipeSTDOUT_(int pfd[2]);
 	void 						pipeSTDIN_(int pfd[2]);
 	void 						dupSTDERR_();
-	void 						build_(const std::string &, const std::string &);
+	void 						build_(const std::string &);
 	void						freeEnvs_();
 	void 						write500();
 
 public:
-	CGIExec(const Request &);
-	FileDescriptor				*run(Client & );
+	CGIExec(Client &);
+	FileDescriptor				*run();
 	virtual						~CGIExec();
 };
 

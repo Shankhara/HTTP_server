@@ -44,6 +44,7 @@ void testParsing()
 	assertThrow("./parsing/noServer.conf", " no server provide");
 	assertThrow("./parsing/noArguments.conf", " no arguments provide");
 	assertThrow("./parsing/missingBrackets.conf", " missing brackets");
+	assertThrow("./parsing/missingBrackets.conf", " missing brackets");
 
 
 //	testDuplicateServerName();
