@@ -19,7 +19,7 @@ class Response
 	void 						writeHeadersEnd_();
 	static std::map<int, std::string> statusMap_;
 	int statusCode_;
-	std::string response_;
+	std::string path_;
 
 	virtual void append_(std::string);
 	virtual void append_(char [], unsigned int);
