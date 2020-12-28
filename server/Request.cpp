@@ -310,7 +310,7 @@ Parsing::location *Request::matchLocation_(Parsing::server *server) const
 
 	for (unsigned long j = 0; j < server->locations.size(); j++)
 	{
-		if (getReqTarget().rfind(server->locations[j].name, 0) == 0)
+		if (getReqTarget().rfind(server->locations[j].name, 0) == 0) 
 		{
 			if (server->locations[j].name.size() > minSize)
 			{

@@ -7,7 +7,7 @@ OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o testParsing.o \
 			CGIExec.o CGISocket.o testCGI.o \
 			Request.o testRequest.o \
-			RespGet.o RespHead.o Response.o testResponse.o \
+			RespGet.o RespHead.o RespPut.o Response.o testResponse.o \
 			RespError.o \
 			autoIndex.o Mime.o
 
@@ -25,6 +25,7 @@ testParsing.o: testParsing.cpp
 testCGI.o: testCGI.cpp
 Client.o : ../fds/Client.hpp
 RespGet.o: ../responses/RespGet.hpp
+RespPut.o: ../responses/RespPut.hpp
 RespHead.o: ../responses/RespHead.hpp
 RespError.o: ../responses/RespError.hpp
 autoIndex.o: ../responses/autoIndex.cpp

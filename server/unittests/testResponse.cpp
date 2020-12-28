@@ -21,6 +21,30 @@ void testRespGet()
 	delete (vhost);
 }
 
+void testRespPut()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string body = "HTTP is a generic interface protocol for information systems. \
+	It is designed to hide the details of how a service is ..."; 
+	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " + ft_itoa(body.size()) + "\r\n\r\n" + body;
+	int ret = ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+	std::cout << ret << std::endl;
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespPut respPut(ra, buf, bufsize);
+
+	int readSize = respPut.readResponse();
+	Log().Get(logDEBUG) << "READ " << readSize;
+	buf[readSize] = '\0';
+	std::cout << buf << std::endl;
+	delete (vhost);
+}
+
 void testMimeType()
 {
 	Mime m;
@@ -28,7 +52,6 @@ void testMimeType()
 	std::string ret;
 
 	ret = m.getContentType(fileName);
-	std::cout << ret << std::endl;
 	assertStringEqual(ret, "text/html", "fileName: " + fileName);
 
 	fileName = "index.html.fr";
@@ -67,5 +90,6 @@ void testMimeType()
 void testResponse()
 {
 //	testRespGet();
-	testMimeType();
+	testRespPut();
+//	testMimeType();
 }
