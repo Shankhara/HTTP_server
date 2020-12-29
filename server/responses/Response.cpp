@@ -59,6 +59,8 @@ void Response::writeHeadersEnd_()
 }
 
 int Response::writeErrorPage(int statusCode) {
+	if (headersBuilt_)
+		return 0;
 	nbytes_ = 0;
 	std::string body = "<html>"
 					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"

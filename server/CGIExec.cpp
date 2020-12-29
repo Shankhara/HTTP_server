@@ -87,9 +87,10 @@ FileDescriptor *CGIExec::run()
 	else
 	{
 		close(pipeIN[0]);
-		if (client_.getRequest().getHeaderContentLength() > 0)
+		std::string body = client_.getRequest().getBody();
+		if (!body.empty())
 		{
-			std::string body = client_.getRequest().getBody();
+			Log().Get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size();
 			write(pipeIN[1], body.c_str(), body.size());
 		}
 		response->setPid(cpid);
