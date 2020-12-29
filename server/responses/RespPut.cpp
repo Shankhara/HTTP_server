@@ -2,42 +2,27 @@
 
 RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-	fd_ = 0;
-	statusCode_ = 200;
-	fileExists_ = false;
-	payload_ = req_.getBody();
-
-	setPath_();
+	setFilePath();
 }
 
 RespPut::~RespPut() { }
 
-void RespPut::setPath_()
-{
-	location_ = req_.getLocation();
-	reqTarget_ = req_.getReqTarget();
-
-	if (!location_->root.empty())
-		path_ = location_->root + reqTarget_;
-	else
-		path_ = req_.getServer()->root + reqTarget_; 
-}
-
 bool RespPut::reachResource_()
 {
-	if (path_[path_.size() - 1] == '/')
+	if (filePath_[filePath_.size() - 1] == '/')
 		return false;
 
 	struct stat buffer;
-	if (!stat(path_.c_str(), &buffer))
-		fileExists_ = true;
+	if (stat(filePath_.c_str(), &buffer) == -1)
+		statusCode_ = 201;
+	else
+		statusCode_ = 200;
 
-	fd_ = open(path_.c_str(), O_CREAT | O_RDWR, 0666);
+	fd_ = open(filePath_.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0664);
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
-		std::cout << fd_ << std::endl;
 		return (false);
 	}
 	return (true);
@@ -59,25 +44,21 @@ int RespPut::compareFiles_()
 
 void RespPut::putPayload_()
 {
-	size_t nbytes = 0, len = payload_.size();
-	char *str = &payload_[0];
-
-	while (nbytes < len)
-		nbytes += write(fd_, str + nbytes, len / 2);
+	int len = payload_.size();
+	int nbytes = write(fd_, payload_.c_str(), len);
 	
-	if (nbytes < 0)
+	if (nbytes != len)
+	{
+		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
-	else if (fileExists_)
-		statusCode_ = 200;
-	else
-		statusCode_ = 201;
+	}
 }
 
 void RespPut::makeResponse_()
 {
 	writeStatusLine_(statusCode_);
-	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
-	writeThisHeader_("Content-location", path_);
+	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
+	writeThisHeader_("Content-location", filePath_);
 	if (!compareFiles_())
 		writeThisHeader_("Last-Modified", getStrDate());
 	writeHeadersEnd_();

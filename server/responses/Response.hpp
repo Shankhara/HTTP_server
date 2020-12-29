@@ -7,32 +7,36 @@
 class Response
 {
 	protected:
-	const Request				&req_;
-	char 						*buf_;
-	unsigned int				bufSize_;
-	int							nbytes_;
-	bool 						headersBuilt_;
+	const Request						&req_;
+	char 								*buf_;
+	int									nbytes_;
+	int									fd_;
+	int 								statusCode_;
+	bool 								headersBuilt_;
+	unsigned int						bufSize_;
+	std::string 						filePath_;
+	std::string 						payload_;
+	static std::map<int, std::string>	statusMap_;
+
 	void						writeStatusLine_(int);
 	void						writeBaseHeaders_();
 	void						writeContentType_(std::string);
 	void						writeContentLength_(long);
 	void 						writeHeadersEnd_();
-	static std::map<int, std::string> statusMap_;
-	int statusCode_;
-	std::string path_;
+	void 						writeThisHeader_(std::string, std::string);
+	void 						writeStatusLine_();
+	void 						writeContentType_();
 
 	virtual void append_(std::string);
 	virtual void append_(char [], unsigned int);
-	void writeThisHeader_(std::string name, std::string value);
-	void writeStatusLine_();
-	void writeContentType_();
 
 	public:
 	Response(const Request &, char[], unsigned int bufSize);
 	virtual			~Response();
 	int				writeErrorPage(int);
+	void 			writeErrorBody(int);
 	void 			appendHeaders(int, std::string, unsigned int);
 	virtual int		readResponse() = 0;
 
-	void appendIntro();
+	void setFilePath();
 };

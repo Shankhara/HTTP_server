@@ -5,8 +5,11 @@ std::map<int, std::string> Response::statusMap_;
 Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	req_(r), buf_(buf), bufSize_(bufSize - 1)
 {
+	fd_ = 0;
 	nbytes_= 0;
 	headersBuilt_ = false;
+	payload_ = req_.getBody();
+
 	if (statusMap_.size() == 0)
 	{
 		statusMap_[200] = "OK";
@@ -25,7 +28,10 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
-Response::~Response() { }
+Response::~Response()
+{
+	close(fd_);
+}
 
 void Response::writeBaseHeaders_()
 {
@@ -34,27 +40,19 @@ void Response::writeBaseHeaders_()
 	append_("Connection: close\r\n");
 }
 
-void Response::writeContentType_(std::string value) {
+void Response::writeContentType_(std::string value)
+{
 	append_("Content-Type: " + value + "\r\n");
 }
 
-void Response::writeContentType_()
+void Response::writeContentLength_(long value)
 {
-	append_("Content-Type: " + Mime::getInstance()->getContentType(path_) + "\r\n");
-}
-
-void Response::writeContentLength_(long value) {
 	append_("Content-Length: " + ft_itoa(value) + "\r\n");
 }
 
 void Response::writeStatusLine_(int statusCode)
 {
 	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
-}
-
-void Response::writeStatusLine_()
-{
-	append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
 }
 
 void Response::writeThisHeader_(std::string name, std::string value)
@@ -68,7 +66,16 @@ void Response::writeHeadersEnd_()
 	headersBuilt_ = true;
 }
 
-int Response::writeErrorPage(int statusCode) {
+void Response::setFilePath()
+{
+	if (!req_.getLocation()->root.empty())
+		filePath_ = req_.getLocation()->root + req_.getReqTarget();
+	else
+		filePath_ = req_.getServer()->root + req_.getReqTarget(); 
+}
+
+int Response::writeErrorPage(int statusCode)
+{
 	nbytes_ = 0;
 	std::string body = "<html>"
 					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
@@ -80,6 +87,19 @@ int Response::writeErrorPage(int statusCode) {
 	appendHeaders(statusCode, "text/html", body.size());
 	append_(body);
 	return (nbytes_);
+}
+
+void Response::writeErrorBody(int statusCode)
+{
+	nbytes_ = 0;
+	std::string body = "<html>"
+					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
+					"<body bgcolor=\"white\">"
+					"<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"
+					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
+				    "</body>"
+		 			"</html>";
+	append_(body);
 }
 
 void Response::append_(std::string str) {
@@ -102,10 +122,4 @@ void Response::appendHeaders(int statusCode, std::string contentType, unsigned i
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();
-}
-
-void Response::appendIntro()
-{
-	writeStatusLine_();
-	writeBaseHeaders_();
 }

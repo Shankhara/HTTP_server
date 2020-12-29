@@ -5,14 +5,6 @@
 class RespPut: public Response
 {
 	private:
-	Parsing::location *location_;
-	std::string reqTarget_;
-	std::string path_;
-	std::string payload_;
-	int fd_;
-	int fileExists_;
-
-	void setPath_();
 	void putPayload_();
 	bool reachResource_();
 	void makeResponse_();
@@ -22,5 +14,4 @@ class RespPut: public Response
 	RespPut(const Request &r, char[], unsigned int);
 	~RespPut();
 	virtual int readResponse();
-
 };
