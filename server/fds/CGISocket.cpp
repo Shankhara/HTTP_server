@@ -57,6 +57,8 @@ void CGISocket::setPid(pid_t pid) {
 }
 
 void CGISocket::parseCGIStatus(char *buf, int nbytes) {
+	buf[nbytes] = '\0';
+	Log().Get(logDEBUG) << "NBYTES " << nbytes << " RESPONSE " << buf;
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
 		send(client_.getFd(),"HTTP/1.1 200 OK\r\n", 17, 0);

@@ -318,6 +318,7 @@ static void testIncorrectContentLength()
 
 static void testMatchLocation()
 {
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	vhost->at(0).locations.push_back(Parsing::location());
 	vhost->at(0).locations[1].name = std::string("/restricted/");
@@ -333,6 +334,13 @@ static void testMatchLocation()
 
 
 	delete (vhost);
+}
+
+void testStrToHex()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	assertEqual(strHexToInt("e"), (unsigned long)14, "StrToHex() e");
+	assertEqual(strHexToInt("3e8"), (unsigned long)1000, "StrToHex() 3e8");
 }
 
 void testRequest()
@@ -351,4 +359,5 @@ void testRequest()
 	testForbiddenMethod();
 	testMatchLocation();
 	testIncorrectContentLength();
+	testStrToHex();
 }

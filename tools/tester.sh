@@ -1,12 +1,14 @@
 #!/bin/bash
 WEBSERV="/tmp/webserv"
 DIR=${WEBSERV}"/YoupiBanane"
+
 echo "boostraping in ${WEBSERV}"
-wget -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester -o ${WEBSERV}/ubuntu_tester
-wget -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester -o ${WEBSERV}/ubuntu_cgi_tester
 
 rm -rf ${DIR}/put_test/
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
+wget -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester
+wget -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester
+chmod +x ${WEBSERV}/ubuntu_*
 echo "<h1>index</h1>" > ${DIR}/youpi.bad_extension
 touch ${DIR}/youpi.bla
 touch ${DIR}/nop/youpi.bad_extension
@@ -26,16 +28,19 @@ echo "server {
 	}
 	location /post_body {
 		cgi_extension .bla;
-		cgi_path ${WEBSERV};
+		cgi_path ${WEBSERV}/ubuntu_cgi_tester;
 		method POST;
 		client_max_body_size 100;
 	}
 	location /directory {
 		method GET POST;
+		cgi_extension .bla;
+		cgi_path ${WEBSERV}/ubuntu_cgi_tester;
 		root ${DIR};
 		index youpi.bad_extension;
 	}
 }" > ${WEBSERV}/servers.conf
 
+cd ${PWD}
 cd ../server && make && cd ../tools
 ../server/webserv ${WEBSERV}/servers.conf

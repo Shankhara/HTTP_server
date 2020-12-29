@@ -64,7 +64,7 @@ FileDescriptor *CGIExec::run()
 		return (0);
 	}
 	CGISocket *response = new CGISocket(pipeOUT[0], client_);
-	build_(location->root); //TODO rewrite since we got request in scope
+	build_(location->root);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -81,7 +81,7 @@ FileDescriptor *CGIExec::run()
 		}
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
-		dupSTDERR_();
+		//dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else

@@ -32,7 +32,7 @@ bool RespPut::reachResource_()
 	if (!stat(path_.c_str(), &buffer))
 		fileExists_ = true;
 
-	fd_ = open(path_.c_str(), O_CREAT, 0664);
+	fd_ = open(path_.c_str(), O_CREAT|O_RDWR, 0664);
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
@@ -58,9 +58,10 @@ int RespPut::compareFiles_()
 
 void RespPut::putPayload_()
 {
-	size_t len = payload_.size(), nbytes;
+	int nbytes;
 
-	if ((nbytes = write(fd_, payload_.c_str(), len)) < 0)
+	nbytes = write(fd_, payload_.c_str(), payload_.size());
+	if (nbytes < 0)
 		statusCode_ = 500;
 	else if (fileExists_)
 		statusCode_ = 200;

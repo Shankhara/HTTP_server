@@ -8,6 +8,7 @@ Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 	headers_parsed = false;
 	statusCode_ = 100;
 	headerContentLength_ = 0;
+	chunkCursor_ = 0;
 
 	static const std::string str_list[9] = { "CONNECT", "GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
@@ -76,33 +77,48 @@ int Request::checkVersion()
 
 int Request::getChunkedBody()
 {
-	std::string hex_size, res, check;
-	size_t start = 0, end = 0, num_size = 0, total_size = 0;
+	std::string strHexChunkSize, check;
+	size_t cursor = 0, hexEndPos = 0;
 
-	if (request_.size() == 0)
+	Log().Get(logDEBUG) << __FUNCTION__ << " SIZE " << request_.size() << " REQ [" << request_ << "]";
+	if (request_.empty())
+		return 100;
+	if (request_ == "0")
 		return 200;
-	while (start == 0 || request_[start] != '0')
+	while (!request_.empty() && request_[cursor] != '\0' && request_[cursor] != '0')
 	{
-		end = request_.find("\r\n", start);
-		hex_size.assign(request_, start, end - start);
-		num_size = strHex_to_int(hex_size);
-		if (num_size > MAX_SIZE)
+		hexEndPos = request_.find("\r\n", cursor);
+		strHexChunkSize.assign(request_, cursor, hexEndPos - cursor);
+		chunkSize_ = strHexToInt(strHexChunkSize);
+		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize_ << " > " << request_.size() << " HEXPOS" << hexEndPos;
+		if (chunkSize_ > CHUNK_MAX_SIZE)
+		{
+			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize_ << " > " << CHUNK_MAX_SIZE;
 			return 400;
-
-		start = end + 2;
-		if (request_[start + num_size] == '\n')
-			num_size++;
-
-		total_size += num_size;
-		res.append(request_, start, num_size);
-		start = request_.find_first_not_of("\r\n", start + num_size);
+		}
+		if (request_.size() - (hexEndPos + 4) < chunkSize_)
+		{
+			Log().Get(logERROR) << __FUNCTION__ << " SKIP " << chunkSize_ << " > " << CHUNK_MAX_SIZE;
+			return 100;
+		}else{
+			msgBody_.append(request_, hexEndPos + 2, chunkSize_);
+			cursor = chunkSize_ + hexEndPos + 2;
+			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
+				return (400);
+			cursor += 2;
+			Log().Get(logERROR) << " CURSOR " << cursor << " REQ [" << request_[cursor] << "]";
+			request_.assign(request_, cursor, request_.size() - cursor);
+			cursor = 0;
+		}
 	}
-
-	check.append(request_, start);
-	if (check != "0\r\n\r\n")
+	if (request_.size() < 5)
+		return 100;
+	if (request_ != "0\r\n\r\n")
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " no match";
 		return 400;
-
-	msgBody_ = res;
+	}
+	Log().Get(logERROR) << __FUNCTION__  << " Complete ";
 	return 200;
 }
 
@@ -167,7 +183,7 @@ int Request::parseHeaders()
 		if (itx != ite)
 		{
 			dist = std::distance(it, itx);
-			if (headerLine[HEADERCONTENT].size() > MAX_SIZE)
+			if (headerLine[HEADERCONTENT].size() > CHUNK_MAX_SIZE)
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
@@ -241,7 +257,7 @@ int Request::parseRequestLine()
 		return 400;
 	if (checkMethod())
 		return 400; //pas 501 car on implemente toutes les methodes
-	if (requestLine_.size() > MAX_SIZE)
+	if (requestLine_.size() > CHUNK_MAX_SIZE)
 		return 414;
 	if (checkVersion())
 		return 505;
@@ -256,7 +272,7 @@ int Request::parseRequestLine()
 
 int Request::parse()
 {
-	if (boolFind(request_, "\r\n\r\n"))
+	if (!headers_parsed && boolFind(request_, "\r\n\r\n"))
 	{
 		statusCode_ = parseRequestLine();
 		if (statusCode_ == 100)
@@ -276,8 +292,12 @@ int Request::parse()
 	}
 
 	if (statusCode_ == 200 && !location_->root.empty())
-		requestLine_[REQTARGET] = "/" + std::string(requestLine_[REQTARGET], \
-		location_->name.size(), requestLine_[REQTARGET].size() - 1);
+	{
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+			 location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET][0] != '/')
+			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+	}
 	return (statusCode_);
 }
 

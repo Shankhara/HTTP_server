@@ -21,7 +21,7 @@ void Client::onEvent()
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
 	buf_[nbytes] = '\0';
-	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
+	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes << " buf_ [" << buf_ << "]";
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)		
@@ -58,7 +58,8 @@ void Client::doResponse_() {
 	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 		doStaticFile_();
 	else
-		doCGI_();
+		doStaticFile_();
+	//doCGI_();
 }
 
 void Client::sendResponse_(Response *resp) {

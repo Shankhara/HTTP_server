@@ -10,7 +10,7 @@
 #include "Utils.hpp"
 #include "Logger.hpp"
 
-#define MAX_SIZE 8192
+#define CHUNK_MAX_SIZE 8192
 
 class Request
 {
@@ -42,6 +42,9 @@ class Request
 	std::string headerContentLanguage_;
 	std::string headerContentType_;
 
+	unsigned int 		chunkCursor_;
+	unsigned int 		chunkSize_;
+	char 				chunkBuf_[CHUNK_MAX_SIZE];
 	bool				isMethodAuthorized_(Parsing::location *) const;
 	Parsing::location	*matchLocation_(Parsing::server *) const;
 	Parsing::server		*matchServer_() const;
@@ -67,7 +70,7 @@ class Request
 		TRANSFER_ENCODING, USER_AGENT };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
-	int doRequest(char[256], size_t);
+	int doRequest(char[], size_t);
 	int parse();
 	int parseRequestLine();
 	int parseHeaders();
