@@ -1,5 +1,9 @@
+import os
 import requests
 import unittest
+
+PORT_NGINX = os.getenv('NGINX_PORT')
+PORT_WEBSERV = os.getenv('WEBSERV_PORT')
 
 class Test01(unittest.TestCase):
 	def test_root(self):
