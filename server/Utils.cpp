@@ -137,12 +137,12 @@ std::string ft_itoa(unsigned long nb)
 
 size_t strHex_to_int(std::string const &str)
 {
-	static const std::string baseHexa = "0123456789ABCDEF";
+	static const std::string baseHexa = "0123456789abcdef";
 	size_t index, res = 0, pow = 0;
 	
 	for (std::string::const_reverse_iterator i = str.rbegin(); i != str.rend(); i++)
 	{
-		index = baseHexa.find(*i);
+		index = baseHexa.find(ft_tolower(*i));
 		if (index == std::string::npos)
 			return (-1);
 
