@@ -28,7 +28,8 @@ void testRespPut()
 	Request ra(*vhost);
 	std::string body = "HTTP is a generic interface protocol for information systems. \
 	It is designed to hide the details of how a service is ..."; 
-	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " + ft_itoa(body.size()) + "\r\n\r\n" + body;
+	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
+	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
 	int ret = ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 	std::cout << ret << std::endl;
 
@@ -62,7 +63,6 @@ void testRespDelete()
 	Log().Get(logDEBUG) << "READ " << readSize;
 	buf[readSize] = '\0';
 	std::cout << buf << std::endl;
-	delete (vhost);
 }
 
 void testMimeType()

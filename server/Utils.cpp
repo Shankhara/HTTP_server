@@ -1,8 +1,4 @@
 #include "Utils.hpp"
-#include <cstring>
-#include <vector>
-#include <string>
-#include <algorithm>
 
 std::string getStrDate()
 {
@@ -115,6 +111,49 @@ char	*ft_strncpy(char *dest, const char *src, size_t n)
 		i++;
 	}
 	return (dest);
+}
+
+size_t ft_strlen(char *str)
+{
+	size_t i = 0;
+	while (str[i])
+		i++;
+	return i;
+}
+
+char *ft_strcat(char *s1, char *s2)
+{
+	size_t i = 0, j = 0;
+
+	char *str = (char*)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (!str)
+		return NULL;
+
+	while (s1[i])
+	{
+		str[i] = s1[i];
+		i++;
+	}
+	while (s2[j])
+		str[i++] = s2[j++];
+
+	str[i] = '\0';
+	return (str);
+}
+
+bool ft_strcmp(char *s1, char *s2)
+{
+	if (ft_strlen(s1) != ft_strlen(s2))
+		return false;
+
+	size_t i = 0;
+	while (s1[i])
+	{
+		if (s1[i] != s2[i])
+			return false;
+		i++;
+	}
+	return true;
 }
 
 std::string ft_itoa(unsigned long nb)
