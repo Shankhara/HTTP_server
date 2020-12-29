@@ -32,11 +32,12 @@ bool RespPut::reachResource_()
 	if (!stat(path_.c_str(), &buffer))
 		fileExists_ = true;
 
-	fd_ = open(path_.c_str(), O_CREAT, 0664);
+	fd_ = open(path_.c_str(), O_CREAT | O_RDWR, 0666);
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
+		std::cout << fd_ << std::endl;
 		return (false);
 	}
 	return (true);
@@ -58,9 +59,9 @@ int RespPut::compareFiles_()
 
 void RespPut::putPayload_()
 {
-	size_t len = payload_.size(), nbytes;
-
-	if ((nbytes = write(fd_, payload_.c_str(), len)) < 0)
+	size_t nbytes = write(fd_, payload_.c_str(), payload_.size());
+	
+	if (nbytes < 0)
 		statusCode_ = 500;
 	else if (fileExists_)
 		statusCode_ = 200;
@@ -71,8 +72,7 @@ void RespPut::putPayload_()
 void RespPut::makeResponse_()
 {
 	writeStatusLine_(statusCode_);
-	//writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
-	writeContentType_("text/html"); // dans mon tcpdump le contentType etait vide
+	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(path_));
 	writeThisHeader_("Content-location", path_);
 	if (!compareFiles_())
 		writeThisHeader_("Last-Modified", getStrDate());
