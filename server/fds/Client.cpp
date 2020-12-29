@@ -66,6 +66,8 @@ void Client::sendResponse_(Response *resp) {
 	int nbytes;
 	while ((nbytes = resp->readResponse()) > 0)
 	{
+		buf_[nbytes] = '\0';
+		Log().Get(logERROR) << " RESPONSE [" << buf_ << "]";
 		if (send(fd_, buf_, nbytes, 0) < 0)
 		{
 			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;

@@ -105,7 +105,7 @@ int Request::getChunkedBody()
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;
-			Log().Get(logERROR) << " CURSOR " << cursor << " REQ [" << request_[cursor] << "]";
+			Log().Get(logERROR) << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "]";
 			request_.assign(request_, cursor, request_.size() - cursor);
 			cursor = 0;
 		}
