@@ -8,7 +8,6 @@ Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 	headers_parsed = false;
 	statusCode_ = 100;
 	headerContentLength_ = 0;
-	chunkCursor_ = 0;
 
 	static const std::string str_list[9] = { "CONNECT", "GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE", "PATCH" };
@@ -78,7 +77,7 @@ int Request::checkVersion()
 int Request::getChunkedBody()
 {
 	std::string strHexChunkSize, check;
-	size_t cursor = 0, hexEndPos = 0;
+	size_t cursor = 0, hexEndPos = 0, chunkSize = 0;
 
 	Log().Get(logDEBUG) << __FUNCTION__ << " SIZE " << request_.size() << " REQ [" << request_ << "]";
 	if (request_.empty())
@@ -89,20 +88,20 @@ int Request::getChunkedBody()
 	{
 		hexEndPos = request_.find("\r\n", cursor);
 		strHexChunkSize.assign(request_, cursor, hexEndPos - cursor);
-		chunkSize_ = strHexToInt(strHexChunkSize);
-		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize_ << " > " << request_.size() << " HEXPOS" << hexEndPos;
-		if (chunkSize_ > CHUNK_MAX_SIZE)
+		chunkSize = strHexToInt(strHexChunkSize);
+		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos;
+		if (chunkSize > CHUNK_MAX_SIZE)
 		{
-			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize_ << " > " << CHUNK_MAX_SIZE;
+			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 400;
 		}
-		if (request_.size() - (hexEndPos + 4) < chunkSize_)
+		if (request_.size() - (hexEndPos + 4) < chunkSize)
 		{
-			Log().Get(logERROR) << __FUNCTION__ << " SKIP " << chunkSize_ << " > " << CHUNK_MAX_SIZE;
+			Log().Get(logERROR) << __FUNCTION__ << " SKIP " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 100;
 		}else{
-			msgBody_.append(request_, hexEndPos + 2, chunkSize_);
-			cursor = chunkSize_ + hexEndPos + 2;
+			msgBody_.append(request_, hexEndPos + 2, chunkSize);
+			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;

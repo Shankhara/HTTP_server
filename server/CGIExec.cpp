@@ -81,7 +81,7 @@ FileDescriptor *CGIExec::run()
 		}
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
-		//dupSTDERR_();
+		dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else

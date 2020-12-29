@@ -42,9 +42,6 @@ class Request
 	std::string headerContentLanguage_;
 	std::string headerContentType_;
 
-	unsigned int 		chunkCursor_;
-	unsigned int 		chunkSize_;
-	char 				chunkBuf_[CHUNK_MAX_SIZE];
 	bool				isMethodAuthorized_(Parsing::location *) const;
 	Parsing::location	*matchLocation_(Parsing::server *) const;
 	Parsing::server		*matchServer_() const;
