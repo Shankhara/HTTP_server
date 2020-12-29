@@ -59,7 +59,11 @@ int RespPut::compareFiles_()
 
 void RespPut::putPayload_()
 {
-	size_t nbytes = write(fd_, payload_.c_str(), payload_.size());
+	size_t nbytes = 0, len = payload_.size();
+	char *str = &payload_[0];
+
+	while (nbytes < len)
+		nbytes += write(fd_, str + nbytes, len / 2);
 	
 	if (nbytes < 0)
 		statusCode_ = 500;
