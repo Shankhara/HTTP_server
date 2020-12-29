@@ -46,7 +46,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	}
 	if (statusCode == 200)
 		doResponse_();
-	else if (statusCode == 100 && !request_.getBody().empty())
+	else if (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")
 		doResponse_();
 }
 
@@ -57,11 +57,12 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 }
 
 void Client::doResponse_() {
-	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0])) // TODO: check every CGI
+	{
 		doStaticFile_();
+	}
 	else
-		doStaticFile_();
-		//doCGI_();
+		doCGI_();
 }
 
 void Client::sendResponse_(Response *resp) {
@@ -69,7 +70,7 @@ void Client::sendResponse_(Response *resp) {
 	while ((nbytes = resp->readResponse()) > 0)
 	{
 		buf_[nbytes] = '\0';
-		Log().Get(logERROR) << " RESPONSE " << buf_;
+		Log().Get(logERROR) << "NBYTES " << nbytes << " RESPONSE " << buf_;
 		if (send(fd_, buf_, nbytes, 0) < 0)
 		{
 			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;

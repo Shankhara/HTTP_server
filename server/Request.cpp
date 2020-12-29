@@ -96,16 +96,14 @@ int Request::getChunkedBody()
 			return 400;
 		}
 		if (request_.size() - (hexEndPos + 4) < chunkSize)
-		{
-			Log().Get(logERROR) << __FUNCTION__ << " SKIP " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 100;
-		}else{
+		else{
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;
-			Log().Get(logERROR) << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "]";
+			Log().Get(logINFO) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
 			request_.assign(request_, cursor, request_.size() - cursor);
 			cursor = 0;
 		}
@@ -239,6 +237,13 @@ int Request::parseHeadersContent()
 
 	headers_parsed = true;
 
+	server_ = matchServer_();
+	location_ = matchLocation_(server_);
+	if (location_ == 0)
+		return 403;
+	else if (!isMethodAuthorized_(location_))
+		return 405;
+
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
 
@@ -277,18 +282,9 @@ int Request::parse()
 		if (statusCode_ == 100)
 			statusCode_ = parseHeaders();
 	}
+
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
-
-	if (statusCode_ == 200)
-	{
-		server_ = matchServer_();
-		location_ = matchLocation_(server_);
-		if (location_ == 0)
-			statusCode_ = 403;
-		else if (!isMethodAuthorized_(location_))
-			statusCode_ = 405;
-	}
 
 	if (statusCode_ == 200 && !location_->root.empty())
 	{
@@ -347,7 +343,7 @@ bool 	Request::isMethodAuthorized_(Parsing::location *location) const
 		return true;
 	for (unsigned long i = 0; i < location->methods.size(); i++)
 	{
-		if (location->methods[i].compare(getMethod()) == 0)
+		if (location->methods[i] == getMethod())
 		{
 			return true;
 		}

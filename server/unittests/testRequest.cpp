@@ -321,16 +321,24 @@ static void testMatchLocation()
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	vhost->at(0).locations.push_back(Parsing::location());
-	vhost->at(0).locations[1].name = std::string("/restricted/");
+	vhost->at(0).locations[1].name = std::string("/directory");
 	vhost->at(0).locations[1].methods.push_back("POST");
+	vhost->at(0).locations[1].root = "/tmp";
+	vhost->at(0).locations.push_back(Parsing::location());
+	vhost->at(0).locations[2].name = std::string("/put_test/");
+	vhost->at(0).locations[2].methods.push_back("PUT");
 
 	Request a(*vhost);
 	std::string req = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 200, "matchLocation GET /");
 
 	Request b(*vhost);
-	std::string req2 = "GET /restricted/toto HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	assertEqual(a.doRequest(const_cast<char*>(req2.c_str()), req2.size()), 405, "matchLocation GET /restricted");
+	std::string req2 = "POST /put_test/cgi.bla HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(req2.c_str()), req2.size()), 405, "matchLocation POST forbidden");
+
+	Request c(*vhost);
+	std::string req3 = "POST /directory/cgi.bla HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(c.doRequest(const_cast<char*>(req3.c_str()), req3.size()), 200, "matchLocation POST");
 
 
 	delete (vhost);
