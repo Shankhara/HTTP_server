@@ -62,6 +62,8 @@ std::string Mime::getExtension(const std::string & filename) const
 	end = filename.find('.', start);
 	if (start == dead)
 		return (res);
+	if (start == end)
+		return filename.substr(start + 1);
 	return filename.substr(start + 1, end - 1);
 }
 
@@ -69,7 +71,7 @@ std::string Mime::getFilename(std::string & param) const
 {
 	size_t start = param.rfind("/");
 	if (start != std::string::npos)
-		return param.substr(start);
+		return param.substr(start + 1);
 	return param;
 }
 
