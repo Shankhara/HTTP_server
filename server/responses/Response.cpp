@@ -38,11 +38,6 @@ void Response::writeContentType_(std::string value) {
 	append_("Content-Type: " + value + "\r\n");
 }
 
-void Response::writeContentType_()
-{
-	append_("Content-Type: " + Mime::getInstance()->getContentType(path_) + "\r\n");
-}
-
 void Response::writeContentLength_(long value) {
 	append_("Content-Length: " + ft_itoa(value) + "\r\n");
 }
@@ -50,11 +45,6 @@ void Response::writeContentLength_(long value) {
 void Response::writeStatusLine_(int statusCode)
 {
 	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
-}
-
-void Response::writeStatusLine_()
-{
-	append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
 }
 
 void Response::writeThisHeader_(std::string name, std::string value)
@@ -104,8 +94,3 @@ void Response::appendHeaders(int statusCode, std::string contentType, unsigned i
 	writeHeadersEnd_();
 }
 
-void Response::appendIntro()
-{
-	writeStatusLine_();
-	writeBaseHeaders_();
-}

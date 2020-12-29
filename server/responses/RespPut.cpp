@@ -88,24 +88,18 @@ void RespPut::makeResponse_()
 int RespPut::readResponse()
 {
 	nbytes_ = 0;
-
+	if (fd_ == 0) {
+		reachResource_();
+	}
 	if (fd_ > 0)
 	{
-		if (headersBuilt_)
-			return 0;
 		putPayload_();
-		if (req_.getStatusCode() == 200)
+		if (req_.getStatusCode() == 200 && !headersBuilt_)
 			makeResponse_();
-		else return -1;
 	}
-	if (fd_ == 0)
-	{
-		if (reachResource_())
-			putPayload_();
-		if (req_.getStatusCode() == 200)
-			makeResponse_();
-		else return -1;
-
-	}
+	if (fd_ == -1)
+		writeErrorPage(500);
+	Log().Get(logDEBUG) << __FUNCTION__ << " NBYTES " << nbytes_;
 	return nbytes_;
 }
+

@@ -12,6 +12,7 @@ class RespPut: public Response
 	int fd_;
 	size_t payloadCursor_;
 	int fileExists_;
+	int statusCode_;
 
 	void setPath_();
 	void putPayload_();
@@ -23,5 +24,6 @@ class RespPut: public Response
 	RespPut(const Request &r, char[], unsigned int);
 	~RespPut();
 	virtual int readResponse();
+	bool isResponseReady();
 
 };

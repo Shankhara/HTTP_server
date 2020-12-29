@@ -44,9 +44,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
-	if (statusCode == 200)
-		doResponse_();
-	else if (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")
+	else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT"))
 		doResponse_();
 }
 
@@ -66,9 +64,11 @@ void Client::doResponse_() {
 }
 
 void Client::sendResponse_(Response *resp) {
+	bool isSent = false;
 	int nbytes;
 	while ((nbytes = resp->readResponse()) > 0)
 	{
+		isSent = true;
 		buf_[nbytes] = '\0';
 		Log().Get(logERROR) << "NBYTES " << nbytes << " RESPONSE " << buf_;
 		if (send(fd_, buf_, nbytes, 0) < 0)
@@ -77,9 +77,8 @@ void Client::sendResponse_(Response *resp) {
 			break ;
 		}
 	}
-	if (nbytes == -1)
-		return ;
-	Server::getInstance()->deleteFileDescriptor(fd_);
+	if (isSent)
+		Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
 std::string &Client::getResponse()
