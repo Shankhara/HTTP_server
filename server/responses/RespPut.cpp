@@ -3,6 +3,7 @@
 RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
 	fd_ = 0;
+	payloadCursor_ = 0;
 	statusCode_ = 200;
 	fileExists_ = false;
 	payload_ = req_.getBody();
@@ -60,7 +61,10 @@ void RespPut::putPayload_()
 {
 	int nbytes;
 
-	nbytes = write(fd_, payload_.c_str(), payload_.size());
+	std::string payload = req_.getBody();
+	size_t len = payload.size() - payloadCursor_;
+	nbytes = write(fd_, payload.c_str() + payloadCursor_, len);
+	payloadCursor_ += len;
 	if (nbytes < 0)
 		statusCode_ = 500;
 	else if (fileExists_)
@@ -78,16 +82,30 @@ void RespPut::makeResponse_()
 	if (!compareFiles_())
 		writeThisHeader_("Last-Modified", getStrDate());
 	writeHeadersEnd_();
+	headersBuilt_ = true;
 }
 
 int RespPut::readResponse()
 {
 	nbytes_ = 0;
+
+	if (fd_ > 0)
+	{
+		if (headersBuilt_)
+			return 0;
+		putPayload_();
+		if (req_.getStatusCode() == 200)
+			makeResponse_();
+		else return -1;
+	}
 	if (fd_ == 0)
 	{
 		if (reachResource_())
 			putPayload_();
-		makeResponse_();
+		if (req_.getStatusCode() == 200)
+			makeResponse_();
+		else return -1;
+
 	}
 	return nbytes_;
 }

@@ -10,6 +10,7 @@ class RespPut: public Response
 	std::string path_;
 	std::string payload_;
 	int fd_;
+	size_t payloadCursor_;
 	int fileExists_;
 
 	void setPath_();

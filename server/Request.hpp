@@ -53,6 +53,9 @@ class Request
 	
 	bool requestLine_parsed;
 	bool headers_parsed;
+
+	bool isHeadersParsed() const;
+
 	bool body_parsed;
 	bool queryString_parsed;
 	bool bodyToParse;
@@ -88,6 +91,7 @@ class Request
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getBody() const;
+	std::string consumeBody();
 	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;

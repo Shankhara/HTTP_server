@@ -414,3 +414,13 @@ std::string Request::getHeaderContentLanguage() const
 
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
+
+bool Request::isHeadersParsed() const {
+	return headers_parsed;
+}
+
+std::string Request::consumeBody() {
+		std::string c = msgBody_;
+		msgBody_.clear();
+		return (c);
+}

@@ -39,13 +39,15 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 	statusCode = request_.doRequest(buf, nbytes);
 	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode;
-	if (statusCode == 200)
-		doResponse_();
-	else if (statusCode != 100)
+	if (statusCode > 200)
 	{
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
+	if (statusCode == 200)
+		doResponse_();
+	else if (statusCode == 100 && !request_.getBody().empty())
+		doResponse_();
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)
@@ -67,13 +69,15 @@ void Client::sendResponse_(Response *resp) {
 	while ((nbytes = resp->readResponse()) > 0)
 	{
 		buf_[nbytes] = '\0';
-		Log().Get(logERROR) << " RESPONSE [" << buf_ << "]";
+		Log().Get(logERROR) << " RESPONSE " << buf_;
 		if (send(fd_, buf_, nbytes, 0) < 0)
 		{
 			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
 			break ;
 		}
 	}
+	if (nbytes == -1)
+		return ;
 	Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
