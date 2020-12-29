@@ -86,7 +86,7 @@ void CGISocket::parseCGIStatus(char *buf, int nbytes) {
 	resp_.append(buf + 8, 3);
 	resp_.append("\r\n");
 	size_t crlf = std::string(buf, nbytes).find("\r\n", 0);
-	if (crlf == std::string::npos || crlf + 2 > nbytes)
+	if (crlf == std::string::npos || crlf + 2 > static_cast<size_t>(nbytes))
 		crlf = 0;
 	resp_.append(buf + crlf + 2);
 }
