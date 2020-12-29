@@ -1,12 +1,5 @@
 #include "unittests.hpp"
 
-#define BADREQUEST 1
-#define BADMETHOD 2
-#define BADVERSION 3
-#define BADHEADERNAME 4
-#define BADHEADER 5
-#define BADBODY 6
-
 static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, \
 const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
 {
@@ -339,13 +332,13 @@ void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-	testConstructRequest();
-	correctRequestLine();
-	badRequestLine();
-	correctHeaders();
-  	badHeaders();
-	correctSequencialReceive(5);
-	correctSequencialReceive(10);
+//	testConstructRequest();
+//	correctRequestLine();
+//	badRequestLine();
+//	correctHeaders();
+//  	badHeaders();
+//	correctSequencialReceive(5);
+//	correctSequencialReceive(10);
 	correctChunkedBody();
 	badChunkedBody();
 	testForbiddenMethod();

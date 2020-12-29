@@ -5,12 +5,14 @@
 #include "../parsing/Parsing.hpp"
 #include "../CGIExec.hpp"
 //#include "../Request.hpp"
-#include "../responses/Response.hpp"
-#include "../responses/RespGet.hpp"
-#include "../responses/RespPut.hpp"
 #include "../fds/Client.hpp"
 #include "../fds/Listener.hpp"
 #include "../Mime.hpp"
+#include "../responses/Response.hpp"
+#include "../responses/RespGet.hpp"
+#include "../responses/RespPut.hpp"
+#include "../responses/RespPost.hpp"
+#include "../responses/RespDelete.hpp"
 
 void testRequest();
 void testResponse();
