@@ -10,7 +10,7 @@
 #include "Utils.hpp"
 #include "Logger.hpp"
 
-#define CHUNK_MAX_SIZE 8192
+#define CHUNK_MAX_SIZE 65536
 
 class Request
 {

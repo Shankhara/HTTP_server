@@ -58,7 +58,8 @@ void Client::doResponse_() {
 	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
 		doStaticFile_();
 	else
-		doCGI_();
+		doStaticFile_();
+		//doCGI_();
 }
 
 void Client::sendResponse_(Response *resp) {
