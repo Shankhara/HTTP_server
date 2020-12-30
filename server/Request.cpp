@@ -1,6 +1,5 @@
 #include "Request.hpp"
 
-Parsing::server * Request::server_ = NULL;
 
 Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 {
@@ -76,49 +75,66 @@ int Request::checkVersion()
 
 int Request::getChunkedBody()
 {
-	std::string hex_size, res, check;
-	size_t start = 0, end = 0, num_size = 0, total_size = 0;
+	std::string strHexChunkSize;
+	size_t cursor, hexEndPos, chunkSize;
 
-	if (request_.size() == 0)
+	if (request_ == "0")
 		return 200;
-	while (start == 0 || request_[start] != '0')
+	if (msgBody_.empty())
+		msgBody_.reserve(100000000);
+	while (request_.size() > 3 && request_[0] != '0')
 	{
-		end = request_.find("\r\n", start);
-		hex_size.assign(request_, start, end - start);
-		num_size = strHex_to_int(hex_size);
-		if (num_size > MAX_SIZE)
+		hexEndPos = request_.find("\r\n", 0);
+		if (hexEndPos == std::string::npos)
+			return 100;
+		strHexChunkSize.assign(request_, 0, hexEndPos);
+		chunkSize = strHexToInt(strHexChunkSize);
+		if (msgBody_.size() + chunkSize > location_->client_max_body_size)
+			return (413);
+		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos;
+		if (chunkSize > CHUNK_MAX_SIZE)
+		{
+			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 400;
-
-		start = end + 2;
-		if (request_[start + num_size] == '\n')
-			num_size++;
-
-		total_size += num_size;
-		res.append(request_, start, num_size);
-		start = request_.find_first_not_of("\r\n", start + num_size);
+		}
+		if (request_.size() < chunkSize + hexEndPos + 4)
+			return 100;
+		else{
+			cursor = chunkSize + hexEndPos + 2;
+			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
+				return (400);
+			cursor += 2;
+			msgBody_.append(request_, hexEndPos + 2, chunkSize);
+			request_.assign(request_.c_str() + cursor);
+			Log().Get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
+		}
 	}
-
-	check.append(request_, start);
-	if (check != "0\r\n\r\n")
+	if (request_.size() < 5)
+		return 100;
+	if (request_ != "0\r\n\r\n")
+	{
+		Log().Get(logERROR) << __FUNCTION__  << " not ending with expected sequence";
 		return 400;
-
-	msgBody_ = res;
+	}
+	Log().Get(logINFO) << __FUNCTION__  << " Complete ";
 	return 200;
 }
 
 int Request::parseBody()
 {
-	size_t ret = headerTransferEncoding_.find("chunked");
-	if (ret != std::string::npos)
+	if (headerTransferEncoding_ == "chunked")
 		return getChunkedBody();
 	else
 	{
 		size_t len = headerContentLength_;
-		if (request_.size() == len)
+		if (request_.size() > location_->client_max_body_size)
+			return 413;
+		else if (request_.size() == len)
 		{
 			msgBody_ = request_;
 			return 200;
 		}
+
 		if (request_.size() > len)
 			return 400;
 	}
@@ -127,7 +143,7 @@ int Request::parseBody()
 
 void Request::parseQueryString()
 {
-    size_t i = 0;
+    size_t i;
 
 	i = requestLine_[REQTARGET].find('?');
 	if (i != std::string::npos)
@@ -167,7 +183,7 @@ int Request::parseHeaders()
 		if (itx != ite)
 		{
 			dist = std::distance(it, itx);
-			if (headerLine[HEADERCONTENT].size() > MAX_SIZE)
+			if (headerLine[HEADERCONTENT].size() > CHUNK_MAX_SIZE)
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
@@ -207,7 +223,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
 		headerContentLanguage_ = removeSpaces(headersRaw_[CONTENT_LANGUAGE]);
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
+		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
@@ -223,6 +239,13 @@ int Request::parseHeadersContent()
 		headerTransferEncoding_ = removeSpaces(headersRaw_[TRANSFER_ENCODING]);
 
 	headers_parsed = true;
+
+	server_ = matchServer_();
+	location_ = matchLocation_(server_);
+	if (location_ == 0)
+		return 403;
+	else if (!isMethodAuthorized_(location_))
+		return 405;
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
@@ -241,7 +264,7 @@ int Request::parseRequestLine()
 		return 400;
 	if (checkMethod())
 		return 400; //pas 501 car on implemente toutes les methodes
-	if (requestLine_.size() > MAX_SIZE)
+	if (requestLine_.size() > CHUNK_MAX_SIZE)
 		return 414;
 	if (checkVersion())
 		return 505;
@@ -256,28 +279,23 @@ int Request::parseRequestLine()
 
 int Request::parse()
 {
-	if (boolFind(request_, "\r\n\r\n"))
+	if (!headers_parsed && boolFind(request_, "\r\n\r\n"))
 	{
 		statusCode_ = parseRequestLine();
 		if (statusCode_ == 100)
 			statusCode_ = parseHeaders();
 	}
+
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
 
-	if (statusCode_ == 200)
-	{
-		server_ = matchServer_();
-		location_ = matchLocation_(server_);
-		if (location_ == 0)
-			statusCode_ = 403;
-		else if (!isMethodAuthorized_(location_))
-			statusCode_ = 405;
-	}
-
 	if (statusCode_ == 200 && !location_->root.empty())
-		requestLine_[REQTARGET] = "/" + std::string(requestLine_[REQTARGET], \
-		location_->name.size(), requestLine_[REQTARGET].size() - 1);
+	{
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+			 location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET][0] != '/')
+			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+	}
 	return (statusCode_);
 }
 
@@ -329,7 +347,7 @@ bool 	Request::isMethodAuthorized_(Parsing::location *location) const
 		return true;
 	for (unsigned long i = 0; i < location->methods.size(); i++)
 	{
-		if (location->methods[i].compare(getMethod()) == 0)
+		if (location->methods[i] == getMethod())
 		{
 			return true;
 		}
@@ -396,3 +414,13 @@ std::string Request::getHeaderContentLanguage() const
 
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
+
+bool Request::isHeadersParsed() const {
+	return headers_parsed;
+}
+
+std::string Request::consumeBody() {
+		std::string c = msgBody_;
+		msgBody_.clear();
+		return (c);
+}

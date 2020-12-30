@@ -22,9 +22,21 @@ CGISocket::~CGISocket()
 	instances--;
 }
 
-int CGISocket::pipeToClient() {
-	char 	buf[BUFFER_SIZE + 1];
-	int		nbytes;
+void CGISocket::appendContentLenght_() {
+	size_t headerPos = resp_.find("\r\n\r\n", 0);
+	if (headerPos == 0 || headerPos > resp_.size())
+		resp_.append("Content-Length: 0");
+	else{
+		size_t bodySize = resp_.size() - (headerPos + 4);
+		std::string itoa = ft_itoa(bodySize);
+		Log().Get(logDEBUG) << " HEADERPOS " << headerPos << "resp_ " << resp_.size();
+		resp_.insert(headerPos, "Content-Length: " + itoa);
+	}
+}
+
+int CGISocket::readCGIResponse() {
+	char		buf[BUFFER_SIZE + 1];
+	int			nbytes;
 
 	if ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
 	{
@@ -32,12 +44,9 @@ int CGISocket::pipeToClient() {
 		{
 			parseCGIStatus(buf, nbytes);
 			httpStatus_ = true;
-		}
-		Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
-		if (send(client_.getFd(), buf, nbytes, 0) == -1)
-		{
-			Log().Get(logERROR) << "CGIResponse::send > FD " << fd_ << " SENT ERROR " << strerror(errno);
-			return (-1);
+		}else{
+			Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
+			resp_.append(buf, nbytes);
 		}
 	}
 	return nbytes;
@@ -46,7 +55,15 @@ int CGISocket::pipeToClient() {
 void CGISocket::onEvent()
 {
 	client_.setLastEventTimer();
-	if (pipeToClient() < 0)
+	int nbytes = readCGIResponse();
+	if (nbytes > 0)
+		return ;
+	else if (nbytes == 0) {
+		appendContentLenght_();
+		Log().Get(logDEBUG) << "NBYTES " << resp_.size();
+		send(client_.getFd(), resp_.c_str(), resp_.size(), 0);
+	}
+	else
 		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
@@ -57,14 +74,19 @@ void CGISocket::setPid(pid_t pid) {
 }
 
 void CGISocket::parseCGIStatus(char *buf, int nbytes) {
+	buf[nbytes] = '\0';
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
-		send(client_.getFd(),"HTTP/1.1 200 OK\r\n", 17, 0);
+		resp_ = "HTTP/1.1 200 OK\r\n";
+		resp_.append(buf, nbytes);
 		return ;
 	}
 	//TODO: check if its a valid HTTP code
-	std::string header = "HTTP/1.1 ";
-	header.append(buf + 8, 3);
-	header.append("\r\n");
-	send(client_.getFd(), header.c_str(),header.length(), 0);
+	resp_ = "HTTP/1.1 ";
+	resp_.append(buf + 8, 3);
+	resp_.append("\r\n");
+	size_t crlf = std::string(buf, nbytes).find("\r\n", 0);
+	if (crlf == std::string::npos || crlf + 2 > static_cast<size_t>(nbytes))
+		crlf = 0;
+	resp_.append(buf + crlf + 2);
 }

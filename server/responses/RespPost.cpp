@@ -5,7 +5,10 @@ RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : Respons
 	setFilePath();
 }
 
-RespPost::~RespPost() { }
+RespPost::~RespPost() {
+	if (fd_ > 0)
+		close(fd_);
+}
 
 void RespPost::postPayload_()
 {

@@ -3,9 +3,17 @@
 RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
 	setFilePath();
+	fd_ = 0;
+	payloadCursor_ = 0;
+	statusCode_ = 200;
+	fileExists_ = false;
+	payload_ = req_.getBody();
 }
 
-RespPut::~RespPut() { }
+RespPut::~RespPut() {
+	if (fd_ > 0)
+		close(fd_);
+}
 
 bool RespPut::reachResource_()
 {
@@ -31,7 +39,7 @@ bool RespPut::reachResource_()
 int RespPut::compareFiles_()
 {
 	char buff[255];
-	size_t nbytes; 
+	int nbytes;
 	std::string str;
 
 	while ((nbytes = read(fd_, buff, 254)) > 0)
@@ -44,37 +52,43 @@ int RespPut::compareFiles_()
 
 void RespPut::putPayload_()
 {
-	int len = payload_.size();
-	int nbytes = write(fd_, payload_.c_str(), len);
-	
-	if (nbytes != len)
-	{
-		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+	int nbytes;
+
+	std::string payload = req_.getBody();
+	size_t len = payload.size() - payloadCursor_;
+	nbytes = write(fd_, payload.c_str() + payloadCursor_, len);
+	payloadCursor_ += len;
+	if (nbytes < 0)
 		statusCode_ = 500;
-	}
 }
+
+
 
 void RespPut::makeResponse_()
 {
-	if (headersBuilt_ == false)
-	{
 		writeStatusLine_(statusCode_);
 		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
 		writeThisHeader_("Content-location", filePath_);
 		if (!compareFiles_())
 			writeThisHeader_("Last-Modified", getStrDate());
 		writeHeadersEnd_();
-	}
 }
 
 int RespPut::readResponse()
 {
 	nbytes_ = 0;
-	if (fd_ == 0)
-	{
-		if (reachResource_())
-			putPayload_();
-		makeResponse_();
+	if (fd_ == 0) {
+		reachResource_();
 	}
+	if (fd_ > 0)
+	{
+		putPayload_();
+		if (req_.getStatusCode() == 200 && !headersBuilt_)
+			makeResponse_();
+	}
+	if (fd_ == -1)
+		writeErrorPage(500);
+	Log().Get(logDEBUG) << __FUNCTION__ << " NBYTES " << nbytes_;
 	return nbytes_;
 }
+

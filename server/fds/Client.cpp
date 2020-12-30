@@ -20,7 +20,6 @@ void Client::onEvent()
 {
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
-	buf_[nbytes] = '\0';
 	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
@@ -39,12 +38,13 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 	statusCode = request_.doRequest(buf, nbytes);
 	Log().Get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode;
-	if (statusCode == 200)
-		doResponse_();
-	else if (statusCode != 100)
+	if (statusCode > 200)
 	{
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
+	}
+	else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
+			doResponse_();
 	}
 }
 
@@ -55,23 +55,28 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 }
 
 void Client::doResponse_() {
-	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0]))
+	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0])) // TODO: check every CGI
+	{
 		doStaticFile_();
+	}
 	else
 		doCGI_();
 }
 
 void Client::sendResponse_(Response *resp) {
+	bool isSent = false;
 	int nbytes;
 	while ((nbytes = resp->readResponse()) > 0)
 	{
+		isSent = true;
 		if (send(fd_, buf_, nbytes, 0) < 0)
 		{
 			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
 			break ;
 		}
 	}
-	Server::getInstance()->deleteFileDescriptor(fd_);
+	if (isSent)
+		Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
 std::string &Client::getResponse()
@@ -89,7 +94,7 @@ void Client::doStaticFile_() {
 	if (request_.getMethod() == "GET")
 		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "POST")
-		resp = new RespError(405, request_, buf_, CLIENT_BUFFER_SIZE);
+		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "PUT")
 		resp = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
 	else

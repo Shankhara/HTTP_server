@@ -23,11 +23,13 @@ const std::string CGIExec::vars_[] = {
 
 CGIExec::~CGIExec() {
 	free(envs_[18]);
+	free(envs_[19]);
 }
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	setEnv_(18, "REDIRECT_STATUS=200");
-	envs_[19] = 0;
+	setEnv_(19, "HTTP_X_SECRET_HEADER_FOR_TEST=1");
+	envs_[20] = 0;
 }
 
 void CGIExec::build_(const std::string &workDir) {
@@ -48,7 +50,7 @@ void CGIExec::build_(const std::string &workDir) {
 	setEnv_(CGIExec::SERVER_NAME, request_.getHeaderHost());
 	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request_.getServer()->port));
 	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");
-	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
+	setEnv_(CGIExec::SERVER_SOFTWARE, WEBSERV_ID);
 }
 
 FileDescriptor *CGIExec::run()
@@ -64,7 +66,7 @@ FileDescriptor *CGIExec::run()
 		return (0);
 	}
 	CGISocket *response = new CGISocket(pipeOUT[0], client_);
-	build_(location->root); //TODO rewrite since we got request in scope
+	build_(location->root);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
@@ -87,9 +89,10 @@ FileDescriptor *CGIExec::run()
 	else
 	{
 		close(pipeIN[0]);
-		if (client_.getRequest().getHeaderContentLength() > 0)
+		std::string body = client_.getRequest().getBody();
+		if (!body.empty())
 		{
-			std::string body = client_.getRequest().getBody();
+			Log().Get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size();
 			write(pipeIN[1], body.c_str(), body.size());
 		}
 		response->setPid(cpid);

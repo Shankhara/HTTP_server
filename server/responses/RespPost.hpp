@@ -5,6 +5,8 @@
 class RespPost: public Response
 {
 	private:
+	int fd_;
+	std::string 						payload_;
 	void postPayload_();
 	void makeResponse_();
 	

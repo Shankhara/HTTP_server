@@ -21,3 +21,5 @@ int RespHead::readResponse() {
 RespHead::RespHead(const Request &r, char *buf, unsigned int bufSize) : RespGet(r, buf, bufSize){}
 
 RespHead::~RespHead() {}
+
+

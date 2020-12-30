@@ -10,7 +10,7 @@
 #include "Utils.hpp"
 #include "Logger.hpp"
 
-#define MAX_SIZE 8192
+#define CHUNK_MAX_SIZE 65536
 
 class Request
 {
@@ -24,7 +24,7 @@ class Request
 	std::vector<std::string> requestLine_;
 	std::vector<Parsing::server> &servers_;
 	Parsing::location *location_;
-	static Parsing::server *server_;
+	Parsing::server *server_;
 
 	int headerContentLength_;
 	std::string headerDate_;
@@ -54,6 +54,9 @@ class Request
 	
 	bool requestLine_parsed;
 	bool headers_parsed;
+
+	bool isHeadersParsed() const;
+
 	bool body_parsed;
 	bool queryString_parsed;
 	bool bodyToParse;
@@ -68,7 +71,7 @@ class Request
 		TRANSFER_ENCODING, USER_AGENT };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
 
-	int doRequest(char[256], size_t);
+	int doRequest(char[], size_t);
 	int parse();
 	int parseRequestLine();
 	int parseHeaders();
@@ -90,6 +93,8 @@ class Request
 	int getHeaderContentLength() const;
 	std::string getBody() const;
 	std::string getBackUpRequest() const;
+	std::string consumeBody();
+	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
 	std::string getQueryStr() const;

@@ -92,3 +92,4 @@ int RespGet::writeAutoIndex_(stds path) {
 	append_(body); //TODO: tterrail if body.size > BUFFER_SIZE content-Length will not match body sent;
 	return (nbytes_);
 }
+

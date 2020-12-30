@@ -18,16 +18,18 @@ class Client;
 class CGISocket: public FileDescriptor {
 private:
 	Client 				&client_;
+	std::string			resp_;
 	pid_t  				pid_;
 	bool 				httpStatus_;
 	void 				parseCGIStatus(char buf[], int);
+	void				appendContentLenght_();
 
 public:
 	static unsigned int instances;
 	CGISocket(int, Client &);
 	virtual		~CGISocket();
 	void		onEvent();
-	int			pipeToClient();
+	int			readCGIResponse();
 	void		setPid(pid_t pid);
 };
 

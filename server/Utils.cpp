@@ -174,11 +174,12 @@ std::string ft_itoa(unsigned long nb)
 	return (str);
 }
 
-size_t strHex_to_int(std::string const &str)
+size_t strHexToInt(std::string str)
 {
 	static const std::string baseHexa = "0123456789abcdef";
 	size_t index, res = 0, pow = 0;
-	
+
+	std::transform(str.begin(), str.end(),str.begin(), ::toupper);
 	for (std::string::const_reverse_iterator i = str.rbegin(); i != str.rend(); i++)
 	{
 		index = baseHexa.find(ft_tolower(*i));

@@ -23,7 +23,7 @@ private:
 	int							stdoutFD_;
 	int							stdinFD_;
 	static const std::string	vars_[];
-	char *						envs_[20];
+	char *						envs_[21];
 	enum e_envs {
 		AUTH_TYPE,
 		CONTENT_LENGTH,

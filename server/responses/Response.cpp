@@ -5,10 +5,8 @@ std::map<int, std::string> Response::statusMap_;
 Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	req_(r), buf_(buf), bufSize_(bufSize - 1)
 {
-	fd_ = 0;
 	nbytes_ = 0;
 	headersBuilt_ = false;
-	payload_ = req_.getBody();
 
 	if (statusMap_.size() == 0)
 	{
@@ -28,9 +26,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
-Response::~Response()
-{
-	close(fd_);
+Response::~Response(){
 }
 
 void Response::writeBaseHeaders_()
@@ -71,11 +67,13 @@ void Response::setFilePath()
 	if (!req_.getLocation()->root.empty())
 		filePath_ = req_.getLocation()->root + req_.getReqTarget();
 	else
-		filePath_ = req_.getServer()->root + req_.getReqTarget(); 
+		filePath_ = req_.getServer()->root + req_.getReqTarget();
 }
 
 int Response::writeErrorPage(int statusCode)
 {
+	if (headersBuilt_)
+		return 0;
 	nbytes_ = 0;
 	std::string body = "<html>"
 					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
