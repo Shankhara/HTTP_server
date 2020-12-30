@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export NGINX_PORT=9082
-export WEBSERV_PORT=9081
+export NGINX_PORT="9082"
+export WEBSERV_PORT="9081"
 
 cd ../server/ && make
 cp webserv ../client/build/webserv
