@@ -75,21 +75,22 @@ int Request::checkVersion()
 
 int Request::getChunkedBody()
 {
-	std::string strHexChunkSize, check;
-	size_t cursor, hexEndPos = 0, chunkSize = 0;
+	std::string strHexChunkSize;
+	size_t cursor, hexEndPos, chunkSize;
 
-	Log().Get(logDEBUG) << __FUNCTION__ << " SIZE " << request_.size() << " REQ [" << request_ << "]";
-	if (request_.empty())
-		return 100;
 	if (request_ == "0")
 		return 200;
-	while (!request_.empty() && request_[0] != '\0' && request_[0] != '0')
+	if (msgBody_.empty())
+		msgBody_.reserve(100000000);
+	while (request_.size() > 3 && request_[0] != '0')
 	{
 		hexEndPos = request_.find("\r\n", 0);
 		if (hexEndPos == std::string::npos)
 			return 100;
 		strHexChunkSize.assign(request_, 0, hexEndPos);
 		chunkSize = strHexToInt(strHexChunkSize);
+		if (msgBody_.size() + chunkSize > location_->client_max_body_size)
+			return (413);
 		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos;
 		if (chunkSize > CHUNK_MAX_SIZE)
 		{
@@ -99,15 +100,18 @@ int Request::getChunkedBody()
 		if (request_.size() - (hexEndPos + 4) < chunkSize)
 			return 100;
 		else{
-			if (msgBody_.size() + chunkSize > location_->client_max_body_size)
-				return (413);
-			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;
-			Log().Get(logINFO) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
-			request_ = std::string(request_.c_str() + cursor);
+			if (cursor > request_.size())
+			{
+				Log().Get(logERROR) << "strHex " << strHexChunkSize << " CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
+				Log().Get(logERROR) << " request.size" << request_.size() << " CURSOR" << cursor;
+				return (500);
+			}
+			msgBody_.append(request_, hexEndPos + 2, chunkSize);
+			request_.assign(request_.c_str() + cursor);
 		}
 	}
 	if (request_.size() < 5)
@@ -123,8 +127,7 @@ int Request::getChunkedBody()
 
 int Request::parseBody()
 {
-	size_t ret = headerTransferEncoding_.find("chunked");
-	if (ret != std::string::npos)
+	if (headerTransferEncoding_ == "chunked")
 		return getChunkedBody();
 	else
 	{
