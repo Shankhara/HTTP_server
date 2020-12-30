@@ -149,7 +149,11 @@ void Request::parseQueryString()
 	if (i != std::string::npos)
 	{
 		queryString_ = requestLine_[REQTARGET].substr(i);
-		requestLine_[REQTARGET].erase(i, std::string::npos);
+		requestLine_[REQTARGET].erase(i, std::string::npos); // ??
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET][0] != '/')
+			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 	}
 }
 
@@ -289,13 +293,6 @@ int Request::parse()
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
 
-	if (statusCode_ == 200 && !location_->root.empty())
-	{
-		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
-			 location_->name.size(), requestLine_[REQTARGET].size() - 1);
-		if (requestLine_[REQTARGET][0] != '/')
-			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
-	}
 	return (statusCode_);
 }
 
