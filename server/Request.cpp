@@ -9,9 +9,9 @@ Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 	statusCode_ = 100;
 	headerContentLength_ = 0;
 
-	static const std::string str_list[9] = { "CONNECT", "GET", "HEAD", "POST", "PUT", "DELETE", \
-		"OPTIONS", "TRACE", "PATCH" };
-	std::vector<std::string> tmp(str_list, str_list + 9);
+	static const std::string str_list[7] = { "GET", "HEAD", "POST", "PUT", "DELETE", \
+		"OPTIONS", "TRACE" };
+	std::vector<std::string> tmp(str_list, str_list + 7);
 	methods = tmp;
 
 	static const std::string str_list2[15] = { "accept-charsets", "accept-language", "allow", \

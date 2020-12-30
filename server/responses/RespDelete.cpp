@@ -64,8 +64,11 @@ int RespDelete::delResource_()
 
 void RespDelete::makeResponse_()
 {
-	writeStatusLine_(statusCode_);
-	writeHeadersEnd_();
+	if (headersBuilt_ == false)
+	{
+		writeStatusLine_(statusCode_);
+		writeHeadersEnd_();
+	}
 }
 
 int RespDelete::readResponse()
@@ -74,6 +77,7 @@ int RespDelete::readResponse()
 
 	if (!delResource_())
 		statusCode_ = 204;
+
 	makeResponse_();
 
 	return nbytes_;

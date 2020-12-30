@@ -6,7 +6,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	req_(r), buf_(buf), bufSize_(bufSize - 1)
 {
 	fd_ = 0;
-	nbytes_= 0;
+	nbytes_ = 0;
 	headersBuilt_ = false;
 	payload_ = req_.getBody();
 
@@ -102,21 +102,24 @@ void Response::writeErrorBody(int statusCode)
 	append_(body);
 }
 
-void Response::append_(std::string str) {
+void Response::append_(std::string str)
+{
 	if (str.size() + nbytes_ > bufSize_)
 		return ;
 	ft_strncpy(buf_ + nbytes_, str.c_str(), str.size());
 	nbytes_ += str.size();
 }
 
-void Response::append_(char str[], unsigned int size) {
+void Response::append_(char str[], unsigned int size)
+{
 	if (size + nbytes_ > bufSize_)
 		return ;
 	ft_strncpy(buf_ + nbytes_, str, size);
 	nbytes_ += size;
 }
 
-void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength) {
+void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength)
+{
 	writeStatusLine_(statusCode);
 	writeBaseHeaders_();
 	writeContentType_(contentType);

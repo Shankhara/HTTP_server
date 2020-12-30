@@ -56,12 +56,15 @@ void RespPut::putPayload_()
 
 void RespPut::makeResponse_()
 {
-	writeStatusLine_(statusCode_);
-	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
-	writeThisHeader_("Content-location", filePath_);
-	if (!compareFiles_())
-		writeThisHeader_("Last-Modified", getStrDate());
-	writeHeadersEnd_();
+	if (headersBuilt_ == false)
+	{
+		writeStatusLine_(statusCode_);
+		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
+		writeThisHeader_("Content-location", filePath_);
+		if (!compareFiles_())
+			writeThisHeader_("Last-Modified", getStrDate());
+		writeHeadersEnd_();
+	}
 }
 
 int RespPut::readResponse()

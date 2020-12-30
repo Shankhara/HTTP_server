@@ -42,18 +42,21 @@ void RespPost::postPayload_()
 
 void RespPost::makeResponse_()
 {
-	writeStatusLine_(statusCode_);
-	if (statusCode_ != 500)
+	if (headersBuilt_ == false)
 	{
-		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
-		writeThisHeader_("Content-location", filePath_);
-		writeThisHeader_("Last-Modified", getStrDate());
-		writeHeadersEnd_();
-	}
-	else
-	{
-		writeHeadersEnd_();
-		writeErrorBody(statusCode_);
+		writeStatusLine_(statusCode_);
+		if (statusCode_ != 500)
+		{
+			writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
+			writeThisHeader_("Content-location", filePath_);
+			writeThisHeader_("Last-Modified", getStrDate());
+			writeHeadersEnd_();
+		}
+		else
+		{
+			writeHeadersEnd_();
+			writeErrorBody(statusCode_);
+		}
 	}
 }
 

@@ -18,14 +18,13 @@ class Response
 	std::string 						payload_;
 	static std::map<int, std::string>	statusMap_;
 
-	void						writeStatusLine_(int);
-	void						writeBaseHeaders_();
-	void						writeContentType_(std::string);
-	void						writeContentLength_(long);
-	void 						writeHeadersEnd_();
-	void 						writeThisHeader_(std::string, std::string);
-	void 						writeStatusLine_();
-	void 						writeContentType_();
+	void writeStatusLine_(int);
+	void writeBaseHeaders_();
+	void writeContentType_(std::string);
+	void writeContentLength_(long);
+	void writeHeadersEnd_();
+	void writeThisHeader_(std::string, std::string);
+	void writeStatusLine_();
 
 	virtual void append_(std::string);
 	virtual void append_(char [], unsigned int);

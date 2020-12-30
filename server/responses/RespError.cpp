@@ -1,14 +1,15 @@
 #include "RespError.hpp"
 
-RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int bufSize):
-				Response( r, buf, bufSize),
-				statusCode_(statusCode) {
+RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int bufSize): \
+Response( r, buf, bufSize), statusCode_(statusCode)
+{
 	fd_ = 0;
 }
 
 RespError::~RespError() {}
 
-int RespError::readResponse() {
+int RespError::readResponse()
+{
 	//TODO: #42
 	nbytes_ = 0;
 	if (fd_ == 0)
