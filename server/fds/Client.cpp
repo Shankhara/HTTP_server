@@ -20,8 +20,7 @@ void Client::onEvent()
 {
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
-	buf_[nbytes] = '\0';
-	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes << " buf_ [" << buf_ << "]";
+	Log().Get(logINFO) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)		

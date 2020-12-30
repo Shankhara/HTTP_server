@@ -23,7 +23,7 @@ class Request
 	std::vector<std::string> requestLine_;
 	std::vector<Parsing::server> &servers_;
 	Parsing::location *location_;
-	static Parsing::server *server_;
+	Parsing::server *server_;
 
 	int headerContentLength_;
 	std::string headerDate_;
