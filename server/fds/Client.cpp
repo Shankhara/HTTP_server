@@ -43,8 +43,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
-	else {
-		if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
+	else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
 			doResponse_();
 		}
 	}
