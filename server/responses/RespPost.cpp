@@ -13,23 +13,27 @@ void RespPost::postPayload_()
 
 	int ret = stat(filePath_.c_str(), &buffer);
 	if (ret == -1)
-	{
 		fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
-		statusCode_ = 201;
-	}
 	else
-	{
 		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
-		statusCode_ = 200;
-	}
+
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
+		return;
 	}
 
-	int nbytes = write(fd_, payload_.c_str(), payload_.size());
-	if (nbytes == -1)
+	int len = payload_.size();
+	int nbytes = write(fd_, payload_.c_str(), len);
+	if (nbytes == len)
+	{
+		if (ret == -1)
+			statusCode_ = 201;
+		else
+			statusCode_ = 200;
+	}
+	else
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;

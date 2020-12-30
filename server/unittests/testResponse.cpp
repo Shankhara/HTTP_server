@@ -45,19 +45,45 @@ void testRespPut()
 	delete (vhost);
 }
 
+void testRespPost()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	Log::setLevel(logDEBUG);
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string body = "HTTP is a generic interface protocol for information systems. \
+	It is designed to hide the details of how a service is ..."; 
+	std::string str = "POST /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
+	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
+	int ret = ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+	Log().Get(logDEBUG) << "Request Return " << ret;
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespPost respPost(ra, buf, bufsize);
+
+	int readSize = respPost.readResponse();
+	Log().Get(logDEBUG) << "READ " << readSize;
+	buf[readSize] = '\0';
+	std::cout << buf << std::endl;
+	delete (vhost);
+}
+
 void testRespDelete()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
-	Request ra(*vhost);
+	Request r(*vhost);
 	std::string str = "DELETE /a.txt HTTP/1.1\r\nHost: webserv\r\n\r\n";
-	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+	r.doRequest(const_cast<char*>(str.c_str()), str.size());
 
 	unsigned int bufsize = 16 * 1024;
 	char buf[bufsize];
 
-	RespDelete respDel(ra, buf, bufsize);
+	RespDelete respDel(r, buf, bufsize);
 
 	int readSize = respDel.readResponse();
 	Log().Get(logDEBUG) << "READ " << readSize;
@@ -115,6 +141,7 @@ void testResponse()
 {
 //	testRespGet();
 //	testRespPut();
-	testRespDelete();
+	testRespPost();
+//	testRespDelete();
 //	testMimeType();
 }
