@@ -374,7 +374,7 @@ Parsing::server		Parsing::getDefaultServer()
 	server.port = 80;
 	server.host = "127.0.0.1";
 	server.root = "";
-	server.client_max_body_size = 1048576;
+	server.client_max_body_size = 536870912;
 	return (server);
 }
 
@@ -389,7 +389,7 @@ Parsing::location	Parsing::getDefaultLocation()
 	location.cgi_path = "";
 	location.upload_enable = false;
 	location.upload_path = "";
-	location.client_max_body_size = 1048576;
+	location.client_max_body_size = 536870912;
 	return (location);
 }
 

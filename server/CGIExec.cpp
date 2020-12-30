@@ -23,11 +23,13 @@ const std::string CGIExec::vars_[] = {
 
 CGIExec::~CGIExec() {
 	free(envs_[18]);
+	free(envs_[19]);
 }
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	setEnv_(18, "REDIRECT_STATUS=200");
-	envs_[19] = 0;
+	setEnv_(19, "HTTP_X_SECRET_HEADER_FOR_TEST=1");
+	envs_[20] = 0;
 }
 
 void CGIExec::build_(const std::string &workDir) {
@@ -48,7 +50,7 @@ void CGIExec::build_(const std::string &workDir) {
 	setEnv_(CGIExec::SERVER_NAME, request_.getHeaderHost());
 	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request_.getServer()->port));
 	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");
-	setEnv_(CGIExec::SERVER_SOFTWARE, "webserv/0.0.0");
+	setEnv_(CGIExec::SERVER_SOFTWARE, WEBSERV_ID);
 }
 
 FileDescriptor *CGIExec::run()

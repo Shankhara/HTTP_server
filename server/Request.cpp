@@ -98,6 +98,8 @@ int Request::getChunkedBody()
 		if (request_.size() - (hexEndPos + 4) < chunkSize)
 			return 100;
 		else{
+			if (msgBody_.size() + chunkSize > location_->client_max_body_size)
+				return 413;
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
@@ -112,10 +114,10 @@ int Request::getChunkedBody()
 		return 100;
 	if (request_ != "0\r\n\r\n")
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " no match";
+		Log().Get(logERROR) << __FUNCTION__  << " not ending with expected sequence";
 		return 400;
 	}
-	Log().Get(logERROR) << __FUNCTION__  << " Complete ";
+	Log().Get(logINFO) << __FUNCTION__  << " Complete ";
 	return 200;
 }
 
@@ -127,11 +129,14 @@ int Request::parseBody()
 	else
 	{
 		size_t len = headerContentLength_;
-		if (request_.size() == len)
+		if (request_.size() > location_->client_max_body_size)
+			return 413;
+		else if (request_.size() == len)
 		{
 			msgBody_ = request_;
 			return 200;
 		}
+
 		if (request_.size() > len)
 			return 400;
 	}
@@ -220,7 +225,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
 		headerContentLanguage_ = removeSpaces(headersRaw_[CONTENT_LANGUAGE]);
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
+		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())

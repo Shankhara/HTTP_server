@@ -11,7 +11,10 @@ RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(
 	setPath_();
 }
 
-RespPut::~RespPut() { }
+RespPut::~RespPut() {
+	if (fd_ > 0)
+		close(fd_);
+}
 
 void RespPut::setPath_()
 {

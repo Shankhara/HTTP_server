@@ -35,8 +35,8 @@ void CGISocket::appendContentLenght_() {
 }
 
 int CGISocket::readCGIResponse() {
-	char 	buf[BUFFER_SIZE + 1];
-	int		nbytes;
+	char		buf[BUFFER_SIZE + 1];
+	int			nbytes;
 
 	if ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
 	{

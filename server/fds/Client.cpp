@@ -69,8 +69,6 @@ void Client::sendResponse_(Response *resp) {
 	while ((nbytes = resp->readResponse()) > 0)
 	{
 		isSent = true;
-		buf_[nbytes] = '\0';
-		Log().Get(logERROR) << "NBYTES " << nbytes << " RESPONSE " << buf_;
 		if (send(fd_, buf_, nbytes, 0) < 0)
 		{
 			Log().Get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes;
@@ -96,7 +94,7 @@ void Client::doStaticFile_() {
 	if (request_.getMethod() == "GET")
 		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "POST")
-		resp = new RespError(405, request_, buf_, CLIENT_BUFFER_SIZE);
+		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "PUT")
 		resp = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
 	else

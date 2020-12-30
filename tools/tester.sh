@@ -27,10 +27,10 @@ echo "server {
 		method PUT;
 	}
 	location /post_body {
-		cgi_extension .bla;
-		cgi_path ${WEBSERV}/ubuntu_cgi_tester;
 		method POST;
 		client_max_body_size 100;
+		root ${DIR};
+		index youpi.bad_extension;
 	}
 	location /directory {
 		method GET POST;
