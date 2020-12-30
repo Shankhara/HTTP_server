@@ -20,7 +20,7 @@ void Client::onEvent()
 {
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
-	Log().Get(logINFO) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
+	Log().Get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)		
@@ -43,8 +43,11 @@ void Client::constructRequest(char buf[], int nbytes) {
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
-	else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT"))
-		doResponse_();
+	else {
+		if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
+			doResponse_();
+		}
+	}
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)

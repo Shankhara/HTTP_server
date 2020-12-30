@@ -18,7 +18,7 @@
 #include "../responses/RespPut.hpp"
 
 #define MAX_CGI_FORKS 20
-#define CLIENT_BUFFER_SIZE	131072
+#define CLIENT_BUFFER_SIZE	65536
 
 
 class Client: public FileDescriptor {

@@ -97,21 +97,16 @@ int Request::getChunkedBody()
 			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 400;
 		}
-		if (request_.size() - (hexEndPos + 4) < chunkSize)
+		if (request_.size() < chunkSize + hexEndPos + 4)
 			return 100;
 		else{
 			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;
-			if (cursor > request_.size())
-			{
-				Log().Get(logERROR) << "strHex " << strHexChunkSize << " CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
-				Log().Get(logERROR) << " request.size" << request_.size() << " CURSOR" << cursor;
-				return (500);
-			}
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			request_.assign(request_.c_str() + cursor);
+			Log().Get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
 		}
 	}
 	if (request_.size() < 5)
