@@ -7,39 +7,45 @@ RespDelete::RespDelete(const Request &r, char buf[], unsigned int bufSize) : Res
 
 RespDelete::~RespDelete() { }
 
-int RespDelete::delDir_(char *param)
+int RespDelete::delDir_(std::string & param)
 {
-    DIR *dir = opendir(param);
+	const char *c_param = param.c_str();
+
+    DIR *dir = opendir(c_param);
 	if (!dir)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
+		return EXIT_FAILURE;
     }
 
     struct dirent *entry;
-	char slash[2] = "/";
-	char currentDir[2] = ".";
-	char prevDir[3] = "..";
+	std::string name, concat_path;
 
     while ((entry = readdir(dir)))
 	{
-        if (ft_strcmp(entry->d_name, currentDir) || ft_strcmp(entry->d_name, prevDir))
+		name = entry->d_name;
+        if (name == "." || name == "..")
             continue;
 
-		char * tmp = ft_strcat(ft_strcat(param, slash), entry->d_name);
+		concat_path = param + "/" + name;
         if (entry->d_type == DT_DIR)
-            delDir_(tmp);
-        else
-			unlink(tmp);
-		free(tmp);
+            delDir_(concat_path);
+		else 
+			unlink(concat_path.c_str());
     }
-    if (!rmdir(param) && !closedir(dir))
-		return EXIT_SUCCESS;
+    if (rmdir(c_param) == -1)
+	{
+		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		statusCode_ = 500;
+		return EXIT_FAILURE;
+    }
 
-	return EXIT_FAILURE;
+	closedir(dir);
+	return EXIT_SUCCESS;
 }
 
-int RespDelete::reachResource_()
+int RespDelete::delResource_()
 {
     struct stat statbuf;
  
@@ -47,12 +53,13 @@ int RespDelete::reachResource_()
 	if (ret == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
-		return -1;
+		statusCode_ = 404;
+		return ret;
 	}
+	if (!S_ISDIR(statbuf.st_mode))
+		return unlink(filePath_.c_str());
 
-	if (!ret && !S_ISDIR(statbuf.st_mode))
-		return 0;
-	return 1;
+	return delDir_(filePath_);
 }
 
 void RespDelete::makeResponse_()
@@ -63,17 +70,10 @@ void RespDelete::makeResponse_()
 
 int RespDelete::readResponse()
 {
-	int ret = reachResource_();
+	nbytes_ = 0;
 
-	if (!ret && !unlink(filePath_.c_str()))
+	if (!delResource_())
 		statusCode_ = 204;
-	
-	if (ret == 1 && delDir_(&filePath_[0]))
-		statusCode_ = 204;
-	
-	if (ret == -1)
-		statusCode_ = 404;
-
 	makeResponse_();
 
 	return nbytes_;

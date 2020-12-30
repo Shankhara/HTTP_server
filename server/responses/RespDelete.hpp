@@ -6,9 +6,8 @@
 class RespDelete: public Response
 {
 	private:
-	int del_it_();
-	int delDir_(char*);
-	int reachResource_();
+	int delDir_(std::string &);
+	int delResource_();
 	void makeResponse_();
 	
 	public:
