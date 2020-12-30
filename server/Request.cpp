@@ -283,6 +283,7 @@ int Request::parse()
 
 int Request::doRequest(char buf[], size_t nbytes)
 {
+	backUpRequest_.append(buf, nbytes);
 	request_.append(buf, nbytes);
 
 	parse();
@@ -348,8 +349,8 @@ int Request::getStatusCode() const
 std::string Request::getBody() const
 { return (msgBody_); }
 
-std::string Request::getRequest() const
-{ return (requestLine_[METHOD]); }
+std::string Request::getBackUpRequest() const
+{ return (backUpRequest_); }
 
 std::string Request::getMethod() const
 { return (requestLine_[METHOD]); }

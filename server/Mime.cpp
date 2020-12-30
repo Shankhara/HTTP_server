@@ -59,12 +59,12 @@ std::string Mime::getExtension(const std::string & filename) const
 	std::string res;
 
 	start = filename.find('.', 0);
-	end = filename.find('.', start);
+	end = filename.find('.', ++start);
 	if (start == dead)
 		return (res);
-	if (start == end)
-		return filename.substr(start + 1);
-	return filename.substr(start + 1, end - 1);
+	if (end == dead)
+		return filename.substr(start);
+	return filename.substr(start, end - start);
 }
 
 std::string Mime::getFilename(std::string & param) const

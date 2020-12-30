@@ -17,6 +17,7 @@ class Request
 	private:
 	int statusCode_;
 	std::string request_;
+	std::string backUpRequest_;
 	std::string msgBody_;
 	std::string queryString_;
 	std::vector<std::string> headersRaw_;
@@ -88,7 +89,7 @@ class Request
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getBody() const;
-	std::string getRequest() const;
+	std::string getBackUpRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
 	std::string getQueryStr() const;

@@ -6,8 +6,9 @@ VPATH		+= ../responses/
 NAME		= unittests
 OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o CGIExec.o CGISocket.o autoIndex.o Mime.o Request.o Response.o \
-			RespGet.o RespHead.o RespPut.o RespError.o RespPost.o RespDelete.o RespOptions.o \
-			testParsing.o testCGI.o testRequest.o testResponse.o \
+			RespGet.o RespHead.o RespPut.o RespError.o RespPost.o RespDelete.o \
+			RespOptions.o RespTrace.o \
+			testParsing.o testCGI.o testRequest.o testResponse.o
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -g3

@@ -12,7 +12,7 @@ void RespOptions::makeResponse_()
 	if (headersBuilt_ == false)
 	{
 		writeStatusLine_(statusCode_);
-		writeThisHeader_("allow: ", req_.getHeaderAllow());
+		writeThisHeader_("allow", req_.getHeaderAllow());
 		writeHeadersEnd_();
 	}
 }

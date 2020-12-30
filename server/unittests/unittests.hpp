@@ -13,6 +13,8 @@
 #include "../responses/RespPut.hpp"
 #include "../responses/RespPost.hpp"
 #include "../responses/RespDelete.hpp"
+#include "../responses/RespTrace.hpp"
+#include "../responses/RespOptions.hpp"
 
 void testRequest();
 void testResponse();

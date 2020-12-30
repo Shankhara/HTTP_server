@@ -16,7 +16,7 @@ void testRespGet()
 
 	int readSize = respGet.readResponse();
 	buf[readSize] = '\0';
-	std::cout << buf << std::endl;
+	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
 }
 
@@ -30,8 +30,7 @@ void testRespPut()
 	It is designed to hide the details of how a service is ..."; 
 	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
-	int ret = ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-	std::cout << ret << std::endl;
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 
 	unsigned int bufsize = 16 * 1024;
 	char buf[bufsize];
@@ -41,14 +40,13 @@ void testRespPut()
 	int readSize = respPut.readResponse();
 	Log().Get(logDEBUG) << "READ " << readSize;
 	buf[readSize] = '\0';
-	std::cout << buf << std::endl;
+	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
 }
 
 void testRespPost()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-	Log::setLevel(logDEBUG);
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
@@ -56,8 +54,7 @@ void testRespPost()
 	It is designed to hide the details of how a service is ..."; 
 	std::string str = "POST /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
-	int ret = ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-	Log().Get(logDEBUG) << "Request Return " << ret;
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 
 	unsigned int bufsize = 16 * 1024;
 	char buf[bufsize];
@@ -67,7 +64,7 @@ void testRespPost()
 	int readSize = respPost.readResponse();
 	Log().Get(logDEBUG) << "READ " << readSize;
 	buf[readSize] = '\0';
-	std::cout << buf << std::endl;
+	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
 }
 
@@ -88,7 +85,27 @@ void testRespDelete()
 	int readSize = respDel.readResponse();
 	Log().Get(logDEBUG) << "READ " << readSize;
 	buf[readSize] = '\0';
-	std::cout << buf << std::endl;
+	std::cout << "|" << buf << "|" << std::endl;
+}
+
+void testRespTrace()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string str = "GET /index.html HTTP/1.1\r\n\r\n";
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespTrace respTrace(ra, buf, bufsize);
+
+	int readSize = respTrace.readResponse();
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+	delete (vhost);
 }
 
 void testMimeType()
@@ -139,9 +156,10 @@ void testMimeType()
 
 void testResponse()
 {
-//	testRespGet();
-//	testRespPut();
+	testRespGet();
+	testRespPut();
 	testRespPost();
-//	testRespDelete();
-//	testMimeType();
+  	testRespTrace();
+	testRespDelete();
+	testMimeType();
 }

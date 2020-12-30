@@ -16,6 +16,7 @@ SRCS	+= responses/RespPut.cpp
 SRCS	+= responses/RespPost.cpp
 SRCS	+= responses/RespDelete.cpp
 SRCS	+= responses/RespOptions.cpp
+SRCS	+= responses/RespTrace.cpp
 SRCS	+= responses/RespError.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
