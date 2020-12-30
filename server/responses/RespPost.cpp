@@ -22,6 +22,11 @@ void RespPost::postPayload_()
 		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
 		statusCode_ = 200;
 	}
+	if (fd_ == -1)
+	{
+		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		statusCode_ = 500;
+	}
 
 	int nbytes = write(fd_, payload_.c_str(), payload_.size());
 	if (nbytes == -1)
