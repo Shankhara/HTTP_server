@@ -95,7 +95,6 @@ void testItoa()
 
 void testCGI()
 {
-	Log().setLevel(logERROR);
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
 	testItoa();
 	assertCGIFailed("/notfound.php", "404", "Status: 404");

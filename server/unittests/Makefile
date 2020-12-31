@@ -4,7 +4,7 @@ VPATH		+= ../parsing/
 VPATH		+= ../responses/
 
 NAME		= unittests
-OBJS		= unittests.o Client.o Logger.o Server.o Utils.o Listener.o \
+OBJS		= unittests.o Client.o Log.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o CGIExec.o CGISocket.o autoIndex.o Mime.o Request.o Response.o \
 			RespGet.o RespHead.o RespPut.o RespError.o RespPost.o RespDelete.o \
 			RespOptions.o RespTrace.o RespFile.o\
@@ -22,7 +22,7 @@ Client.o : ../fds/Client.hpp
 autoIndex.o: ../responses/autoIndex.cpp
 Utils.o : ../Utils.hpp
 Request.o : ../Request.hpp 
-Logger.o : ../Logger.hpp
+Log.o : ../Log.hpp
 Server.o : ../Server.hpp
 Listener.o : ../fds/Listener.hpp
 Response.o : ../responses/Response.hpp
