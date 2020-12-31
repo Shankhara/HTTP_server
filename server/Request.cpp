@@ -274,10 +274,14 @@ int Request::parseRequestLine()
 	else if (!isMethodAuthorized_(location_))
 		return 405;
 
-	requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
-										  location_->name.size(), requestLine_[REQTARGET].size() - 1);
-	if (requestLine_[REQTARGET][0] != '/')
-		requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+	if (!location_->root.empty())
+	{
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET][0] != '/')
+			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+	}
+
 
 	if (request_ == "\r\n")
 		return (200);

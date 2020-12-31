@@ -14,6 +14,7 @@ RespPut::~RespPut()
 
 bool RespPut::reachResource_()
 {
+	// TODO: how?
 	if (filePath_[filePath_.size() - 1] == '/')
 		return false;
 
@@ -21,6 +22,7 @@ bool RespPut::reachResource_()
 	if (stat(filePath_.c_str(), &buffer) == -1)
 		statusCode_ = 201;
 
+	Log::get(logERROR) << __FUNCTION__  << " PATH " << filePath_;
 	fd_ = open(filePath_.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0664);
 	if (fd_ == -1)
 	{
