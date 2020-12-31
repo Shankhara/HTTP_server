@@ -108,6 +108,26 @@ void testRespTrace()
 	delete (vhost);
 }
 
+void testRespOptions()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string str = "OPTIONS /index.html HTTP/1.1\r\n\r\n";
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespOptions respOptions(ra, buf, bufsize);
+
+	int readSize = respOptions.readResponse();
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+	delete (vhost);
+}
+
 void testMimeType()
 {
 	Mime m;
@@ -161,5 +181,6 @@ void testResponse()
 	testRespPost();
   	testRespTrace();
 	testRespDelete();
+	testRespOptions();
 	testMimeType();
 }

@@ -62,7 +62,7 @@ class Request
 	bool bodyToParse;
 
 	std::vector<std::string> methods;
-	enum e_methods { CONNECT, GET, HEAD, POST, PUT, DELETE, OPTION, TRACE, PATCH };
+	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE };
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
 
 	std::vector<std::string> headersName;

@@ -9,7 +9,8 @@ void RespOptions::makeResponse_()
 	if (headersBuilt_ == false)
 	{
 		writeStatusLine_(statusCode_);
-		writeThisHeader_("allow", req_.getHeaderAllow());
+		writeBaseHeaders_();
+		writeAllow_();
 		writeHeadersEnd_();
 	}
 }

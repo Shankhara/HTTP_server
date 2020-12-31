@@ -19,6 +19,7 @@ class Response
 	void						writeBaseHeaders_();
 	void						writeContentType_(std::string);
 	void						writeContentLength_(long);
+    void                        writeAllow_();
 	void 						writeHeadersEnd_();
 	void 						writeThisHeader_(std::string, std::string);
 
@@ -32,4 +33,5 @@ class Response
 	void 			writeErrorBody(int);
 	void 			appendHeaders(int, std::string, unsigned int);
 	virtual int		readResponse() = 0;
+
 };

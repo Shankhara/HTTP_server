@@ -46,6 +46,19 @@ void Response::writeContentLength_(long value)
 	append_("Content-Length: " + ft_itoa(value) + "\r\n");
 }
 
+void Response::writeAllow_()
+{
+	append_("Allow: ");
+	std::cout << req_.getLocation()->methods.size() << std::endl;
+	for (size_t i = 0; i < req_.getLocation()->methods.size(); i++)
+    {
+	    append_(req_.getLocation()->methods[i]);
+	    if (i < req_.getLocation()->methods.size() - 1)
+    	    append_(", ");
+    }
+	append_("\r\n");
+}
+
 void Response::writeStatusLine_(int statusCode)
 {
 	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
