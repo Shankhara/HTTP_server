@@ -91,7 +91,6 @@ int Request::getChunkedBody()
 		chunkSize = strHexToInt(strHexChunkSize);
 		if (msgBody_.size() + chunkSize > location_->client_max_body_size)
 			return (413);
-		Log::get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos << std::endl;
 		if (chunkSize > CHUNK_MAX_SIZE)
 		{
 			Log::get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE << std::endl;
@@ -116,7 +115,6 @@ int Request::getChunkedBody()
 		Log::get(logERROR) << __FUNCTION__  << " not ending with expected sequence" << std::endl;
 		return 400;
 	}
-	Log::get(logINFO) << __FUNCTION__  << " Complete " << std::endl;
 	return 200;
 }
 
@@ -149,8 +147,7 @@ void Request::parseQueryString()
 	if (i != std::string::npos)
 	{
 		queryString_ = requestLine_[REQTARGET].substr(i);
-		requestLine_[REQTARGET].erase(i, std::string::npos); // ??
-
+		requestLine_[REQTARGET].erase(i);
 	}
 }
 
