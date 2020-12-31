@@ -1,11 +1,13 @@
 #include "RespPost.hpp"
 
-RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
+RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
-	setFilePath();
+	fd_ = 0;
+	payload_ = req_.getBody();
 }
 
-RespPost::~RespPost() {
+RespPost::~RespPost()
+{
 	if (fd_ > 0)
 		close(fd_);
 }

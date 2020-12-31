@@ -1,9 +1,6 @@
 #include "RespDelete.hpp"
 
-RespDelete::RespDelete(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
-{
-	setFilePath();
-}
+RespDelete::RespDelete(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize) { }
 
 RespDelete::~RespDelete() { }
 
@@ -28,11 +25,17 @@ int RespDelete::delDir_(std::string & param)
         if (name == "." || name == "..")
             continue;
 
-		concat_path = param + "/" + name;
+		concat_path += param;
+		concat_path += "/";
+		concat_path += name;
         if (entry->d_type == DT_DIR)
+        {
             delDir_(concat_path);
-		else 
-			unlink(concat_path.c_str());
+        }
+        else
+        {
+            unlink(concat_path.c_str());
+        }
     }
     if (rmdir(c_param) == -1)
 	{
@@ -47,7 +50,7 @@ int RespDelete::delDir_(std::string & param)
 
 int RespDelete::delResource_()
 {
-    struct stat statbuf;
+    struct stat statbuf = {};
  
     int ret = stat(filePath_.c_str(), &statbuf);
 	if (ret == -1)
@@ -64,11 +67,10 @@ int RespDelete::delResource_()
 
 void RespDelete::makeResponse_()
 {
-	if (headersBuilt_ == false)
-	{
-		writeStatusLine_(statusCode_);
-		writeHeadersEnd_();
-	}
+    if (!headersBuilt_) {
+        writeStatusLine_(statusCode_);
+        writeHeadersEnd_();
+    }
 }
 
 int RespDelete::readResponse()

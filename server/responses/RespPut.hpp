@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Response.hpp"
+#include "RespFile.hpp"
 
-class RespPut: public Response
+class RespPut: public RespFile
 {
 	private:
-	std::string 		path_;
-	std::string 		payload_;
-	int 				fd_;
-	size_t				payloadCursor_;
-	int					fileExists_;
-	int 				statusCode_;
+	int fd_;
+	size_t payloadCursor_;
 
 	void putPayload_();
 	bool reachResource_();

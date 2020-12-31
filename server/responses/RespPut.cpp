@@ -1,16 +1,13 @@
 #include "RespPut.hpp"
 
-RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
+RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
-	setFilePath();
 	fd_ = 0;
 	payloadCursor_ = 0;
-	statusCode_ = 200;
-	fileExists_ = false;
-	payload_ = req_.getBody();
 }
 
-RespPut::~RespPut() {
+RespPut::~RespPut()
+{
 	if (fd_ > 0)
 		close(fd_);
 }
@@ -20,11 +17,9 @@ bool RespPut::reachResource_()
 	if (filePath_[filePath_.size() - 1] == '/')
 		return false;
 
-	struct stat buffer;
+	struct stat buffer = {};
 	if (stat(filePath_.c_str(), &buffer) == -1)
 		statusCode_ = 201;
-	else
-		statusCode_ = 200;
 
 	fd_ = open(filePath_.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0664);
 	if (fd_ == -1)
@@ -47,7 +42,7 @@ int RespPut::compareFiles_()
 		buff[nbytes] = '\0';
 		str.append(buff);
 	}
-	return (str.compare(payload_) == 0);
+	return (str.compare(req_.getBody()) == 0);
 }
 
 void RespPut::putPayload_()

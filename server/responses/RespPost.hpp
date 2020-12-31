@@ -1,12 +1,13 @@
 #pragma once
 
-#include "Response.hpp"
+#include "RespFile.hpp"
 
-class RespPost: public Response
+class RespPost: public RespFile
 {
 	private:
 	int fd_;
-	std::string 						payload_;
+	std::string payload_;
+
 	void postPayload_();
 	void makeResponse_();
 	

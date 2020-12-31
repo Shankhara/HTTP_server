@@ -1,9 +1,6 @@
 #include "RespOptions.hpp"
 
-RespOptions::RespOptions(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
-{
-	statusCode_ = 200;
-}
+RespOptions::RespOptions(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize) { }
 
 RespOptions::~RespOptions() { }
 

@@ -1,8 +1,9 @@
-#ifndef WEBSERV_GETMETHOD_HPP
-#define WEBSERV_GETMETHOD_HPP
-#include "Response.hpp"
+#pragma once
+
+#include "RespFile.hpp"
 #include "../Logger.hpp"
 #include "../Utils.hpp"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -10,7 +11,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-class RespGet: public Response
+class RespGet: public RespFile
 {
 	protected:
 	int			fd_;
@@ -25,6 +26,3 @@ class RespGet: public Response
 	~RespGet();
 	virtual int readResponse();
 };
-
-
-#endif //WEBSERV_GETMETHOD_HPP

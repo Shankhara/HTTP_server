@@ -7,6 +7,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 {
 	nbytes_ = 0;
 	headersBuilt_ = false;
+	statusCode_ = 200;
 
 	if (statusMap_.size() == 0)
 	{
@@ -26,8 +27,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
-Response::~Response(){
-}
+Response::~Response() { }
 
 void Response::writeBaseHeaders_()
 {
@@ -60,14 +60,6 @@ void Response::writeHeadersEnd_()
 {
 	append_("\r\n");
 	headersBuilt_ = true;
-}
-
-void Response::setFilePath()
-{
-	if (!req_.getLocation()->root.empty())
-		filePath_ = req_.getLocation()->root + req_.getReqTarget();
-	else
-		filePath_ = req_.getServer()->root + req_.getReqTarget();
 }
 
 int Response::writeErrorPage(int statusCode)

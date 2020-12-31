@@ -2,7 +2,6 @@
 
 RespTrace::RespTrace(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-	statusCode_ = 200;
 	request_ = req_.getBackUpRequest();
 }
 

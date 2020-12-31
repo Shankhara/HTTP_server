@@ -1,6 +1,7 @@
 #include "RespGet.hpp"
 
-RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): Response(r, buf, bufSize) {
+RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): RespFile(r, buf, bufSize)
+{
 	fd_ = 0;
 }
 
@@ -36,25 +37,20 @@ int RespGet::readFile_() {
 	return (currentRead + nbytes_);
 }
 
-void RespGet::openFile_(Parsing::location *location) {
-	std::string path;
-	if (!location->root.empty())
-		path = location->root + req_.getReqTarget();
-	else
-		path = req_.getServer()->root + req_.getReqTarget();
-
+void RespGet::openFile_(Parsing::location *location)
+{
 	int isDir;
 	struct stat st;
-	stat(path.c_str(), &st);
+	stat(filePath_.c_str(), &st);
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir != 0)
 	{
-		if (path[path.size() -1] != '/')
-			path += '/';
-		path += location->index;
+		if (filePath_[filePath_.size() -1] != '/')
+			filePath_ += '/';
+		filePath_ += location->index;
 	}
-	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << path << " IS_DIR " << isDir << " INDEX " << location->index;
-	fd_ = open(path.c_str(), O_RDONLY);
+	Log().Get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index;
+	fd_ = open(filePath_.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
 		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);

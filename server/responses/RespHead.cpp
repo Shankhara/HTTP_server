@@ -1,5 +1,9 @@
 #include "RespHead.hpp"
 
+RespHead::RespHead(const Request &r, char *buf, unsigned int bufSize) : RespGet(r, buf, bufSize){}
+
+RespHead::~RespHead() {}
+
 void RespHead::append_(std::string str) {
 
 	if (headersBuilt_)
@@ -16,10 +20,3 @@ void RespHead::append_(char str[], unsigned int size) {
 int RespHead::readResponse() {
 	return RespGet::readResponse();
 }
-
-
-RespHead::RespHead(const Request &r, char *buf, unsigned int bufSize) : RespGet(r, buf, bufSize){}
-
-RespHead::~RespHead() {}
-
-
