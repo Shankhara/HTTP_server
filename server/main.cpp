@@ -1,12 +1,12 @@
 #include "Server.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "fds/Listener.hpp"
 #include "parsing/Parsing.hpp"
 #include <signal.h>
 
 void signalHandler(int) {
 	std::cerr << "\b\b";
-	Log().Get(logINFO) << "Webserver exiting gracefully.";
+	Log::get(logINFO) << "Webserver exiting gracefully.";
 	delete (Server::getInstance());
 	delete (Mime::getInstance());
 	exit(0);
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 	std::string conf("./parsing/test/wordpress.conf");
 	//Log::setLevel(logDEBUG);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
-		Log::setLevel(logDEBUG);
+		Log::getInstance()->setLevel(logDEBUG);
 	} else if (argc > 1) {
 		conf = std::string(argv[1]);
 	}
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 	try {
 		p.parseConfig();
 	} catch (Parsing::ParsingException &e) {
-		Log().Get(logERROR) << " Unable to parse: " << e.what();
+		Log::get(logERROR) << " Unable to parse: " << e.what();
 		return (EXIT_FAILURE);
 	}
 	Server *webserv = Server::getInstance();

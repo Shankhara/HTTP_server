@@ -6,7 +6,7 @@ CGISocket::CGISocket(int fd, Client &client): client_(client), httpStatus_(false
 {
 	fd_ = fd;
 	lastEventTimer_ = 0;
-	Log().Get(logDEBUG) << "Creating CGIResponse: " << fd_ << " From Client " << client_.getFd();
+	Log::get(logDEBUG) << "Creating CGIResponse: " << fd_ << " From Client " << client_.getFd();
 	instances++;
 }
 
@@ -18,7 +18,7 @@ CGISocket::~CGISocket()
 	if (result == 0)
 		kill(pid_, 9);
 	close(fd_);
-	Log().Get(logDEBUG) << "CGIResponse deleted " << fd_;
+	Log::get(logDEBUG) << "CGIResponse deleted " << fd_;
 	instances--;
 }
 
@@ -29,7 +29,7 @@ void CGISocket::appendContentLenght_() {
 	else{
 		size_t bodySize = resp_.size() - (headerPos + 4);
 		std::string itoa = ft_itoa(bodySize);
-		Log().Get(logDEBUG) << " HEADERPOS " << headerPos << "resp_ " << resp_.size();
+		Log::get(logDEBUG) << " HEADERPOS " << headerPos << "resp_ " << resp_.size();
 		resp_.insert(headerPos, "Content-Length: " + itoa);
 	}
 }
@@ -45,7 +45,7 @@ int CGISocket::readCGIResponse() {
 			parseCGIStatus(buf, nbytes);
 			httpStatus_ = true;
 		}else{
-			Log().Get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
+			Log::get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes;
 			resp_.append(buf, nbytes);
 		}
 	}
@@ -60,11 +60,11 @@ void CGISocket::onEvent()
 		return ;
 	else if (nbytes == 0) {
 		appendContentLenght_();
-		Log().Get(logDEBUG) << "NBYTES " << resp_.size();
+		Log::get(logDEBUG) << "NBYTES " << resp_.size();
 		send(client_.getFd(), resp_.c_str(), resp_.size(), 0);
 	}
 	else
-		Log().Get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
+		Log::get(logDEBUG) << "CGIResponse > read error " << strerror(errno);
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
 

@@ -11,7 +11,7 @@ int RespDelete::delDir_(std::string & param)
     DIR *dir = opendir(c_param);
 	if (!dir)
 	{
-		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
 		return EXIT_FAILURE;
     }
@@ -39,7 +39,7 @@ int RespDelete::delDir_(std::string & param)
     }
     if (rmdir(c_param) == -1)
 	{
-		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
 		return EXIT_FAILURE;
     }
@@ -55,7 +55,7 @@ int RespDelete::delResource_()
     int ret = stat(filePath_.c_str(), &statbuf);
 	if (ret == -1)
 	{
-		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 404;
 		return ret;
 	}

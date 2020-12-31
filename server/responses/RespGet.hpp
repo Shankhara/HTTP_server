@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RespFile.hpp"
-#include "../Logger.hpp"
+#include "../Log.hpp"
 #include "../Utils.hpp"
 
 #include <sys/types.h>

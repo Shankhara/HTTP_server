@@ -3,7 +3,7 @@
 Server* Server::instance_ = 0;
 
 Server::~Server() {
-	Log().Get(logINFO) << "FD_MAX at shutdown: " << fdmax_;
+	Log::get(logINFO) << "FD_MAX at shutdown: " << fdmax_;
 	stop();
 }
 
@@ -28,14 +28,14 @@ void Server::run_()
 		conn_fds = master_;
 		if (select(fdmax_+1, &conn_fds, NULL, NULL, &tv) == -1)
 		{
-			Log().Get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
+			Log::get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_;
 			exit(EXIT_FAILURE);
 		}
 		for (int i = 0; i <= fdmax_; i++)
 		{
 			if (FD_ISSET(i, &conn_fds))
 			{
-				Log().Get(logDEBUG) << "server::run -> select got an event on fd " <<  i;
+				Log::get(logDEBUG) << "server::run -> select got an event on fd " <<  i;
 				fds_[i]->onEvent();
 			}
 		}
@@ -56,14 +56,14 @@ void Server::addFileDescriptor(FileDescriptor *fd) {
 	FD_SET(fd->getFd(), &master_);
 	if (fd->getFd() > fdmax_)
 		fdmax_ = fd->getFd();
-	Log().Get(logDEBUG) << __FUNCTION__ << " " <<  fd->getFd() << " MAX_FD " << fdmax_;
+	Log::get(logDEBUG) << __FUNCTION__ << " " <<  fd->getFd() << " MAX_FD " << fdmax_;
 	fds_[fd->getFd()] = fd;
 }
 
 void Server::deleteFileDescriptor(int fd) {
-	Log().Get(logDEBUG) << __PRETTY_FUNCTION__  << " " << fd;
+	Log::get(logDEBUG) << __PRETTY_FUNCTION__  << " " << fd;
 	if (close(fd) == -1)
-		Log().Get(logERROR) << __PRETTY_FUNCTION__  << " unable to close " << strerror(errno);
+		Log::get(logERROR) << __PRETTY_FUNCTION__  << " unable to close " << strerror(errno);
 	FD_CLR(fd, &master_);
 	delete fds_[fd];
 }
@@ -72,19 +72,19 @@ Server *Server::getInstance()
 {
 	if (instance_ == 0)
 	{
-		Log().Get(logDEBUG) << __PRETTY_FUNCTION__ ;
+		Log::get(logDEBUG) << __PRETTY_FUNCTION__ ;
 		instance_ = new Server();
 	}
 	return instance_;
 }
 
 void Server::stop() {
-	Log().Get(logDEBUG) << "Server::stop()";
+	Log::get(logDEBUG) << "Server::stop()";
 	for (int i = 0; i <= fdmax_; i++)
 	{
 		if (FD_ISSET(i, &master_))
 		{
-			Log().Get(logDEBUG) << "deleting " << i;
+			Log::get(logDEBUG) << "deleting " << i;
 			delete fds_[i];
 		}
 	}
@@ -107,7 +107,7 @@ void Server::garbageCollector_()
 		{
 			if (fds_[i]->getLastEventTimer() > 0 && (getTime() - fds_[i]->getLastEventTimer()) > READ_TIMEOUT * 1000)
 			{
-				Log().Get(logINFO) << "FD: " << i << " > Timeout after " << READ_TIMEOUT << " sec";
+				Log::get(logINFO) << "FD: " << i << " > Timeout after " << READ_TIMEOUT << " sec";
 				deleteFileDescriptor(i);
 			}
 		}

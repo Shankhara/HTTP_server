@@ -1,7 +1,7 @@
 #ifndef WEBSERV_CGIEXEC_HPP
 #define WEBSERV_CGIEXEC_HPP
 
-#include "Logger.hpp"
+#include "Log.hpp"
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>

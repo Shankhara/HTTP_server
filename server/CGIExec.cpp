@@ -59,10 +59,10 @@ FileDescriptor *CGIExec::run()
 	int pipeIN[2];
 	Parsing::location *location = client_.getRequest().getLocation();
 
-	Log().Get(logDEBUG) << "CGI: " << location->cgi_path << " " << location->root << client_.getRequest().getReqTarget() ;
+	Log::get(logDEBUG) << "CGI: " << location->cgi_path << " " << location->root << client_.getRequest().getReqTarget() ;
 	if (pipe(pipeOUT) == -1 || pipe(pipeIN) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno);
 		return (0);
 	}
 	CGISocket *response = new CGISocket(pipeOUT[0], client_);
@@ -71,14 +71,14 @@ FileDescriptor *CGIExec::run()
 	if (cpid < 0)
 	{
 		delete response;
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to fork: " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to fork: " << strerror(errno);
 		return (0);
 	}
 	if (cpid == 0)
 	{
 		if (chdir(location->root.c_str()) == -1)
 		{
-			Log().Get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root;
+			Log::get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root;
 			exit(EXIT_FAILURE);
 		}
 		pipeSTDOUT_(pipeOUT);
@@ -92,7 +92,7 @@ FileDescriptor *CGIExec::run()
 		std::string body = client_.getRequest().getBody();
 		if (!body.empty())
 		{
-			Log().Get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size();
+			Log::get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size();
 			write(pipeIN[1], body.c_str(), body.size());
 		}
 		response->setPid(cpid);
@@ -111,7 +111,7 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	cmd[2] = 0;
 	if (execve(cmd[0], cmd, envs_) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno);
 		write500();
 	}
 }
@@ -120,17 +120,17 @@ void 	CGIExec::pipeSTDIN_(int pfd[2])
 {
 	if (close(pfd[1]) == -1)
 		{
-			Log().Get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
+			Log::get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
 			write500();
 		}
 	if (dup2(pfd[0], STDIN_FILENO) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
 		write500();
 	}
 	if (close(pfd[0]) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
 		write500();
 	}
 	stdinFD_ = STDIN_FILENO;
@@ -140,17 +140,17 @@ void	CGIExec::pipeSTDOUT_(int pfd[2])
 {
 	if (close(pfd[0]) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << " Unable to close " << strerror(errno);
 		write500();
 	}
 	if (dup2(pfd[1], STDOUT_FILENO) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to dup2 " << strerror(errno);
 		write500();
 	}
 	if (close(pfd[1]) == -1)
 	{
-		Log().Get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << "Unable to close " << strerror(errno);
 		write500();
 	}
 	stdoutFD_ = STDOUT_FILENO;
@@ -177,7 +177,7 @@ void CGIExec::setEnv_(int name, const std::string &c)
 		envs_[name][i] = buf[i];
 	}
 	envs_[name][i] = '\0';
-	Log().Get(logDEBUG) << envs_[name];
+	Log::get(logDEBUG) << envs_[name];
 }
 
 void CGIExec::freeEnvs_()

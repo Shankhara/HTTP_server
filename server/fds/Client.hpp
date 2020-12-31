@@ -6,7 +6,7 @@
 #include <errno.h>
 #include <cstring>
 #include <sys/socket.h>
-#include "../Logger.hpp"
+#include "../Log.hpp"
 #include "../Server.hpp"
 #include "FileDescriptor.hpp"
 #include "../Request.hpp"

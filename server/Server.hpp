@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <vector>
 #include <arpa/inet.h>
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "fds/FileDescriptor.hpp"
 
 #define READ_TIMEOUT 60

@@ -4,7 +4,7 @@ RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int b
 Response( r, buf, bufSize), statusCode_(statusCode)
 {
 	fd_ = 0;
-	Log().Get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
+	Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
 }
 
 RespError::~RespError() {}

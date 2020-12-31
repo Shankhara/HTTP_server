@@ -24,7 +24,7 @@ bool RespPut::reachResource_()
 	fd_ = open(filePath_.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0664);
 	if (fd_ == -1)
 	{
-		Log().Get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
 		statusCode_ = 500;
 		return (false);
 	}
@@ -83,7 +83,7 @@ int RespPut::readResponse()
 	}
 	if (fd_ == -1)
 		writeErrorPage(500);
-	Log().Get(logDEBUG) << __FUNCTION__ << " NBYTES " << nbytes_;
+	Log::get(logDEBUG) << __FUNCTION__ << " NBYTES " << nbytes_;
 	return nbytes_;
 }
 

@@ -7,7 +7,7 @@
 #include <cstring>
 #include <wait.h>
 #include "../Server.hpp"
-#include "../Logger.hpp"
+#include "../Log.hpp"
 #include "Client.hpp"
 #include "../responses/Response.hpp"
 

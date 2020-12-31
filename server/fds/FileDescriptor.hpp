@@ -1,7 +1,7 @@
 #ifndef WEBSERV_IFD_HPP
 #define WEBSERV_IFD_HPP
 #include <vector>
-#include "../Logger.hpp"
+#include "../Log.hpp"
 #include "../Utils.hpp"
 
 class FileDescriptor {

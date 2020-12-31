@@ -91,10 +91,10 @@ int Request::getChunkedBody()
 		chunkSize = strHexToInt(strHexChunkSize);
 		if (msgBody_.size() + chunkSize > location_->client_max_body_size)
 			return (413);
-		Log().Get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos;
+		Log::get(logDEBUG) << __FUNCTION__ << " chunk_size " << chunkSize << " > " << request_.size() << " HEXPOS" << hexEndPos;
 		if (chunkSize > CHUNK_MAX_SIZE)
 		{
-			Log().Get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE;
+			Log::get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE;
 			return 400;
 		}
 		if (request_.size() < chunkSize + hexEndPos + 4)
@@ -106,17 +106,17 @@ int Request::getChunkedBody()
 			cursor += 2;
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			request_.assign(request_.c_str() + cursor);
-			Log().Get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
+			Log::get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size();
 		}
 	}
 	if (request_.size() < 5)
 		return 100;
 	if (request_ != "0\r\n\r\n")
 	{
-		Log().Get(logERROR) << __FUNCTION__  << " not ending with expected sequence";
+		Log::get(logERROR) << __FUNCTION__  << " not ending with expected sequence";
 		return 400;
 	}
-	Log().Get(logINFO) << __FUNCTION__  << " Complete ";
+	Log::get(logINFO) << __FUNCTION__  << " Complete ";
 	return 200;
 }
 

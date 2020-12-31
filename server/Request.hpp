@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "parsing/Parsing.hpp"
 #include "Utils.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #define CHUNK_MAX_SIZE 65536
 

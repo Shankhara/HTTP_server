@@ -50,7 +50,7 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	std::string req = "GET "+filename+" HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	int httpStatus = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (httpStatus != 200)
-		Log().Get(logERROR) << "expecting status 200 got " << status;
+		Log::get(logERROR) << "expecting status 200 got " << status;
 	CGIExec cgi(*client);
 	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
 	servers->at(0).locations.at(0).cgi_path = "/usr/bin/php-cgi";
@@ -73,7 +73,7 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	std::string req = "POST "+filename+" HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA";
 	int status = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (status != 200)
-		Log().Get(logERROR) << "expecting status 200 got " << status;
+		Log::get(logERROR) << "expecting status 200 got " << status;
 	CGIExec cgi(*client);
 	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
 	servers->at(0).locations.at(0).cgi_path = "/usr/local/bin/ubuntu_cgi_tester";
