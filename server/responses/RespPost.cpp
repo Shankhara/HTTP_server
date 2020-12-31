@@ -35,8 +35,6 @@ void RespPost::postPayload_()
 	{
 		if (ret == -1)
 			statusCode_ = 201;
-		else
-			statusCode_ = 200;
 	}
 	else
 	{
