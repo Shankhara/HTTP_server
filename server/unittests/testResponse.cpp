@@ -38,7 +38,7 @@ void testRespPut()
 	RespPut respPut(ra, buf, bufsize);
 
 	int readSize = respPut.readResponse();
-	Log::get(logDEBUG) << "READ " << readSize;
+	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
@@ -62,7 +62,7 @@ void testRespPost()
 	RespPost respPost(ra, buf, bufsize);
 
 	int readSize = respPost.readResponse();
-	Log::get(logDEBUG) << "READ " << readSize;
+	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
@@ -83,7 +83,7 @@ void testRespDelete()
 	RespDelete respDel(r, buf, bufsize);
 
 	int readSize = respDel.readResponse();
-	Log::get(logDEBUG) << "READ " << readSize;
+	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 }

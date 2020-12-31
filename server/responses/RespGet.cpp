@@ -29,9 +29,9 @@ int RespGet::readResponse() {
 
 int RespGet::readFile_() {
 	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
-	Log::get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " << nbytes_ << " BUFSIZE_ " << bufSize_;
+	Log::get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " << nbytes_ << " BUFSIZE_ " << bufSize_ << std::endl;
 	if (currentRead < 0) {
-		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno);
+		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
 		return (nbytes_);
 	}
 	return (currentRead + nbytes_);
@@ -49,11 +49,11 @@ void RespGet::openFile_(Parsing::location *location)
 			filePath_ += '/';
 		filePath_ += location->index;
 	}
-	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index;
+	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index << std::endl;
 	fd_ = open(filePath_.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		return ;
 	}
 	if (isDir)

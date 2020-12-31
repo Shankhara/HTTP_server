@@ -24,7 +24,7 @@ void RespPost::postPayload_()
 
 	if (fd_ == -1)
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		statusCode_ = 500;
 		return;
 	}
@@ -38,7 +38,7 @@ void RespPost::postPayload_()
 	}
 	else
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno);
+		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		statusCode_ = 500;
 	}
 }

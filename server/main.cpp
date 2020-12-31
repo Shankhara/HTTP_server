@@ -5,10 +5,12 @@
 #include <signal.h>
 
 void signalHandler(int) {
+	std::cerr.clear();
 	std::cerr << "\b\b";
-	Log::get(logINFO) << "Webserver exiting gracefully.";
+	Log::get(logINFO) << "Webserver exiting gracefully." << std::endl;
 	delete (Server::getInstance());
 	delete (Mime::getInstance());
+	delete (Log::getInstance());
 	exit(0);
 }
 
@@ -50,7 +52,7 @@ int main(int argc, char *argv[]) {
 	try {
 		p.parseConfig();
 	} catch (Parsing::ParsingException &e) {
-		Log::get(logERROR) << " Unable to parse: " << e.what();
+		Log::get(logERROR) << " Unable to parse: " << e.what() << std::endl;
 		return (EXIT_FAILURE);
 	}
 	Server *webserv = Server::getInstance();

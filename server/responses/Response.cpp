@@ -24,7 +24,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 		statusMap_[414] = "Request-URI Too Long";
 		statusMap_[500] = "Internal Server Error";
 	}
-	Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget();
+	Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget() << std::endl;
 }
 
 Response::~Response() { }
