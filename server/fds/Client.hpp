@@ -16,6 +16,7 @@
 #include "../responses/RespHead.hpp"
 #include "../responses/RespError.hpp"
 #include "../responses/RespPut.hpp"
+#include "../responses/Response.hpp"
 
 #define MAX_CGI_FORKS 20
 #define CLIENT_BUFFER_SIZE	65536
@@ -25,13 +26,14 @@ class Client: public FileDescriptor {
 
 private:
 	FileDescriptor						*CGIResponse_;
-	std::string							response_;
+	Response							*resp_;
 	Request								request_;
 	static char 						buf_[CLIENT_BUFFER_SIZE];
 	void 								doResponse_();
 	void 								sendResponse_(Response *);
 	void 								doStaticFile_();
 	void 								doCGI_();
+	void								responseFactory_();
 
 public:
 	Client(int, std::vector<Parsing::server> &);

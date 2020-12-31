@@ -4,6 +4,7 @@ char Client::buf_[CLIENT_BUFFER_SIZE];
 
 Client::Client(int fd, std::vector<Parsing::server> &s): request_(s) {
 	CGIResponse_ = 0;
+	resp_ = 0;
 	fd_ = fd;
 	setLastEventTimer();
 	Log().Get(logDEBUG) << "Creating Client: " << fd_;
@@ -14,6 +15,8 @@ Client::~Client() {
 	close(fd_);
 	if (CGIResponse_ != 0)
 		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
+	if (resp_ != 0)
+		delete(resp_);
 }
 
 void Client::onEvent()
@@ -79,28 +82,25 @@ void Client::sendResponse_(Response *resp) {
 		Server::getInstance()->deleteFileDescriptor(fd_);
 }
 
-std::string &Client::getResponse()
-{
-	return response_;
-}
-
 Request &Client::getRequest() {
 	return request_;
 }
 
-void Client::doStaticFile_() {
+void Client::responseFactory_() {
 	// TODO: factory just like CPPdays to avoid if else branching?
-	Response *resp;
 	if (request_.getMethod() == "GET")
-		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "POST")
-		resp = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "PUT")
-		resp = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
 	else
-		resp = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
-	sendResponse_(resp);
-	delete(resp);
+		resp_ = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
+}
+void Client::doStaticFile_() {
+	if (resp_ == 0)
+		responseFactory_();
+	sendResponse_(resp_);
 }
 
 void Client::doCGI_() {

@@ -150,10 +150,7 @@ void Request::parseQueryString()
 	{
 		queryString_ = requestLine_[REQTARGET].substr(i);
 		requestLine_[REQTARGET].erase(i, std::string::npos); // ??
-		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
-											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
-		if (requestLine_[REQTARGET][0] != '/')
-			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+
 	}
 }
 
@@ -244,12 +241,7 @@ int Request::parseHeadersContent()
 
 	headers_parsed = true;
 
-	server_ = matchServer_();
-	location_ = matchLocation_(server_);
-	if (location_ == 0)
-		return 403;
-	else if (!isMethodAuthorized_(location_))
-		return 405;
+
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
@@ -274,6 +266,18 @@ int Request::parseRequestLine()
 		return 505;
 
 	parseQueryString();
+
+	server_ = matchServer_();
+	location_ = matchLocation_(server_);
+	if (location_ == 0)
+		return 403;
+	else if (!isMethodAuthorized_(location_))
+		return 405;
+
+	requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+										  location_->name.size(), requestLine_[REQTARGET].size() - 1);
+	if (requestLine_[REQTARGET][0] != '/')
+		requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 
 	if (request_ == "\r\n")
 		return (200);
