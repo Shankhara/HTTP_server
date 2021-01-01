@@ -105,7 +105,7 @@ int Request::getChunkedBody()
 			cursor += 2;
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			request_.assign(request_.c_str() + cursor);
-			Log::get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size() << std::endl;
+			//Log::get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size() << std::endl;
 		}
 	}
 	if (request_.size() < 5)
@@ -132,7 +132,6 @@ int Request::parseBody()
 			msgBody_ = request_;
 			return 200;
 		}
-
 		if (request_.size() > len)
 			return 400;
 	}

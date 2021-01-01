@@ -69,21 +69,26 @@ void Client::doResponse_() {
 void Client::sendResponse_(Response *resp) {
 	bool isSent = false;
 	int nbytes;
+	size_t sentSize = 0;
+
 	while ((nbytes = resp->readResponse()) > 0)
 	{
 		isSent = true;
-		if (send(fd_, buf_, nbytes, 0) < 0)
+		sentSize += nbytes;
+		if ((nbytes = send(fd_, buf_, nbytes, 0)) < 0)
 		{
 			Log::get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes << std::endl;
+			break ;
+		}else if (nbytes == 0) {
+			Log::get(logERROR) << " send returned 0" << std::endl;
 			break ;
 		}
 	}
 	if (isSent)
+	{
+		Log::get(logINFO) << "- fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_.getMethod() << " " << request_.getReqTarget() << " [" << sentSize << "]" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
-}
-
-Request &Client::getRequest() {
-	return request_;
+	}
 }
 
 void Client::responseFactory_() {
@@ -91,12 +96,19 @@ void Client::responseFactory_() {
 	if (request_.getMethod() == "GET")
 		resp_ = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "POST")
-		resp_ = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespPost(request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_.getMethod() == "HEAD")
+		resp_ = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_.getMethod() == "TRACE")
+		resp_ = new RespTrace(request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_.getMethod() == "DELETE")
+		resp_ = new RespDelete(request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_.getMethod() == "PUT")
 		resp_ = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
 	else
-		resp_ = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespError(400, request_, buf_, CLIENT_BUFFER_SIZE);
 }
+
 void Client::doStaticFile_() {
 	if (resp_ == 0)
 		responseFactory_();
@@ -123,4 +135,8 @@ void Client::doCGI_() {
 		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
+}
+
+Request &Client::getRequest() {
+	return request_;
 }

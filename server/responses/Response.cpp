@@ -77,6 +77,7 @@ void Response::writeHeadersEnd_()
 
 int Response::writeErrorPage(int statusCode)
 {
+	statusCode_ = statusCode;
 	if (headersBuilt_)
 		return 0;
 	nbytes_ = 0;
@@ -128,4 +129,8 @@ void Response::appendHeaders(int statusCode, std::string contentType, unsigned i
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();
+}
+
+int Response::getStatusCode() const {
+	return statusCode_;
 }
