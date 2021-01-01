@@ -2,7 +2,7 @@
 WEBSERV="/tmp/webserv"
 DIR=${WEBSERV}"/YoupiBanane"
 
-echo "Boostraping in ${WEBSERV}"
+echo "Bootstrapping in ${WEBSERV}"
 
 rm -rf ${WEBSERV}/YoupiBanane/
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/

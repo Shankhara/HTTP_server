@@ -46,9 +46,9 @@ void Client::constructRequest(char buf[], int nbytes) {
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
-	else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
+	else if (request_.getLocation() != 0)
 			doResponse_();
-	}
+	//else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)
@@ -69,8 +69,11 @@ bool isFileCGI(Parsing::location *location, std::string filePath)
 
 void Client::doResponse_() {
 	if (request_.getLocation()->cgi_extension.empty() || !isFileCGI(request_.getLocation(), request_.getReqTarget()))
-		doStaticFile_();
-	else
+	{
+		if (request_.getStatusCode() == 200 || request_.getMethod() == "PUT" || request_.getMethod() == "POST" )
+			doStaticFile_();
+	}
+	else if (request_.getStatusCode() == 200)
 		doCGI_();
 }
 

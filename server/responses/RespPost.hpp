@@ -5,11 +5,13 @@
 class RespPost: public RespFile
 {
 	private:
-	int fd_;
+	int			fd_;
 	std::string payload_;
+	size_t		payloadCursor_;
 
 	void postPayload_();
 	void makeResponse_();
+	void openFile_();
 	
 	public:
 	RespPost(const Request &r, char[], unsigned int);

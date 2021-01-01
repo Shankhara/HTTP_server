@@ -6,6 +6,7 @@ Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
 	headersRaw_.resize(18);
 	headers_parsed = false;
 	statusCode_ = 100;
+	location_ = 0;
 	headerContentLength_ = 0;
 
 	static const std::string str_list[7] = { "GET", "HEAD", "POST", "PUT", "DELETE", \
