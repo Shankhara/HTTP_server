@@ -41,7 +41,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 
 	statusCode = request_.doRequest(buf, nbytes);
 	Log::get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode << std::endl;
-	if (statusCode > 200)
+	if (statusCode >= 400)
 	{
 		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
@@ -57,11 +57,19 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-void Client::doResponse_() {
-	if (request_.getLocation()->cgi_extension.empty() || !ends_with(request_.getReqTarget(), request_.getLocation()->cgi_extension[0])) // TODO: check every CGI
+bool isFileCGI(Parsing::location *location, std::string filePath)
+{
+	for (size_t i = 0; i < location->cgi_extension.size(); i++)
 	{
-		doStaticFile_();
+		if (ends_with(filePath, location->cgi_extension[i]))
+			return true;
 	}
+	return false;
+}
+
+void Client::doResponse_() {
+	if (request_.getLocation()->cgi_extension.empty() || !isFileCGI(request_.getLocation(), request_.getReqTarget()))
+		doStaticFile_();
 	else
 		doCGI_();
 }

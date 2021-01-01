@@ -2,12 +2,12 @@
 WEBSERV="/tmp/webserv"
 DIR=${WEBSERV}"/YoupiBanane"
 
-echo "boostraping in ${WEBSERV}"
+echo "Boostraping in ${WEBSERV}"
 
-rm -rf ${DIR}/put_test/
+rm -rf ${WEBSERV}/YoupiBanane/
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
-wget -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester
-wget -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester
+wget -q -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester 
+wget -q -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester
 chmod +x ${WEBSERV}/ubuntu_*
 echo "<h1>index</h1>" > ${DIR}/youpi.bad_extension
 touch ${DIR}/youpi.bla
@@ -29,8 +29,6 @@ echo "server {
 	location /post_body {
 		method POST;
 		client_max_body_size 100;
-		root ${DIR};
-		index youpi.bad_extension;
 	}
 	location /directory {
 		method GET POST;
@@ -42,5 +40,8 @@ echo "server {
 }" > ${WEBSERV}/servers.conf
 
 cd ${PWD}
-cd ../server && make && cd ../tools
-../server/webserv ${WEBSERV}/servers.conf
+echo "Building webserv"
+cd ../server && make > /dev/null && cd ../tools
+../server/webserv ${WEBSERV}/servers.conf &
+${WEBSERV}/ubuntu_tester http://localhost:8080
+pkill -SIGINT webserv

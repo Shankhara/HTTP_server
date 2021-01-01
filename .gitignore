@@ -3,6 +3,7 @@ server/.objs/
 *.out
 *.swp
 *.o
+*.pyc
 ubuntu_cgi_tester
 ubuntu_tester
 webserv

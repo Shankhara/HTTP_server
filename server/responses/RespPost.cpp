@@ -24,13 +24,14 @@ void RespPost::postPayload_()
 
 	if (fd_ == -1)
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
+		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		statusCode_ = 500;
 		return;
 	}
 
 	int len = payload_.size();
-	int nbytes = write(fd_, payload_.c_str(), len);
+	Log::get(logERROR) << __FUNCTION__  << " LEN " << len << std::endl;
+	int nbytes = write(fd_, payload_.c_str(), len); //TODO: check if 0 or -1
 	if (nbytes == len)
 	{
 		if (ret == -1)
@@ -38,7 +39,7 @@ void RespPost::postPayload_()
 	}
 	else
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
+		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		statusCode_ = 500;
 	}
 }
@@ -47,9 +48,9 @@ void RespPost::makeResponse_()
 {
 	if (headersBuilt_ == false)
 	{
-		writeStatusLine_(statusCode_);
 		if (statusCode_ != 500)
 		{
+			writeStatusLine_(statusCode_);
 			writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
 			writeThisHeader_("Content-location", filePath_);
 			writeThisHeader_("Last-Modified", getStrDate());
@@ -57,8 +58,7 @@ void RespPost::makeResponse_()
 		}
 		else
 		{
-			writeHeadersEnd_();
-			writeErrorBody(statusCode_);
+			writeErrorPage(500);
 		}
 	}
 }
