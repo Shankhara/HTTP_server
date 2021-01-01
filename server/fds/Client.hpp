@@ -17,6 +17,10 @@
 #include "../responses/RespError.hpp"
 #include "../responses/RespPut.hpp"
 #include "../responses/Response.hpp"
+#include "../responses/RespPost.hpp"
+#include "../responses/RespDelete.hpp"
+#include "../responses/RespOptions.hpp"
+#include "../responses/RespTrace.hpp"
 
 #define MAX_CGI_FORKS 20
 #define CLIENT_BUFFER_SIZE	65536
