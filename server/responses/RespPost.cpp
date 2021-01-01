@@ -37,7 +37,6 @@ void RespPost::postPayload_()
 	int len = payload_.size();
 	if (len == 0)
 		return ;
-	Log::get(logINFO) << __FUNCTION__  << " LEN " << len << " CURSOR " << payloadCursor_ <<  std::endl;
 	int nbytes = write(fd_, payload_.c_str(), len);
 	if (nbytes == 0) {
 		Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
@@ -49,7 +48,6 @@ void RespPost::postPayload_()
 		statusCode_ = 500;
 	}
 	payloadCursor_ += len;
-	Log::get(logINFO) << __FUNCTION__  << " LEN " << len << " CURSOR " << payloadCursor_ <<  std::endl;
 }
 
 void RespPost::makeResponse_()

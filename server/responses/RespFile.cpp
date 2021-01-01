@@ -6,7 +6,6 @@ RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Respons
 }
 
 RespFile::~RespFile() {
-	if (fd_)
 }
 
 void RespFile::setFilePath_()
