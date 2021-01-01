@@ -23,7 +23,6 @@ void RespPost::openFile_()
 	}
 	else
 		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
-
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
@@ -39,8 +38,7 @@ void RespPost::postPayload_()
 	if (len == 0)
 		return ;
 	Log::get(logINFO) << __FUNCTION__  << " LEN " << len << " CURSOR " << payloadCursor_ <<  std::endl;
-	//int nbytes = write(fd_, payload_.c_str(), len);
-	int nbytes = 20;
+	int nbytes = write(fd_, payload_.c_str(), len);
 	if (nbytes == 0) {
 		Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
 		statusCode_ = 500;
@@ -59,6 +57,7 @@ void RespPost::makeResponse_()
 	if (headersBuilt_ == false)
 	{
 		writeStatusLine_(statusCode_);
+		writeContentLength_(0);
 		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
 		writeThisHeader_("Content-location", filePath_);
 		writeThisHeader_("Last-Modified", getStrDate());
@@ -72,9 +71,8 @@ int RespPost::readResponse()
 
 	if (fd_ == 0)
 		openFile_();
-	if (fd_ == -1) {
+	if (statusCode_ == 500)
 		return writeErrorPage(500);
-	}
 	payload_ = req_.getBody();
 	if (payload_.size() > payloadCursor_)
 		postPayload_();
