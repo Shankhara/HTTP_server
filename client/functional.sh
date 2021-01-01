@@ -29,4 +29,5 @@ docker run --rm -d -p $WEBSERV_PORT:8082 --name ft_webserv ft_webserv
 clear
 echo "Running test"
 cd ../../python_testing
+#cd python_testing
 python3 main.py

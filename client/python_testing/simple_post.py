@@ -18,6 +18,24 @@ class Test_post():
 		pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length")
 		pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type")
 
+	def print_test_throw(self, test_url_nginx, test_url_webserv, test_name):	
+		print("\tNginx url :	" + test_url_nginx)
+		print("\tWebserv url : 	" + test_url_webserv + "\n")
+	
+		throw_nginx = False;
+		throw_webserv = False;	
+		try:
+			nginx = req.post(test_url_nginx)
+		except req.exceptions.RequestException as e:
+			throw_nginx = True;
+	
+		try:
+			webserv = req.post(test_url_webserv)
+		except req.exceptions.RequestException as e:
+			throw_webserv = True;
+		pt().test(str(throw_webserv), str(throw_nginx), test_name)
+	
+
 	def test00_post(self):
 		print("\n\t\033[1;32mTest 00 -\033[0m POST / \n")
 
@@ -57,29 +75,7 @@ class Test_post():
 		test_url_nginx = self.url_nginx + "/fake_dir";
 		test_url_webserv = self.url_webserv + "/fake_dir"; 
 	
-		print("\tNginx url :	" + test_url_nginx)
-		print("\tWebserv url : 	" + test_url_webserv + "\n")
-	
-		throw_nginx = 0;
-		throw_webserv = 0;
-	
-	#
-	#	Request is exiting the process is the connection is refused somehow
-	#
-	
-	
-	#	try:
-	#		nginx = req.post(test_url_nginx)
-	#	except ValueError:
-	#		throw_nginx = 1;
-	#	
-	#	try:
-	#		webserv = req.post(test_url_webserv)
-	#	except ValueError:
-	#		throw_webserv = 1;
-	#
-	#	test(str(throw_webserv), str(throw_nginx), "Requesting a directory as a file (should throw)")
-	
+		self.print_test_throw(test_url_nginx, test_url_webserv, "Requesting a directory as a file (should throw)")	
 	
 	def test05_post(self):
 		print("\n\t\033[1;32mTest 05 -\033[0m POST /fake_dir/ \n")
@@ -104,7 +100,7 @@ class Test_post():
 		test_url_nginx = self.url_nginx + "/fake_dir/../.";
 		test_url_webserv = self.url_webserv + "/fake_dir/../."; 
 	
-		self.print_test_content(test_url_nginx, test_url_webserv, "496")
+		self.print_test_throw(test_url_nginx, test_url_webserv, "Requesting . (should throw)")	
 	
 	def test08_post(self):
 		print("\n\t\033[1;32mTest 08 -\033[0m POST /fake_dir/../fake_dir/../../tmp/fake_dir \n")
@@ -135,10 +131,10 @@ class Test_post():
 		self.test01_post()
 		self.test02_post()
 		self.test03_post()
-		#test04_post()
+		self.test04_post()
 		self.test05_post()
 		self.test06_post()
-		#test07_post()
+		self.test07_post()
 		self.test08_post()
 		self.test09_post()
 		self.test10_post()	

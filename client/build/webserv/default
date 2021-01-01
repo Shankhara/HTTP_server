@@ -4,7 +4,7 @@ server {
     root /tmp;
 	location / {
 		index index.html;
-		method GET HEAD;
+		method GET POST HEAD;
 		root /tmp;
 		autoindex on;
 	}
