@@ -43,7 +43,7 @@ class Test_get():
 		test_url_nginx = self.url_nginx + "/";
 		test_url_webserv = self.url_webserv + "/"; 
 	
-		self.print_test_content(test_url_nginx, test_url_webserv, "496")
+		self.print_test_content(test_url_nginx, test_url_webserv, "618")
 	
 	
 	def test01_get(self):
@@ -92,7 +92,7 @@ class Test_get():
 		test_url_nginx = self.url_nginx + "/fake_dir/../";
 		test_url_webserv = self.url_webserv + "/fake_dir/../"; 
 	
-		self.print_test_content(test_url_nginx, test_url_webserv, "496")
+		self.print_test_content(test_url_nginx, test_url_webserv, "618")
 	
 	
 	def test07_get(self):

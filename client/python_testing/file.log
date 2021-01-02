@@ -1,0 +1,259 @@
+
+	[1;32mTest 00 -[0m GET / 
+
+	Nginx url :	http://localhost:9082/
+	Webserv url : 	http://localhost:9081/
+
+[1;32mSuccess[0m: > Checking status code
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 496
+ Expected : 618
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 01 -[0m GET /a 
+
+	Nginx url :	http://localhost:9082/a
+	Webserv url : 	http://localhost:9081/a
+
+[1;32mSuccess[0m: > Checking status code
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;31mFail[0m: > Checking header Content-Type
+ Value : text/html
+ Expected : application/octet-stream
+
+	[1;32mTest 02 -[0m GET /a/ 
+
+	Nginx url :	http://localhost:9082/a/
+	Webserv url : 	http://localhost:9081/a/
+
+[1;31mFail[0m: > Checking status code
+ Value : 200
+ Expected : 404
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 03 -[0m GET /doesntexist 
+
+	Nginx url :	http://localhost:9082/doesntexist
+	Webserv url : 	http://localhost:9081/doesntexist
+
+[1;32mSuccess[0m: > Checking status code
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 04 -[0m GET /fake_dir 
+
+	Nginx url :	http://localhost:9082/fake_dir
+	Webserv url : 	http://localhost:9081/fake_dir
+
+[1;31mFail[0m: > Requesting a directory as a file (should throw)
+ Value : False
+ Expected : True
+
+	[1;32mTest 05 -[0m GET /fake_dir/ 
+
+	Nginx url :	http://localhost:9082/fake_dir/
+	Webserv url : 	http://localhost:9081/fake_dir/
+
+[1;32mSuccess[0m: > Checking status code
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 06 -[0m GET /fake_dir/../ 
+
+	Nginx url :	http://localhost:9082/fake_dir/../
+	Webserv url : 	http://localhost:9081/fake_dir/../
+
+[1;32mSuccess[0m: > Checking status code
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 496
+ Expected : 618
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 07 -[0m GET /fake_dir/../. 
+
+	Nginx url :	http://localhost:9082/fake_dir/../.
+	Webserv url : 	http://localhost:9081/fake_dir/../.
+
+[1;32mSuccess[0m: > Requesting . (should throw)
+
+	[1;32mTest 08 -[0m GET /fake_dir/../fake_dir/../../tmp/fake_dir 
+
+	Nginx url :	http://localhost:9082/fake_dir/../fake_dir/../../tmp/fake_dir
+	Webserv url : 	http://localhost:9081/fake_dir/../fake_dir/../../tmp/fake_dir
+
+[1;32mSuccess[0m: > Checking status code
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mtest 09 -[0m GET /fake_dir/../fake_dir/../../ 
+
+	Nginx url :	http://localhost:9082/fake_dir/../fake_dir/../../
+	Webserv url : 	http://localhost:9081/fake_dir/../fake_dir/../../
+
+[1;32mSuccess[0m: > Checking status code
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 496
+ Expected : 0
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mtest 10 -[0m GET /../etc/passwd/ 
+
+	Nginx url :	http://localhost:9082/../etc/passwd/
+	Webserv url : 	http://localhost:9081/../etc/passwd/
+
+[1;31mFail[0m: > Checking status code
+ Value : 200
+ Expected : 404
+[1;32mSuccess[0m: > Checking header Content-Length
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 00 -[0m POST / 
+
+	Nginx url :	http://localhost:9082/
+	Webserv url : 	http://localhost:9081/
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 403
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 496
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 01 -[0m POST /a 
+
+	Nginx url :	http://localhost:9082/a
+	Webserv url : 	http://localhost:9081/a
+
+[1;31mFail[0m: > Checking status code
+ Value : 200
+ Expected : 405
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 0
+ Expected : 10
+[1;31mFail[0m: > Checking header Content-Type
+ Value : text/plain
+ Expected : text/html
+
+	[1;32mTest 02 -[0m POST /a/ 
+
+	Nginx url :	http://localhost:9082/a/
+	Webserv url : 	http://localhost:9081/a/
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 404
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 0
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 03 -[0m POST /doesntexist 
+
+	Nginx url :	http://localhost:9082/doesntexist
+	Webserv url : 	http://localhost:9081/doesntexist
+
+[1;31mFail[0m: > Checking status code
+ Value : 201
+ Expected : 404
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 0
+ Expected : 156
+[1;31mFail[0m: > Checking header Content-Type
+ Value : text/plain
+ Expected : text/html
+
+	[1;32mTest 04 -[0m POST /fake_dir 
+
+	Nginx url :	http://localhost:9082/fake_dir
+	Webserv url : 	http://localhost:9081/fake_dir
+
+[1;31mFail[0m: > Requesting a directory as a file (should throw)
+ Value : False
+ Expected : True
+
+	[1;32mTest 05 -[0m POST /fake_dir/ 
+
+	Nginx url :	http://localhost:9082/fake_dir/
+	Webserv url : 	http://localhost:9081/fake_dir/
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 403
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 255
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 06 -[0m POST /fake_dir/../ 
+
+	Nginx url :	http://localhost:9082/fake_dir/../
+	Webserv url : 	http://localhost:9081/fake_dir/../
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 403
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 496
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 07 -[0m POST /fake_dir/../. 
+
+	Nginx url :	http://localhost:9082/fake_dir/../.
+	Webserv url : 	http://localhost:9081/fake_dir/../.
+
+[1;32mSuccess[0m: > Requesting . (should throw)
+
+	[1;32mTest 08 -[0m POST /fake_dir/../fake_dir/../../tmp/fake_dir 
+
+	Nginx url :	http://localhost:9082/fake_dir/../fake_dir/../../tmp/fake_dir
+	Webserv url : 	http://localhost:9081/fake_dir/../fake_dir/../../tmp/fake_dir
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 404
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 156
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mtest 09 -[0m POST /fake_dir/../fake_dir/../../ 
+
+	Nginx url :	http://localhost:9082/fake_dir/../fake_dir/../../
+	Webserv url : 	http://localhost:9081/fake_dir/../fake_dir/../../
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 403
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 0
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mtest 10 -[0m POST /../etc/passwd/ 
+
+	Nginx url :	http://localhost:9082/../etc/passwd/
+	Webserv url : 	http://localhost:9081/../etc/passwd/
+
+[1;31mFail[0m: > Checking status code
+ Value : 500
+ Expected : 404
+[1;31mFail[0m: > Checking header Content-Length
+ Value : 180
+ Expected : 0
+[1;32mSuccess[0m: > Checking header Content-Type
+
+	[1;32mTest 00 -[0m GET / (Multiple Requests Synchronously)
+
+[1;32mSuccess[0m: > Testing multiple requests synchronously
+
+	[1;32mTest 01 -[0m GET / (Multiple Requests Asynchronously)
+
+[1;32mSuccess[0m: > Testing multiple requests asynchronously
+
+
+		[1;31m32 / 60	Successful Tests[0m
+
+
