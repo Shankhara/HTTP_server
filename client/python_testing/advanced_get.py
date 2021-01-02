@@ -22,7 +22,6 @@ class Test_advanced_get():
 	def test00_get(self):
 		print("\n\t\033[1;32mTest 00 -\033[0m GET / (Multiple Requests Synchronously)\n")
 
-		test_url_nginx = self.url_nginx + "/";
 		test_url_webserv = self.url_webserv + "/"; 
 	
 		for i in range(200):
@@ -35,8 +34,7 @@ class Test_advanced_get():
 	def test01_get(self):
 		print("\n\t\033[1;32mTest 01 -\033[0m GET / (Multiple Requests Asynchronously)\n")
 
-		test_url_nginx = self.url_nginx + "/";
-		test_url_webserv = self.url_webserv + "/"; 
+		test_url_webserv = self.url_webserv + "/";
 	
 		reqs = []
 		for i in range(50):

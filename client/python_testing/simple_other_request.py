@@ -36,14 +36,65 @@ class Test_other_request():
 			throw_webserv = True;
 		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
 	
-	def test00_get(self):
-		print("\n\t\033[1;32mTest 00 -\033[0m GET / \n")
+	def test00_trace(self):
+		print("\n\t\033[1;32mTest 00 -\033[0m TRACE / \n")
 
-		test_url_nginx = self.url_nginx + "/";
-		test_url_webserv = self.url_webserv + "/"; 
+		test_url_webserv = self.url_webserv + "/";	
+
+		print("\tWebserv url : 	" + test_url_webserv + "\n")
+
+		webserv = req.request('TRACE', test_url_webserv)
+
+		print(webserv.text)
+		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
+
+	def test01_head(self):
+		print("\n\t\033[1;32mTest 01 -\033[0m HEAD / \n")
+
+		test_url_webserv = self.url_webserv + "/";	
+
+		print("\tWebserv url : 	" + test_url_webserv + "\n")
+
+		webserv = req.head(test_url_webserv)
+
+		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
+		self.tests = pt().test(webserv.text, "", "Checking for empty content", self.tests)
+
+	def test02_put(self):
+		print("\n\t\033[1;32mTest 02 -\033[0m PUT /post/test \n")
+
+		test_url_webserv = self.url_webserv + "/post/test";	
+
+		print("\tWebserv url : 	" + test_url_webserv + "\n")
+
+		webserv = req.put(test_url_webserv, data="put content")
 	
-		self.print_test_content(test_url_nginx, test_url_webserv, "618")
-	
+		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
+		
+		webserv = req.get(test_url_webserv)
+		
+		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
+		self.tests = pt().test(webserv.text, "put content", "Checking content of get after put request", self.tests)
+			
+
+	def test03_delete(self):
+		print("\n\t\033[1;32mTest 03 -\033[0m DELETE /post/test \n")
+
+		test_url_webserv = self.url_webserv + "/post/test";	
+
+		print("\tWebserv url : 	" + test_url_webserv + "\n")
+
+		res = req.get(test_url_webserv)
+		self.tests = pt().test(str(res.status_code), "200", "Checking status code of get /post/test", self.tests)
+		self.tests = pt().test(res.text, "delete and put content", "Checking content of get /post/test", self.tests)
+		webserv = req.delete(test_url_webserv)	
+		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code of get /post/test", self.tests)	
+		res = req.get(test_url_webserv)
+		self.tests = pt().test(str(res.status_code), "404", "Checking status code of get after deleting file", self.tests)
+
 	def test_simple_other_request(self):
-		self.test00_get()
+	#	self.test00_trace()
+		self.test01_head()
+		self.test02_put()
+		self.test03_delete()
 		return self.tests	
