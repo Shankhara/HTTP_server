@@ -37,6 +37,15 @@ class Test_advanced_get():
 		except req.exceptions.RequestException as e:
 			throw_webserv = True;
 		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
+
+	def check_header_status_code(self, status_code, content_length):
+		if status_code != "200":
+			self.tests = pt().test(status_code, "200", "Testing multiple requests Status Code", self.tests)
+			return False
+		elif content_length != "618":
+			self.tests = pt().test(content_length, "618", "Testing multiple requests Content-Length", self.tests)	
+			return False
+		return True	
 	
 	def test00_get(self):
 		print("\n\t\033[1;32mTest 00 -\033[0m GET / (Multiple Requests Synchronously)\n")
@@ -46,11 +55,7 @@ class Test_advanced_get():
 	
 		for i in range(200):
 			webserv = req.get(test_url_webserv)
-			if webserv.status_code != 200:
-				self.tests = pt().test(str(webserv.status_code), "200", "Testing multiple requests Status Code", self.tests)
-				return
-			elif webserv.headers['Content-Length'] != '618':
-				self.tests = pt().test(str(webserv.headers['Content-Length']), "618", "Testing multiple requests Content-Length", self.tests)	
+			if self.check_header_status_code(str(webserv.status_code), str(webserv.headers["Content-Length"])) == False:
 				return
 		self.tests = pt().test("1", "1", "Testing multiple requests synchronously", self.tests)	
 	
@@ -64,15 +69,11 @@ class Test_advanced_get():
 		reqs = []
 		for i in range(50):
 			reqs.append(greq.get(test_url_webserv))
-
 		responses = greq.map(reqs, size=50)
 		for webserv in responses:
-			if webserv.status_code != 200:
-				self.tests = pt().test(str(webserv.status_code), "200", "Testing multiple requests Status Code", self.tests)
-				return
-			elif webserv.headers['Content-Length'] != '618':
-				self.tests = pt().test(str(webserv.headers['Content-Length']), "618", "Testing multiple requests Content-Length", self.tests)	
-				return
+			if self.check_header_status_code(str(webserv.status_code), str(webserv.headers["Content-Length"])) == False:
+				return		
+		print("slaut")
 		self.tests = pt().test("1", "1", "Testing multiple requests asynchronously", self.tests)	
 	
 
@@ -87,5 +88,5 @@ class Test_advanced_get():
 
 	def test_advanced_get(self):
 		self.test00_get()
-		self.test01_get()
+		#self.test01_get()
 		return self.tests	
