@@ -4,6 +4,7 @@ server/.objs/
 *.swp
 *.o
 *.pyc
+*.log
 ubuntu_cgi_tester
 ubuntu_tester
 webserv
