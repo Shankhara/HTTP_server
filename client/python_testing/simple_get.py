@@ -3,9 +3,10 @@ from printing_test import Printing_test as pt
 
 class Test_get():
 
-	def __init__(self, url_nginx_, url_webserv_):
+	def __init__(self, url_nginx_, url_webserv_, tests_):
 		self.url_nginx = url_nginx_
 		self.url_webserv = url_webserv_
+		self.tests = tests_
 
 	def print_test_content(self, test_url_nginx, test_url_webserv, content_length):
 		print("\tNginx url :	" + test_url_nginx)
@@ -14,9 +15,9 @@ class Test_get():
 		nginx = req.get(test_url_nginx)
 		webserv = req.get(test_url_webserv)
 
-		pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code")
-		pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length")
-		pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type")
+		self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
+		self.tests = pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length", self.tests)
+		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
 
 	def print_test_throw(self, test_url_nginx, test_url_webserv, test_name):	
 		print("\tNginx url :	" + test_url_nginx)
@@ -33,7 +34,7 @@ class Test_get():
 			webserv = req.get(test_url_webserv)
 		except req.exceptions.RequestException as e:
 			throw_webserv = True;
-		pt().test(str(throw_webserv), str(throw_nginx), test_name)
+		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
 	
 
 	def test00_get(self):
@@ -137,4 +138,5 @@ class Test_get():
 		self.test07_get()
 		self.test08_get()
 		self.test09_get()
-		self.test10_get()	
+		self.test10_get()
+		return self.tests	
