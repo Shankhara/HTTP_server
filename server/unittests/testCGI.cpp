@@ -46,7 +46,7 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	std::vector<Parsing::server> *servers = createVirtualHosts();
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
-	Client *client = new Client(12, *servers);
+	Client *client = new Client(12, *listener);
 	std::string req = "GET "+filename+" HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	int httpStatus = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (httpStatus != 200)
@@ -69,7 +69,7 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	std::vector<Parsing::server> *servers = createVirtualHosts();
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
-	Client *client = new Client(12, *servers);
+	Client *client = new Client(12, *listener);
 	std::string req = "POST "+filename+" HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA";
 	int status = client->getRequest().doRequest(const_cast<char *>(req.c_str()), req.size());
 	if (status != 200)

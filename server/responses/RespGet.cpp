@@ -17,7 +17,7 @@ int RespGet::readResponse() {
 	if (fd_ == 0)
 	{
 		fd_ = -1;
-		Parsing::location *location = req_.getLocation();
+		const Parsing::location *location = req_.getLocation();
 		if (req_.getLocation()->autoindex && req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
 			return (writeAutoIndex_(location->root + req_.getReqTarget()));
 		openFile_(location);
@@ -37,7 +37,7 @@ int RespGet::readFile_() {
 	return (currentRead + nbytes_);
 }
 
-void RespGet::openFile_(Parsing::location *location)
+void RespGet::openFile_(const Parsing::location *location)
 {
 	int isDir;
 	struct stat st;

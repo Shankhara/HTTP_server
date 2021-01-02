@@ -2,7 +2,7 @@
 
 char Client::buf_[CLIENT_BUFFER_SIZE];
 
-Client::Client(int fd, std::vector<Parsing::server> &s): request_(s) {
+Client::Client(int fd, const Listener &l): request_(l.getServers()) {
 	CGIResponse_ = 0;
 	resp_ = 0;
 	fd_ = fd;
@@ -13,17 +13,16 @@ Client::Client(int fd, std::vector<Parsing::server> &s): request_(s) {
 Client::~Client() {
 	Log::get(logDEBUG) << "Client deleted: " << fd_ << std::endl;
 	close(fd_);
-	if (CGIResponse_ != 0)
-		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
 	if (resp_ != 0)
 		delete(resp_);
+	if (CGIResponse_ != 0)
+		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
 }
 
 void Client::onEvent()
 {
 	setLastEventTimer();
 	int nbytes = recv(fd_, buf_, CLIENT_BUFFER_SIZE - 1, 0);
-	Log::get(logDEBUG) << __FUNCTION__  << " Client" << fd_ << " -> RECV " << nbytes << std::endl;
 	if (nbytes <= 0)
 	{
 		if (nbytes < 0)		
@@ -48,7 +47,6 @@ void Client::constructRequest(char buf[], int nbytes) {
 	}
 	else if (request_.getLocation() != 0)
 			doResponse_();
-	//else if (statusCode == 200 || (statusCode == 100 && !request_.getBody().empty() && request_.getMethod() == "PUT")) {
 }
 
 inline bool ends_with(std::string const & value, std::string const & ending)
@@ -57,7 +55,7 @@ inline bool ends_with(std::string const & value, std::string const & ending)
 	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-bool isFileCGI(Parsing::location *location, std::string filePath)
+bool Client::isFileCGI_(const Parsing::location *location, std::string filePath)
 {
 	for (size_t i = 0; i < location->cgi_extension.size(); i++)
 	{
@@ -68,7 +66,7 @@ bool isFileCGI(Parsing::location *location, std::string filePath)
 }
 
 void Client::doResponse_() {
-	if (request_.getLocation()->cgi_extension.empty() || !isFileCGI(request_.getLocation(), request_.getReqTarget()))
+	if (request_.getLocation()->cgi_extension.empty() || !isFileCGI_(request_.getLocation(), request_.getReqTarget()))
 	{
 		if (request_.getStatusCode() == 200 || request_.getMethod() == "PUT" || request_.getMethod() == "POST" )
 			doStaticFile_();
@@ -78,9 +76,9 @@ void Client::doResponse_() {
 }
 
 void Client::sendResponse_(Response *resp) {
-	bool isSent = false;
-	int nbytes;
-	size_t sentSize = 0;
+	bool 	isSent = false;
+	int 	nbytes;
+	size_t	sentSize = 0;
 
 	while ((nbytes = resp->readResponse()) > 0)
 	{

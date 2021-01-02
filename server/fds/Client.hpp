@@ -11,6 +11,7 @@
 #include "FileDescriptor.hpp"
 #include "../Request.hpp"
 #include "../CGIExec.hpp"
+#include "Listener.hpp"
 #include "../parsing/Parsing.hpp"
 #include "../responses/RespGet.hpp"
 #include "../responses/RespHead.hpp"
@@ -25,6 +26,7 @@
 #define MAX_CGI_FORKS 20
 #define CLIENT_BUFFER_SIZE	65536
 
+class Listener;
 
 class Client: public FileDescriptor {
 
@@ -38,12 +40,12 @@ private:
 	void 								doStaticFile_();
 	void 								doCGI_();
 	void								responseFactory_();
+	bool 								isFileCGI_(const Parsing::location *, std::string);
 
 public:
-	Client(int, std::vector<Parsing::server> &);
+	Client(int, const Listener &);
 	virtual 						~Client();
 	void 							constructRequest(char [], int);
-	std::string 					&getResponse();
 	void 							onEvent();
 	Request							&getRequest();
 };

@@ -27,7 +27,7 @@ void Listener::onNewClient()
 		Log::get(logERROR) << "server::onClientConnect " << strerror(errno) << std::endl;
 		exit(8);
 	}
-	Client *client = new Client(newfd, servers_);
+	Client *client = new Client(newfd, *this);
 	Server::getInstance()->addFileDescriptor(client);
 }
 
@@ -96,5 +96,9 @@ int Listener::addServer(const Parsing::server &s) {
 	Log::get(logINFO) << __FUNCTION__  << " > " << s.host << ":" << s.port << " add virtualhost: " << s.names[0] << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
 	servers_.push_back(s);
 	return (0);
+}
+
+const std::vector<Parsing::server> &Listener::getServers() const {
+	return servers_;
 }
 

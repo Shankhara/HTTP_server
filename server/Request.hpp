@@ -22,9 +22,9 @@ class Request
 	std::string queryString_;
 	std::vector<std::string> headersRaw_;
 	std::vector<std::string> requestLine_;
-	std::vector<Parsing::server> &servers_;
-	Parsing::location *location_;
-	Parsing::server *server_;
+	const std::vector<Parsing::server>	&servers_;
+	const Parsing::location *location_;
+	const Parsing::server *server_;
 
 	int headerContentLength_;
 	std::string headerDate_;
@@ -43,13 +43,14 @@ class Request
 	std::string headerContentLanguage_;
 	std::string headerContentType_;
 
-	bool				isMethodAuthorized_(Parsing::location *) const;
-	Parsing::location	*matchLocation_(Parsing::server *) const;
-	Parsing::server		*matchServer_() const;
+	bool							isMethodAuthorized_(const Parsing::location *) const;
+	const Parsing::location			*matchLocation_(const Parsing::server *) const;
+	const Parsing::server			*matchServer_() const;
+	int								accessControl_();
 
 
 	public:
-	Request(std::vector<Parsing::server> &);
+	Request(const std::vector<Parsing::server> &);
 	~Request();
 	
 	bool requestLine_parsed;
@@ -87,8 +88,8 @@ class Request
 	std::vector<std::string> workLine(std::string &, const char &);
 	std::string decode_authorization();
 
-	Parsing::server *getServer() const;
-	Parsing::location *getLocation() const;
+	const Parsing::server *getServer() const;
+	const Parsing::location *getLocation() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getBody() const;

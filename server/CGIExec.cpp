@@ -57,7 +57,7 @@ FileDescriptor *CGIExec::run()
 {
 	int pipeOUT[2];
 	int pipeIN[2];
-	Parsing::location *location = client_.getRequest().getLocation();
+	const Parsing::location *location = client_.getRequest().getLocation();
 
 	Log::get(logDEBUG) << "CGI: " << location->cgi_path << " " << location->root << client_.getRequest().getReqTarget()  << std::endl;
 	if (pipe(pipeOUT) == -1 || pipe(pipeIN) == -1)

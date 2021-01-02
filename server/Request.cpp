@@ -1,7 +1,7 @@
 #include "Request.hpp"
 
 
-Request::Request(std::vector<Parsing::server> &servers): servers_(servers)
+Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(18);
 	headers_parsed = false;
@@ -207,7 +207,12 @@ int Request::parseHeadersContent()
 			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
+	{
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
+		size_t pos = headerHost_.find(':', 0);
+		if (pos != std::string::npos)
+			headerHost_.assign(headerHost_, 0, pos);
+	}
 	else
 		return 400;
 	if (!headersRaw_[REFERER].empty())
@@ -238,12 +243,32 @@ int Request::parseHeadersContent()
 
 	headers_parsed = true;
 
-
+	if ((statusCode_ = accessControl_()) >= 400)
+		return statusCode_;
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
 
 	return (100);
+}
+
+int Request::accessControl_()
+{
+	server_ = matchServer_();
+	location_ = matchLocation_(server_);
+	if (location_ == 0)
+		return 403;
+	else if (!isMethodAuthorized_(location_))
+		return 405;
+
+	if (!location_->root.empty())
+	{
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
+											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		if (requestLine_[REQTARGET][0] != '/')
+			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
+	}
+	return statusCode_;
 }
 
 int Request::parseRequestLine()
@@ -264,22 +289,6 @@ int Request::parseRequestLine()
 
 	parseQueryString();
 
-	server_ = matchServer_();
-	location_ = matchLocation_(server_);
-	if (location_ == 0)
-		return 403;
-	else if (!isMethodAuthorized_(location_))
-		return 405;
-
-	if (!location_->root.empty())
-	{
-		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
-											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
-		if (requestLine_[REQTARGET][0] != '/')
-			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
-	}
-
-
 	if (request_ == "\r\n")
 		return (200);
 
@@ -291,6 +300,8 @@ int Request::parse()
 	if (!headers_parsed && boolFind(request_, "\r\n\r\n"))
 	{
 		statusCode_ = parseRequestLine();
+		if (statusCode_ == 200)
+			statusCode_ = accessControl_();
 		if (statusCode_ == 100)
 			statusCode_ = parseHeaders();
 	}
@@ -303,7 +314,9 @@ int Request::parse()
 
 int Request::doRequest(char buf[], size_t nbytes)
 {
-	backUpRequest_.append(buf, nbytes);
+	if (!headers_parsed)
+		backUpRequest_.append(buf, nbytes); // TODO: duplicate raw requestLine/headers but do not duplicate body
+											// in fact we should only keep slice of this str instead of duplicating small parts
 	request_.append(buf, nbytes);
 
 	parse();
@@ -311,22 +324,22 @@ int Request::doRequest(char buf[], size_t nbytes)
 	return (statusCode_);
 }
 
-Parsing::server *Request::matchServer_() const
+const Parsing::server *Request::matchServer_() const
 {
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
-			if (servers_[i].names[k].compare(getHeaderHost()) == 0)
+			if (servers_[i].names[k] == getHeaderHost())
 				return (&servers_[i]);
 		}
 	}
 	return (&servers_[0]);
 }
 
-Parsing::location *Request::matchLocation_(Parsing::server *server) const
+const Parsing::location *Request::matchLocation_(const Parsing::server *server) const
 {
-	Parsing::location *location = 0;
+	const Parsing::location *location = 0;
 	unsigned long minSize = 0;
 
 	for (unsigned long j = 0; j < server->locations.size(); j++)
@@ -343,7 +356,7 @@ Parsing::location *Request::matchLocation_(Parsing::server *server) const
 	return (location);
 }
 
-bool 	Request::isMethodAuthorized_(Parsing::location *location) const
+bool 	Request::isMethodAuthorized_(const Parsing::location *location) const
 {
 	if (location->methods.size() == 0)
 		return true;
@@ -357,10 +370,10 @@ bool 	Request::isMethodAuthorized_(Parsing::location *location) const
 	return false;
 }
 
-Parsing::server *Request::getServer() const
+const Parsing::server *Request::getServer() const
 { return server_; }
 
-Parsing::location *Request::getLocation() const
+const Parsing::location *Request::getLocation() const
 { return location_; }
 
 int Request::getStatusCode() const
