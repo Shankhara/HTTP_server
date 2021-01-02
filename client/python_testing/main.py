@@ -3,6 +3,7 @@ import requests as req
 from simple_get import Test_get as sg
 from simple_post import Test_post as sp
 from advanced_get import Test_advanced_get as ag
+from simple_other_request import Test_other_request as other
 from printing_test import Printing_test as pt
 
 PORT_NGINX = os.getenv('NGINX_PORT')
@@ -16,6 +17,7 @@ if __name__ == "__main__":
 	tests = sg(URL_NGINX, URL_WEBSERV, tests).test_simple_get()
 	tests = sp(URL_NGINX, URL_WEBSERV, tests).test_simple_post()
 	tests = ag(URL_NGINX, URL_WEBSERV, tests).test_advanced_get()
+	tests = other(URL_NGINX, URL_WEBSERV, tests).test_simple_other_request()
 
 	if tests[0] != tests[1]:
 		print("\n\n\t\t\033[1;31m" + str(tests[0]) + " / " + str(tests[1]) + "\tSuccessful Tests" + "\033[0m\n\n")

@@ -10,34 +10,6 @@ class Test_advanced_get():
 		self.url_webserv = url_webserv_
 		self.tests = tests_
 
-	def print_test_content(self, test_url_nginx, test_url_webserv, content_length):
-		print("\tNginx url :	" + test_url_nginx)
-		print("\tWebserv url : 	" + test_url_webserv + "\n")
-
-		nginx = req.get(test_url_nginx)
-		webserv = req.get(test_url_webserv)
-
-		self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
-		self.tests = pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length", self.tests)
-		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
-
-	def print_test_throw(self, test_url_nginx, test_url_webserv, test_name):	
-		print("\tNginx url :	" + test_url_nginx)
-		print("\tWebserv url : 	" + test_url_webserv + "\n")
-	
-		throw_nginx = False;
-		throw_webserv = False;	
-		try:
-			nginx = req.get(test_url_nginx)
-		except req.exceptions.RequestException as e:
-			throw_nginx = True;
-	
-		try:
-			webserv = req.get(test_url_webserv)
-		except req.exceptions.RequestException as e:
-			throw_webserv = True;
-		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
-
 	def check_header_status_code(self, status_code, content_length):
 		if status_code != "200":
 			self.tests = pt().test(status_code, "200", "Testing multiple requests Status Code", self.tests)
@@ -75,15 +47,6 @@ class Test_advanced_get():
 				return		
 		print("slaut")
 		self.tests = pt().test("1", "1", "Testing multiple requests asynchronously", self.tests)	
-	
-
-	def test04_get(self):
-		print("\n\t\033[1;32mTest 04 -\033[0m GET /fake_dir \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir";
-		test_url_webserv = self.url_webserv + "/fake_dir"; 
-	
-		self.print_test_throw(test_url_nginx, test_url_webserv, "Requesting a directory as a file (should throw)")	
 	
 
 	def test_advanced_get(self):
