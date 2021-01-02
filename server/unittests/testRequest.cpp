@@ -1,7 +1,7 @@
 #include "unittests.hpp"
 
 static void assertRequest(const std::string &reqStr, const std::string &expectedMethod, \
-const std::string &reqTarget, std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
+const std::string &reqTarget, const std::vector<Parsing::server> *servers, const std::string &testName, int expectedStatus=200)
 {
 	Request r(*servers);
 	int status = r.doRequest(const_cast<char *>(reqStr.c_str()), reqStr.size());
@@ -304,7 +304,7 @@ static void testIncorrectContentLength()
 	Request a(*vhost);
 
 	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA IS NOT 4";
-	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 400, "Content-Length < bodySize");
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 413, "Content-Length < bodySize");
 
 	delete (vhost);
 }
@@ -327,12 +327,11 @@ static void testMatchLocation()
 
 	Request b(*vhost);
 	std::string req2 = "POST /put_test/cgi.bla HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	assertEqual(a.doRequest(const_cast<char*>(req2.c_str()), req2.size()), 405, "matchLocation POST forbidden");
+	assertEqual(b.doRequest(const_cast<char*>(req2.c_str()), req2.size()), 405, "matchLocation POST forbidden");
 
 	Request c(*vhost);
 	std::string req3 = "POST /directory/cgi.bla HTTP/1.1\r\nHost: localhost\r\n\r\n";
 	assertEqual(c.doRequest(const_cast<char*>(req3.c_str()), req3.size()), 200, "matchLocation POST");
-
 
 	delete (vhost);
 }
@@ -342,6 +341,32 @@ void testStrToHex()
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	assertEqual(strHexToInt("e"), (unsigned long)14, "StrToHex() e");
 	assertEqual(strHexToInt("3e8"), (unsigned long)1000, "StrToHex() 3e8");
+	assertEqual(strHexToInt("3E8"), (unsigned long)1000, "StrToHex() 3E8");
+}
+
+static void testServerMatch()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	std::vector<Parsing::server> *vhosts = createVirtualHosts();
+	Parsing::server server;
+	server.host = "127.0.0.1";
+	server.port = 8080;
+	server.names = std::vector<std::string>{"google.com"};
+	server.root = "/tmp/";
+	server.locations.push_back(Parsing::location());
+	server.locations[0].name = std::string("/");
+	server.locations[0].root = "/tmp";
+	server.locations[0].methods = std::vector<std::string>{"HEAD"};
+	vhosts->push_back(server);
+	Request a(*vhosts);
+	std::string req = "GET /directory/cgi.bla HTTP/1.1\r\nHost: idonoexist\r\n\r\n";
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 200, "matchServer fallback to default GET is authorized");
+	Request b(*vhosts);
+	req = "GET /directory/cgi.bla HTTP/1.1\r\nHost: google.com\r\n\r\n";
+	assertEqual(b.doRequest(const_cast<char*>(req.c_str()), req.size()), 405, "matchServer google.com GET is forbidden");
+	Request c(*vhosts);
+	req = "GET /directory/cgi.bla HTTP/1.1\r\nHost: google.com:8080\r\n\r\n";
+	assertEqual(c.doRequest(const_cast<char*>(req.c_str()), req.size()), 405, "matchServer google.com:8080 GET is forbidden");
 }
 
 void testRequest()
@@ -361,4 +386,5 @@ void testRequest()
 	testMatchLocation();
 	testIncorrectContentLength();
 	testStrToHex();
+	testServerMatch();
 }

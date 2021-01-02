@@ -15,7 +15,7 @@ class RespGet: public RespFile
 {
 	protected:
 	int			fd_;
-	void 		openFile_(Parsing::location *location);
+	void 		openFile_(const Parsing::location *location);
 	int		 	readFile_();
 	int 		writeAutoIndex_(stds path);
 	std::string doAutoIndexTemplate_(stds path);
