@@ -8,41 +8,32 @@ class Test_get():
 		self.url_webserv = url_webserv_
 		self.tests = tests_
 
-	def print_test_content(self, path, content_length, test_number):
-		print("\n\t\033[1;32mTest " + test_number + " -\033[0m GET " + path + " \n")
+	def print_test_value(self, path, test_number):
+		print("\n\t\033[1;32mTest " + test_number + " -\033[0m GET " + path + " \n")	
+		print("\tNginx url :	" + self.url_nginx + path)
+		print("\tWebserv url : 	" + self.url_webserv + path + "\n")
 	
-		test_url_nginx = self.url_nginx + path;
-		test_url_webserv = self.url_webserv + path;
 
-		print("\tNginx url :	" + test_url_nginx)
-		print("\tWebserv url : 	" + test_url_webserv + "\n")
-
-		nginx = req.get(test_url_nginx)
-		webserv = req.get(test_url_webserv)
-
+	def print_test_content(self, path, content_length, test_number):
+		nginx = req.get(self.url_nginx + path)
+		webserv = req.get(self.url_webserv + path)
+		
+		self.print_test_value(path, test_number)	
 		self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
 		self.tests = pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length", self.tests)
 		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
 
 	def print_test_throw(self, path, test_name, test_number):	
-
-		print("\n\t\033[1;32mTest " + test_number + " -\033[0m GET " + path + " \n")
-	
-		test_url_nginx = self.url_nginx + path;
-		test_url_webserv = self.url_webserv + path;
-
-		print("\tNginx url :	" + test_url_nginx)
-		print("\tWebserv url : 	" + test_url_webserv + "\n")
-	
-		throw_nginx = False;
 		throw_webserv = False;	
+		throw_nginx = False;
+		
+		self.print_test_value(path, test_number)	
 		try:
-			nginx = req.get(test_url_nginx)
+			nginx = req.get(self.url_nginx + path)
 		except req.exceptions.RequestException as e:
-			throw_nginx = True;
-	
+			throw_nginx = True;	
 		try:
-			webserv = req.get(test_url_webserv)
+			webserv = req.get(self.url_webserv + path)
 		except req.exceptions.RequestException as e:
 			throw_webserv = True;
 		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
@@ -61,7 +52,7 @@ class Test_get():
 	
 	def test04_get(self):
 		self.print_test_throw("/fake_dir", "Requesting a directory as a file (should throw)", "04")	
-	
+
 	def test05_get(self):
 		self.print_test_content("/fake_dir/", "255", "05")
 	
