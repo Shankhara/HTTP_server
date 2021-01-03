@@ -8,7 +8,12 @@ class Test_get():
 		self.url_webserv = url_webserv_
 		self.tests = tests_
 
-	def print_test_content(self, test_url_nginx, test_url_webserv, content_length):
+	def print_test_content(self, path, content_length, test_number):
+		print("\n\t\033[1;32mTest " + test_number + " -\033[0m GET " + path + " \n")
+	
+		test_url_nginx = self.url_nginx + path;
+		test_url_webserv = self.url_webserv + path;
+
 		print("\tNginx url :	" + test_url_nginx)
 		print("\tWebserv url : 	" + test_url_webserv + "\n")
 
@@ -19,7 +24,13 @@ class Test_get():
 		self.tests = pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length", self.tests)
 		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
 
-	def print_test_throw(self, test_url_nginx, test_url_webserv, test_name):	
+	def print_test_throw(self, path, test_name, test_number):	
+
+		print("\n\t\033[1;32mTest " + test_number + " -\033[0m GET " + path + " \n")
+	
+		test_url_nginx = self.url_nginx + path;
+		test_url_webserv = self.url_webserv + path;
+
 		print("\tNginx url :	" + test_url_nginx)
 		print("\tWebserv url : 	" + test_url_webserv + "\n")
 	
@@ -35,97 +46,39 @@ class Test_get():
 		except req.exceptions.RequestException as e:
 			throw_webserv = True;
 		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
-	
 
 	def test00_get(self):
-		print("\n\t\033[1;32mTest 00 -\033[0m GET / \n")
-
-		test_url_nginx = self.url_nginx + "/";
-		test_url_webserv = self.url_webserv + "/"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "618")
-	
+		self.print_test_content("/", "618", "00")
 	
 	def test01_get(self):
-		print("\n\t\033[1;32mTest 01 -\033[0m GET /a \n")
-	
-		test_url_nginx = self.url_nginx + "/a";
-		test_url_webserv = self.url_webserv + "/a";
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "10")
+		self.print_test_content("/a", "10", "01")
 	
 	def test02_get(self):
-		print("\n\t\033[1;32mTest 02 -\033[0m GET /a/ \n")
-	
-		test_url_nginx = self.url_nginx + "/a/";
-		test_url_webserv = self.url_webserv + "/a/";
-		
-		self.print_test_content(test_url_nginx, test_url_webserv, "0")
+		self.print_test_content("/a/", "0", "02")
 		
 	def test03_get(self):
-		print("\n\t\033[1;32mTest 03 -\033[0m GET /doesntexist \n")
-	
-		test_url_nginx = self.url_nginx + "/doesntexist";
-		test_url_webserv = self.url_webserv + "/doesntexist";
-
-		self.print_test_content(test_url_nginx, test_url_webserv, "156")
+		self.print_test_content("/doesntexist", "156", "03")
 	
 	def test04_get(self):
-		print("\n\t\033[1;32mTest 04 -\033[0m GET /fake_dir \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir";
-		test_url_webserv = self.url_webserv + "/fake_dir"; 
-	
-		self.print_test_throw(test_url_nginx, test_url_webserv, "Requesting a directory as a file (should throw)")	
+		self.print_test_throw("/fake_dir", "Requesting a directory as a file (should throw)", "04")	
 	
 	def test05_get(self):
-		print("\n\t\033[1;32mTest 05 -\033[0m GET /fake_dir/ \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir/";
-		test_url_webserv = self.url_webserv + "/fake_dir/"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "255")
+		self.print_test_content("/fake_dir/", "255", "05")
 	
 	def test06_get(self):
-		print("\n\t\033[1;32mTest 06 -\033[0m GET /fake_dir/../ \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir/../";
-		test_url_webserv = self.url_webserv + "/fake_dir/../"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "618")
-	
+		self.print_test_content("/fake_dir/../", "618", "06")
 	
 	def test07_get(self):
-		print("\n\t\033[1;32mTest 07 -\033[0m GET /fake_dir/../. \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir/../.";
-		test_url_webserv = self.url_webserv + "/fake_dir/../."; 
-	
-		self.print_test_throw(test_url_nginx, test_url_webserv, "Requesting . (should throw)")	
+		self.print_test_throw("/fake_dir/../.", "Requesting . (should throw)", "07")	
 	
 	def test08_get(self):
-		print("\n\t\033[1;32mTest 08 -\033[0m GET /fake_dir/../fake_dir/../../tmp/fake_dir \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir/../fake_dir/../../tmp/fake_dir";
-		test_url_webserv = self.url_webserv + "/fake_dir/../fake_dir/../../tmp/fake_dir"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "156")
+		self.print_test_content("/fake_dir/../fake_dir/../../tmp/fake_dir", "156", "08")
 	
 	def test09_get(self):
-		print("\n\t\033[1;32mtest 09 -\033[0m GET /fake_dir/../fake_dir/../../ \n")
-	
-		test_url_nginx = self.url_nginx + "/fake_dir/../fake_dir/../../";
-		test_url_webserv = self.url_webserv + "/fake_dir/../fake_dir/../../"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "0")
+		self.print_test_content("/fake_dir/../fake_dir/../../", "0", "09")
 	
 	def test10_get(self):
-		print("\n\t\033[1;32mtest 10 -\033[0m GET /../etc/passwd/ \n")
-	
-		test_url_nginx = self.url_nginx + "/../etc/passwd/";
-		test_url_webserv = self.url_webserv + "/../etc/passwd/"; 
-	
-		self.print_test_content(test_url_nginx, test_url_webserv, "0")
+		self.print_test_content("/../etc/passwd/", "0", "10")
 	
 	def test_simple_get(self):
 		self.test00_get()
