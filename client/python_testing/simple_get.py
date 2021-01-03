@@ -14,13 +14,13 @@ class Test_get():
 		print("\tWebserv url : 	" + self.url_webserv + path + "\n")
 	
 
-	def print_test_content(self, path, content_length, test_number):
+	def print_test_content(self, path, test_number):
 		nginx = req.get(self.url_nginx + path)
 		webserv = req.get(self.url_webserv + path)
 		
 		self.print_test_value(path, test_number)	
 		self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
-		self.tests = pt().test(webserv.headers['Content-Length'], content_length, "Checking header Content-Length", self.tests)
+		self.tests = pt().test(webserv.headers['Content-Length'], str(len(webserv.text)), "Checking header Content-Length", self.tests)
 		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
 
 	def print_test_throw(self, path, test_name, test_number):	
@@ -39,37 +39,37 @@ class Test_get():
 		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
 
 	def test00_get(self):
-		self.print_test_content("/", "618", "00")
+		self.print_test_content("/", "00")
 	
 	def test01_get(self):
-		self.print_test_content("/a", "10", "01")
+		self.print_test_content("/a", "01")
 	
 	def test02_get(self):
-		self.print_test_content("/a/", "0", "02")
+		self.print_test_content("/a/", "02")
 		
 	def test03_get(self):
-		self.print_test_content("/doesntexist", "156", "03")
+		self.print_test_content("/doesntexist", "03")
 	
 	def test04_get(self):
 		self.print_test_throw("/fake_dir", "Requesting a directory as a file (should throw)", "04")	
 
 	def test05_get(self):
-		self.print_test_content("/fake_dir/", "255", "05")
+		self.print_test_content("/fake_dir/", "05")
 	
 	def test06_get(self):
-		self.print_test_content("/fake_dir/../", "618", "06")
+		self.print_test_content("/fake_dir/../", "06")
 	
 	def test07_get(self):
 		self.print_test_throw("/fake_dir/../.", "Requesting . (should throw)", "07")	
 	
 	def test08_get(self):
-		self.print_test_content("/fake_dir/../fake_dir/../../tmp/fake_dir", "156", "08")
+		self.print_test_content("/fake_dir/../fake_dir/../../tmp/fake_dir", "08")
 	
 	def test09_get(self):
-		self.print_test_content("/fake_dir/../fake_dir/../../", "0", "09")
+		self.print_test_content("/fake_dir/../fake_dir/../../", "09")
 	
 	def test10_get(self):
-		self.print_test_content("/../etc/passwd/", "0", "10")
+		self.print_test_content("/../etc/passwd/", "10")
 	
 	def test_simple_get(self):
 		self.test00_get()
