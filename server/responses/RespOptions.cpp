@@ -11,6 +11,7 @@ void RespOptions::makeResponse_()
 		writeStatusLine_(statusCode_);
 		writeBaseHeaders_();
 		writeAllow_();
+		writeContentLength_(0);
 		writeHeadersEnd_();
 	}
 }

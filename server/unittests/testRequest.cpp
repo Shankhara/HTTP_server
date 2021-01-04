@@ -75,7 +75,11 @@ void badRequestLine()
 
 	Request f(*vhost);
 	str = "GET NOPE HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 400, "invalid target NOPE");
+	assertEqual(f.doRequest(const_cast<char*>(str.c_str()), str.size()), 403, "invalid target NOPE");
+
+	Request g(*vhost);
+	str = "CONNECT /qwe HTTP/1.1\r\nHost: localhost\r\n\r\n";
+	assertEqual(g.doRequest(const_cast<char*>(str.c_str()), str.size()), 501, "method not implemented");
 
 	delete (vhost);
 }
@@ -89,9 +93,6 @@ void correctRequestLine()
 	std::string str = "GET /qwe HTTP/1.1\r\n\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "double CRLF ending requestline");
 
-	str = "CONNECT /qwe HTTP/1.1\r\nHost: localhost\r\n\r\n";
-	assertRequest(str, "CONNECT", "/qwe", vhost, "testing CONNECT");
-
 	str = "DELETE /qwe HTTP/1.1\r\n\r\n";
 	assertRequest(str, "DELETE", "/qwe", vhost, "testing DELETE");
 
@@ -100,9 +101,6 @@ void correctRequestLine()
 
 	str = "OPTIONS /qwe HTTP/1.1\r\n\r\n";
 	assertRequest(str, "OPTIONS", "/qwe", vhost, "testing OPTIONS");
-
-	str = "PATCH /qwe HTTP/1.1\r\n\r\n";
-	assertRequest(str, "PATCH", "/qwe", vhost, "testing PATCH");
 
 	str = "POST /qwe HTTP/1.1\r\n\r\n";
 	assertRequest(str, "POST", "/qwe", vhost, "testing POST");
@@ -136,7 +134,7 @@ void correctSequencialReceive(size_t len)
 	delete (vhost);
 }
 
-void testConstructRequest()
+void testDoRequest()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
@@ -373,13 +371,13 @@ void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-//	testConstructRequest();
-//	correctRequestLine();
-//	badRequestLine();
-//	correctHeaders();
-//  	badHeaders();
-//	correctSequencialReceive(5);
-//	correctSequencialReceive(10);
+	testDoRequest();
+	correctRequestLine();
+	badRequestLine();
+	correctHeaders();
+  	badHeaders();
+	correctSequencialReceive(5);
+	correctSequencialReceive(10);
 	correctChunkedBody();
 	badChunkedBody();
 	testForbiddenMethod();
