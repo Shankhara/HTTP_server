@@ -79,7 +79,7 @@ int Request::getChunkedBody()
 	std::string strHexChunkSize;
 	size_t cursor, hexEndPos, chunkSize;
 
-	if (request_ == "0")
+	if (request_.size() == 1 && request_[0] == '0' && msgBody_.empty())
 		return 200;
 	if (msgBody_.empty())
 		msgBody_.reserve(100000000);
