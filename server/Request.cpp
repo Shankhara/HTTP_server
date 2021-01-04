@@ -3,7 +3,7 @@
 
 Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 {
-	headersRaw_.resize(18);
+	headersRaw_.resize(15);
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
@@ -94,19 +94,22 @@ int Request::getChunkedBody()
 			return (413);
 		if (chunkSize > CHUNK_MAX_SIZE)
 		{
-			Log::get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize << " > " << CHUNK_MAX_SIZE << std::endl;
+			Log::get(logERROR) << __FUNCTION__ << " chunk_size too big " << chunkSize \
+			<< " > " << CHUNK_MAX_SIZE << std::endl;
 			return 400;
 		}
 		if (request_.size() < chunkSize + hexEndPos + 4)
 			return 100;
-		else{
+		else
+		{
 			cursor = chunkSize + hexEndPos + 2;
 			if (request_[cursor] != '\r' && request_[cursor + 1] != '\n')
 				return (400);
 			cursor += 2;
 			msgBody_.append(request_, hexEndPos + 2, chunkSize);
 			request_.assign(request_.c_str() + cursor);
-			//Log::get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor << " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size() << std::endl;
+			//Log::get(logDEBUG) << "CHUNKSIZE " << chunkSize << " CURSOR " << cursor
+			//<< " REQ [" << int(request_[cursor]) << "] Body SIZE " <<  msgBody_.size() << std::endl;
 		}
 	}
 	if (request_.size() < 5)
@@ -281,7 +284,7 @@ int Request::parseRequestLine()
 	if (requestLine_.size() != 3)
 		return 400;
 	if (checkMethod())
-		return 400; //pas 501 car on implemente toutes les methodes
+		return 501;
 	if (requestLine_.size() > CHUNK_MAX_SIZE)
 		return 414;
 	if (checkVersion())
