@@ -259,9 +259,6 @@ int Request::parseHeadersContent()
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
-	
-	if (headersRaw_[CONTENT_LENGTH].empty() || headersRaw_[CONTENT_LENGTH] == "0")
-		return 200;
 
 	return 100;
 }
