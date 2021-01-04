@@ -188,6 +188,10 @@ int Request::parseHeaders()
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
+		ret = headerLine[HEADERTITLE].rfind("x-", 0);
+		if (ret != std::string::npos)
+			customHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
+
 	}
 	return 400;
 }
@@ -433,13 +437,15 @@ std::string Request::getHeaderContentLanguage() const
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
 
-bool Request::isHeadersParsed() const {
-	return headers_parsed;
-}
+std::map<std::string, std::string> Request::getCustomHeaders() const
+{ return customHeaders_; }
+
+bool Request::isHeadersParsed() const
+{ return headers_parsed; }
 
 std::string Request::consumeBody()
 {
-		std::string c = msgBody_;
-		msgBody_.clear();
-		return (c);
+	std::string c = msgBody_;
+	msgBody_.clear();
+	return (c);
 }
