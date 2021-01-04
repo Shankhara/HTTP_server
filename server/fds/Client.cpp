@@ -95,7 +95,7 @@ void Client::sendResponse_(Response *resp) {
 	}
 	if (isSent)
 	{
-		Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_.getMethod() << " " << request_.getHeaderHost() << request_.getReqTarget() << " [" << sentSize << "]" << std::endl;
+		Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_.getMethod() << " http://" << request_.getHeaderHost() << request_.getReqTarget() << " [" << sentSize << "]" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }

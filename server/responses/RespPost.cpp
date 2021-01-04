@@ -18,7 +18,7 @@ void RespPost::openFile_()
 
 	int ret = stat(filePath_.c_str(), &buffer);
 	if (ret == -1) {
-		statusCode_ = 201;
+		statusCode_ = 200;
 		fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
 	}
 	else
@@ -55,10 +55,10 @@ void RespPost::makeResponse_()
 	if (headersBuilt_ == false)
 	{
 		writeStatusLine_(statusCode_);
-		writeContentLength_(0);
 		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
 		writeThisHeader_("Location", filePath_);
 		writeThisHeader_("Last-Modified", getStrDate());
+		writeHeadersEnd_();
 		writeHeadersEnd_();
 	}
 }
