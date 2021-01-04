@@ -175,7 +175,6 @@ void correctHeaders()
 
 void badHeaders()
 {
-
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
@@ -191,6 +190,22 @@ void badHeaders()
 	assertEqual(ret, 400, "whitespace between header name and colon");
 
 	delete (vhost);
+}
+
+void testCustomHeaders()
+{
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	Request a(*vhost);
+	int ret;
+	std::string str = "GET /qwe HTTP/1.1\r\nX-custom1: a\r\nHost: 2\r\nContent-length: 0\r\nX-custom2: b\r\nX-custom3: c\r\n\r\n";
+	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
+	assertEqual(ret, 200, "test getter");
+	std::map<std::string, std::string> tmp = a.getCustomHeaders();
+	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
+		std::cout << it->first << " => " << it->second << std::endl;
+
 }
 
 void correctChunkedBody()
@@ -321,6 +336,7 @@ void testRequest()
 //	badRequestLine();
 //	correctHeaders();
 // 	badHeaders();
+	testCustomHeaders();
 //	correctSequencialReceive(5);
 //	correctSequencialReceive(10);
 //	correctChunkedBody();

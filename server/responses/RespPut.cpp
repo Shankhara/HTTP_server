@@ -32,20 +32,6 @@ bool RespPut::reachResource_()
 	return (true);
 }
 
-int RespPut::compareFiles_()
-{
-	char buff[255];
-	int nbytes;
-	std::string str;
-
-	while ((nbytes = read(fd_, buff, 254)) > 0)
-	{
-		buff[nbytes] = '\0';
-		str.append(buff);
-	}
-	return (str.compare(req_.getBody()) == 0);
-}
-
 void RespPut::putPayload_()
 {
 	int nbytes;
@@ -58,24 +44,23 @@ void RespPut::putPayload_()
 		statusCode_ = 500;
 }
 
-
-
 void RespPut::makeResponse_()
 {
-		writeStatusLine_(statusCode_);
-		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
-		writeThisHeader_("Content-location", filePath_);
-		if (!compareFiles_())
-			writeThisHeader_("Last-Modified", getStrDate());
-		writeHeadersEnd_();
+	writeStatusLine_(statusCode_);
+	writeContentLength_(0);
+	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
+	if (statusCode_ == 201)
+		writeThisHeader_("Location", filePath_);
+	writeThisHeader_("Last-Modified", getStrDate());
+	writeHeadersEnd_();
 }
 
 int RespPut::readResponse()
 {
 	nbytes_ = 0;
-	if (fd_ == 0) {
+	if (fd_ == 0)
 		reachResource_();
-	}
+
 	if (fd_ > 0)
 	{
 		putPayload_();
