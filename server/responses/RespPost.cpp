@@ -57,7 +57,7 @@ void RespPost::makeResponse_()
 		writeStatusLine_(statusCode_);
 		writeContentLength_(0);
 		writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
-		writeThisHeader_("Location", filePath_);
+		writeThisHeader_("Content-location", filePath_);
 		writeThisHeader_("Last-Modified", getStrDate());
 		writeHeadersEnd_();
 	}
