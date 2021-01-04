@@ -25,7 +25,6 @@ CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	envs_.push_back("REDIRECT_STATUS=200");
-	//envs_.push_back("HTTP_X_SECRET_HEADER_FOR_TEST=1");
 	std::map<std::string, std::string> headers = request_.getCustomHeaders(); // should be a ref instead passing by value
 	std::map<std::string, std::string>::iterator it = headers.begin();
 
@@ -96,7 +95,7 @@ FileDescriptor *CGIExec::run()
 		}
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
-		//dupSTDERR_();
+		dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else
@@ -126,7 +125,7 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	envs.reserve(envs_.size() + 1);
 	for (size_t i = 0; i < envs_.size(); ++i) {
 		envs.push_back(const_cast<char *>(envs_[i].c_str()));
-		Log::get(logINFO) << "ENV: " << envs[i] << std::endl;
+		//Log::get(logINFO) << "ENV: " << envs[i] << std::endl;
 	}
 	envs.push_back(0);
 	if (execve(cmd[0], cmd, envs.data()) == -1)
