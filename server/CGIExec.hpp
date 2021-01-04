@@ -8,6 +8,7 @@
 #include <cstring>
 #include <wait.h>
 #include <vector>
+#include <map>
 #include "Request.hpp"
 #include "Server.hpp"
 #include "fds/Client.hpp"
@@ -23,7 +24,7 @@ private:
 	int							stdoutFD_;
 	int							stdinFD_;
 	static const std::string	vars_[];
-	char *						envs_[21];
+	std::vector<std::string>			envs_;
 	enum e_envs {
 		AUTH_TYPE,
 		CONTENT_LENGTH,
@@ -50,8 +51,8 @@ private:
 	void 						pipeSTDIN_(int pfd[2]);
 	void 						dupSTDERR_();
 	void 						build_(const std::string &);
-	void						freeEnvs_();
 	void 						write500();
+	void 						setEnvFromHeader_(std::string name, std::string value);
 
 public:
 	CGIExec(Client &);

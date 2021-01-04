@@ -12,7 +12,6 @@ Server::Server()
 	fdmax_ = 0;
 	FD_ZERO(&master_);
 	fds_.reserve(FD_SETSIZE);
-	instance_ = this;
 }
 
 void Server::run_()
@@ -71,10 +70,7 @@ void Server::deleteFileDescriptor(int fd) {
 Server *Server::getInstance()
 {
 	if (instance_ == 0)
-	{
-		Log::get(logDEBUG) << __PRETTY_FUNCTION__  << std::endl;
 		instance_ = new Server();
-	}
 	return instance_;
 }
 

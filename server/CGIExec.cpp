@@ -21,15 +21,28 @@ const std::string CGIExec::vars_[] = {
 								  "SERVER_SOFTWARE="
 };
 
-CGIExec::~CGIExec() {
-	free(envs_[18]);
-	free(envs_[19]);
-}
+CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
-	setEnv_(18, "REDIRECT_STATUS=200");
-	setEnv_(19, "HTTP_X_SECRET_HEADER_FOR_TEST=1");
-	envs_[20] = 0;
+	envs_.push_back("REDIRECT_STATUS=200");
+	//envs_.push_back("HTTP_X_SECRET_HEADER_FOR_TEST=1");
+	std::map<std::string, std::string> headers = request_.getCustomHeaders(); // should be a ref instead passing by value
+	std::map<std::string, std::string>::iterator it = headers.begin();
+
+	while (it != headers.end()) {
+		setEnvFromHeader_(it->first, it->second);
+		++it;
+	}
+}
+
+void CGIExec::setEnvFromHeader_(std::string name, std::string value)
+{
+	std::replace(name.begin(), name.end(), '-', '_');
+	for (size_t i = 0; i < name.size(); i++)
+	{
+		name[i] = std::toupper(name[i]);
+	}
+	envs_.push_back("HTTP_" + name + "=" + value);
 }
 
 void CGIExec::build_(const std::string &workDir) {
@@ -83,7 +96,7 @@ FileDescriptor *CGIExec::run()
 		}
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
-		dupSTDERR_();
+		//dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else
@@ -98,7 +111,6 @@ FileDescriptor *CGIExec::run()
 		response->setPid(cpid);
 		close(pipeOUT[1]);
 		close(pipeIN[1]);
-		freeEnvs_();
 	}
 	return (response);
 }
@@ -106,10 +118,18 @@ FileDescriptor *CGIExec::run()
 void CGIExec::exec_(const std::string &bin, const std::string &filename)
 {
 	static char * cmd[3];
+
 	cmd[0] = const_cast<char *>(bin.c_str());
 	cmd[1] = const_cast<char *>(filename.c_str());
 	cmd[2] = 0;
-	if (execve(cmd[0], cmd, envs_) == -1)
+	std::vector<char *> envs;
+	envs.reserve(envs_.size() + 1);
+	for (size_t i = 0; i < envs_.size(); ++i) {
+		envs.push_back(const_cast<char *>(envs_[i].c_str()));
+		Log::get(logINFO) << "ENV: " << envs[i] << std::endl;
+	}
+	envs.push_back(0);
+	if (execve(cmd[0], cmd, envs.data()) == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " Unable to execve " << strerror(errno) << std::endl;
 		write500();
@@ -166,24 +186,7 @@ void	CGIExec::dupSTDERR_()
 
 void CGIExec::setEnv_(int name, const std::string &c)
 {
-	//TODO: concat instead allocating tmp buf
-	std::string buf = vars_[name] + c;
-	envs_[name] = (char*)malloc((buf.length() + 1) * sizeof(char));
-	if (envs_[name] == 0)
-		return ;
-	unsigned long i;
-	for (i = 0; i < buf.length(); i++)
-	{
-		envs_[name][i] = buf[i];
-	}
-	envs_[name][i] = '\0';
-	Log::get(logDEBUG) << envs_[name] << std::endl;
-}
-
-void CGIExec::freeEnvs_()
-{
-	for (int i = 0; i < 18; i++)
-		free(envs_[i]);
+	envs_.push_back(vars_[name] + c);
 }
 
 void CGIExec::write500() {

@@ -190,7 +190,7 @@ int Request::parseHeaders()
 		}
 		ret = headerLine[HEADERTITLE].rfind("x-", 0);
 		if (ret != std::string::npos)
-			customHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
+			customHeaders_[headerLine[HEADERTITLE]] = removeSpaces(headerLine[HEADERCONTENT]);
 
 	}
 	return 400;
