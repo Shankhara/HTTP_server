@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/28 12:13:52 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/04 13:25:50 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,13 +308,29 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (PpE(this->file_, stds(" upload_path duplicated ")));	
 		location.upload_path = line[1];
 	}
-	else if (line [0] == "client_max_body_size")
+	else if (line[0] == "client_max_body_size")
 	{
 		if ((*prop)[8] == 0)
 			(*prop)[8] = 1;
 		else
 			throw (PpE(this->file_, stds(" root duplicated ")));
 		location.client_max_body_size = getMcbs(line[1]);
+	}
+	else if (line[0] == "auth_basic")
+	{
+		if ((*prop)[9] == 0)
+			(*prop)[9] = 1;
+		else
+			throw (PpE(this->file_, stds(" auth_basic duplicated ")));	
+		location.auth_basic = line[1];
+	}
+	else if (line[0] == "auth_basic_user_file")
+	{
+		if ((*prop)[10] == 0)
+			(*prop)[10] = 1;
+		else
+			throw (PpE(this->file_, stds(" auth_basic_user_file duplicated ")));	
+		location.auth_basic_user_file = line[1];
 	}
 	return (location);	
 }
@@ -387,6 +403,8 @@ Parsing::location	Parsing::getDefaultLocation()
 	location.index = "";
 	location.autoindex = false;
 	location.cgi_path = "";
+	location.auth_basic = "";
+	location.auth_basic_user_file = "";
 	location.upload_enable = false;
 	location.upload_path = "";
 	location.client_max_body_size = 536870912;
@@ -395,7 +413,7 @@ Parsing::location	Parsing::getDefaultLocation()
 
 std::vector<int>	Parsing::getTableDef()
 {
-	std::vector<int>	vec(9);
+	std::vector<int>	vec(11);
 
 	for (size_t i = 0; i < vec.size(); i++)
 		vec[i] = 0;	

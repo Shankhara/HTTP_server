@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 14:07:23 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/16 16:12:24 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/04 13:25:21 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int main(int ac, const char *av[])
 				std::cout << a.getServers()[i].locations[j].cgi_extension[b];
 			std::cout << std::endl;
 			std::cout << "	CGI_PATH : " << a.getServers()[i].locations[j].cgi_path << std::endl;
+			std::cout << "	AUTH_BASIC : " << a.getServers()[i].locations[j].auth_basic << std::endl;
+			std::cout << "	AUTH_BASIC_USER_FILE : " << a.getServers()[i].locations[j].auth_basic_user_file << std::endl;
 			std::cout << "	UPLOAD_PATH : " << a.getServers()[i].locations[j].upload_path << std::endl;
 			std::cout << "	CLIENT_MAX_BODY_SIZE : " << a.getServers()[i].locations[j].client_max_body_size << std::endl;
 		}

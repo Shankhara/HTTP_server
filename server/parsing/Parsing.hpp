@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/24 10:27:57 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/04 13:27:16 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ static const char		*locationProps_[] = {	"method",
 												"upload_enable",
 												"upload_path",
 												"client_max_body_size",
+												"auth_basic",
+												"auth_basic_user_file",
 												0 };
 
 static int	line_;
@@ -80,6 +82,8 @@ class Parsing
 		stds					index;
 		std::vector<stds>		cgi_extension;
 		stds					cgi_path;
+		stds					auth_basic;
+		stds					auth_basic_user_file;
 		bool					upload_enable;
 		stds					upload_path;
 		size_t					client_max_body_size;

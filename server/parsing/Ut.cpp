@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:29:45 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/15 15:26:12 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/04 13:30:45 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,18 @@ std::vector<stds>   splitWhitespace(stds str)
     std::vector<stds>   res;
     size_t              i;
     size_t              j;
+	bool				quotes = false;
+
 
     i = 0;
     j = 0;
     while (str[i])
     {
-        if (std::isspace(str[i]))
+		if (str[i] == '\"' && quotes == true)
+			quotes = false;
+		else if (str[i] == '\"')
+			quotes = true;
+        if (std::isspace(str[i]) && quotes == false)
         {
             if (i == j)
                 ++j;
