@@ -20,9 +20,13 @@ class Request
 	std::string backUpRequest_;
 	std::string msgBody_;
 	std::string queryString_;
-	std::vector<std::string> headersRaw_;
-	std::vector<std::string> requestLine_;
-	std::map<std::string, std::string> customHeaders_;
+	std::vector<std::string> 			headersRaw_;
+public:
+	const std::vector<std::string> &getHeadersRaw() const;
+
+private:
+	std::vector<std::string> 			requestLine_;
+	std::map<std::string, std::string>	customHeaders_;
 	const std::vector<Parsing::server>	&servers_;
 	const Parsing::location *location_;
 	const Parsing::server *server_;
@@ -68,6 +72,9 @@ class Request
 	enum e_RequestLine { METHOD, REQTARGET, VERSION };
 
 	std::vector<std::string> headersName;
+
+	const std::vector<std::string> &getHeadersName() const;
+
 	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, LAST_MODIFIED, LOCATION, REFERER, \
 		TRANSFER_ENCODING, USER_AGENT };

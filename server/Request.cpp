@@ -190,7 +190,10 @@ int Request::parseHeaders()
 		}
 		ret = headerLine[HEADERTITLE].rfind("x-", 0);
 		if (ret != std::string::npos)
-			customHeaders_[headerLine[HEADERTITLE]] = removeSpaces(headerLine[HEADERCONTENT]);
+		{
+			std::string::iterator end_pos = std::remove(headerLine[HEADERCONTENT].begin(), headerLine[HEADERCONTENT].end(), ' ');
+			customHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT].c_str() + std::distance(headerLine[HEADERCONTENT].begin(), end_pos);
+		}
 
 	}
 	return 400;
@@ -452,4 +455,12 @@ std::string Request::consumeBody()
 	std::string c = msgBody_;
 	msgBody_.clear();
 	return (c);
+}
+
+const std::vector<std::string> &Request::getHeadersRaw() const {
+	return headersRaw_;
+}
+
+const std::vector<std::string> &Request::getHeadersName() const {
+	return headersName;
 }
