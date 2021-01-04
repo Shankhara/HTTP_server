@@ -82,14 +82,28 @@ std::string RespGet::doAutoIndexTemplate_(stds path) {
 	}	
 	body += "</pre><hr></body>";
 	body += "</html>";
-	free(dir);
+	closedir(dir);
 	return body;
 }
 
 int RespGet::writeAutoIndex_(stds path) {
-	std::string body = doAutoIndexTemplate_(path);
-	appendHeaders(200, "text/html", body.size());
-	append_(body); //TODO: tterrail if body.size > BUFFER_SIZE content-Length will not match body sent;
+	if (autoIndexBody_.empty() && !headersBuilt_) {
+		autoIndexBody_ = doAutoIndexTemplate_(path);
+		appendHeaders(200, "text/html", autoIndexBody_.size());
+	}
+	if (static_cast<unsigned int>(nbytes_) + 1 == bufSize_)
+		return (nbytes_);
+	int s = bufSize_ - 1 - nbytes_;
+	if (autoIndexBody_.size() + nbytes_ >= bufSize_)
+	{
+		append_(autoIndexBody_.substr(0, s));
+		autoIndexBody_.assign(autoIndexBody_, s, autoIndexBody_.size() - s);
+	}
+	else if (!autoIndexBody_.empty())
+	{
+		append_(autoIndexBody_);
+		autoIndexBody_.clear();
+	}
 	return (nbytes_);
 }
 

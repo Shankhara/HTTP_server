@@ -40,8 +40,7 @@ std::ostream &Log::get(TLogLevel level) {
 	}
 	else
 		std::cerr.clear();
-	std::cerr << "[" << timeStamp();
-	std::cerr << "] " << printCurrentLevel(level) << ": ";
+	std::cerr << "[" << timeStamp() << "] " << printCurrentLevel(level) << ": ";
 	return std::cerr;
 }
 

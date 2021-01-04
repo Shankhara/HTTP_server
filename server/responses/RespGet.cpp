@@ -16,7 +16,6 @@ int RespGet::readResponse() {
 	nbytes_ = 0;
 	if (fd_ == 0)
 	{
-		fd_ = -1;
 		const Parsing::location *location = req_.getLocation();
 		if (req_.getLocation()->autoindex && req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
 			return (writeAutoIndex_(location->root + req_.getReqTarget()));

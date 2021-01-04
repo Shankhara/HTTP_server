@@ -15,9 +15,11 @@ class RespGet: public RespFile
 {
 	protected:
 	int			fd_;
+	std::string autoIndexBody_;
 	void 		openFile_(const Parsing::location *location);
 	int		 	readFile_();
 	int 		writeAutoIndex_(stds path);
+
 	std::string doAutoIndexTemplate_(stds path);
 	std::string	returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat);
 
