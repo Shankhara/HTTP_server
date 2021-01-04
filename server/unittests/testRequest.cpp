@@ -156,7 +156,6 @@ void correctHeaders()
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-//	Request a(*vhost);
 	int ret;
 	std::string str = "GET /qwe HTTP/1.1\r\naccept-charsets: utf-8, iso-8859-1;q=0.5\r\n\r\n";
 
@@ -203,8 +202,8 @@ void testCustomHeaders()
 	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 200, "test getter");
 	std::map<std::string, std::string> tmp = a.getCustomHeaders();
-	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
-		std::cout << it->first << " => " << it->second << std::endl;
+//	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
+//		std::cout << it->first << " => " << it->second << std::endl;
 
 }
 
@@ -245,12 +244,19 @@ void badChunkedBody()
 
 static void testBodyWithGet()
 {
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request a(*vhost);
+
 	std::string str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\nContent-length: 1\r\n\r\nt";
-	assertRequest(str, "GET", "/qwe", vhost, "testing GET with a body", 413);
+	assertRequest(str, "GET", "/qwe", vhost, "testing GET with a body", 200);
+
+	str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\nContent-length: 1\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 1 but no body", 100);
+
+	str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\nContent-length: 0\r\n\r\nqweqwe";
+	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 0 with a body", 200);
+
 	delete (vhost);
 }
 
@@ -262,7 +268,7 @@ static void testIncorrectContentLength()
 	Request a(*vhost);
 
 	std::string req = "POST /test.bla HTTP/1.1\r\nContent-Length: 4\r\nHost: localhost\r\nContent-Type: application/x-www-form-urlencoded\r\n\r\nDATA IS NOT 4";
-	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 413, "Content-Length < bodySize");
+	assertEqual(a.doRequest(const_cast<char*>(req.c_str()), req.size()), 400, "Content-Length < bodySize");
 
 	delete (vhost);
 }
@@ -331,16 +337,16 @@ void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
-//	testDoRequest();
-	correctRequestLine();
-//	badRequestLine();
-//	correctHeaders();
-// 	badHeaders();
+	testDoRequest();
+  	correctRequestLine();
+	badRequestLine();
+	correctHeaders();
+ 	badHeaders();
 	testCustomHeaders();
-//	correctSequencialReceive(5);
-//	correctSequencialReceive(10);
-//	correctChunkedBody();
-//	badChunkedBody();
+	correctSequencialReceive(5);
+	correctSequencialReceive(10);
+	correctChunkedBody();
+	badChunkedBody();
 	testBodyWithGet();
 	testForbiddenMethod();
 	testMatchLocation();

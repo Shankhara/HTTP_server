@@ -246,7 +246,11 @@ int Request::parseHeadersContent()
 		headerTransferEncoding_ = removeSpaces(headersRaw_[LOCATION]);
 
 	if (!headersRaw_[TRANSFER_ENCODING].empty())
+	{
+		if (!headersRaw_[CONTENT_LENGTH].empty())
+			return 400;
 		headerTransferEncoding_ = removeSpaces(headersRaw_[TRANSFER_ENCODING]);
+	}
 
 	headers_parsed = true;
 
@@ -255,8 +259,11 @@ int Request::parseHeadersContent()
 
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
+	
+	if (headersRaw_[CONTENT_LENGTH].empty() || headersRaw_[CONTENT_LENGTH] == "0")
+		return 200;
 
-	return (100);
+	return 100;
 }
 
 int Request::accessControl_()
@@ -270,8 +277,8 @@ int Request::accessControl_()
 
 	if (!location_->root.empty())
 	{
-		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET],
-											  location_->name.size(), requestLine_[REQTARGET].size() - 1);
+		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], \
+		location_->name.size(), requestLine_[REQTARGET].size() - 1);
 		if (requestLine_[REQTARGET][0] != '/')
 			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 	}

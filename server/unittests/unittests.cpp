@@ -11,7 +11,8 @@ std::vector<Parsing::server> *createVirtualHosts()
 	server.locations.push_back(Parsing::location());
 	server.locations[0].name = std::string("/");
 	server.locations[0].root = "/tmp";
-    server.locations[0].methods = std::vector<std::string>{"GET", "HEAD", "POST", "PUT", "TRACE", "DELETE"};
+	server.locations[0].client_max_body_size = 500000;
+    server.locations[0].methods = std::vector<std::string>{"GET", "HEAD", "POST", "PUT", "TRACE", "DELETE", "OPTIONS"};
 	servers->push_back(server);
 	return servers;
 }
