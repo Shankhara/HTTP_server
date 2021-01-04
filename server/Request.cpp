@@ -166,14 +166,14 @@ int Request::parseHeaders()
 	{
 		ret = line.find(':', 0);
 		if (ret != std::string::npos && line[ret - 1] < 33)
-			return 401;
+			return 400;
 
 		headerLine = workLine(line, ':');
 		if (headerLine.empty())
 		{
 			if (line == "\r")
 				return parseHeadersContent();
-			return 402;
+			return 400;
 		}
 
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
