@@ -191,8 +191,9 @@ int Request::parseHeaders()
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
-		while (headerLine[HEADERCONTENT][0] == ' ') // TODO: cant we do this in workLine?
-			headerLine[HEADERCONTENT].erase(0, 1);
+		size_t notSpace = headerLine[HEADERCONTENT].find_first_not_of(' ', 0);
+		if (notSpace != std::string::npos)
+			headerLine[HEADERCONTENT].erase(0, notSpace);
 		cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
 	}
 	return 400;
