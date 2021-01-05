@@ -214,11 +214,11 @@ void correctChunkedBody()
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
 	Request a(*vhost);
-	std::string str = "GET /qwe HTTP/1.1\r\nhost: hop\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	std::string str = "GET /qwe HTTP/1.1\r\nhost: hop\r\ntransfer-encoding: chunked\r\n\r\n25\r\nVoici les données du premier morceau\r\n1A\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
 	assertEqual(a.doRequest(const_cast<char*>(str.c_str()), str.size()), 200, "2 chunks with newline");
 
 	Request b(*vhost);
-	std::string tester = "POST / HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Go-http-client/1.1\r\nTransfer-Encoding: chunked\r\nContent-Type: test/file\r\nAccept-Encoding: gzip\r\n\r\n";
+	std::string tester = "POST / HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Go-http-client/1.1\r\nTransfer-Encoding: chunked\r\nContent-Type: test/file\r\nAccept-Encoding: gzip\r\n\r\n0\r\n\r\n";
 	assertEqual(b.doRequest(const_cast<char*>(tester.c_str()), tester.size()), 200, "42 tester");
 	delete (vhost);
 }

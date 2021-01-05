@@ -22,8 +22,6 @@ class Request
 	std::string msgBody_;
 	std::string queryString_;
 	std::vector<std::string> 			headersRaw_;
-public:
-	const std::vector<std::string> &getHeadersRaw() const;
 
 private:
 	std::vector<std::string> 			requestLine_;
@@ -31,12 +29,7 @@ private:
 	const std::vector<Parsing::server>	&servers_;
 	const Parsing::location *location_;
 	const Parsing::server *server_;
-
 	std::string originalReqTarget_;
-public:
-	const std::string &getOriginalReqTarget() const;
-
-private:
 	int headerContentLength_;
 	std::string headerDate_;
 	std::string headerAuth_;
@@ -72,6 +65,7 @@ private:
 	bool body_parsed;
 	bool queryString_parsed;
 	bool bodyToParse;
+
 
 	std::vector<std::string> methods;
 	enum e_methods { GET, HEAD, POST, PUT, DELETE, OPTION, TRACE };
@@ -125,4 +119,6 @@ private:
 	std::string getHeaderContentLanguage() const;
 	std::string getHeaderContentType() const;
 	std::map<std::string, std::string> getCGIHeaders() const;
+	const std::vector<std::string> &getHeadersRaw() const;
+	const std::string &getOriginalReqTarget() const;
 };
