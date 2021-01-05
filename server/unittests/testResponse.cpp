@@ -1,4 +1,5 @@
 #include "unittests.hpp"
+#include <string.h>
 
 void testRespGet()
 {
@@ -88,23 +89,56 @@ void testRespDelete()
 	std::cout << "|" << buf << "|" << std::endl;
 }
 
+//static void assertResponse(const std::string & str, const std::vector<Parsing::server> *server, \
+//Response * response, const std::string &testName, int expectedStatus=200)
+//{
+//	Request r(*server);
+//	unsigned int bufsize = 16 * 1024;
+//	char buf[bufsize];
+//
+//	int status = r.doRequest(const_cast<char *>(str.c_str()), str.size());
+//	
+//	response(r, buf, bufsize);
+//
+//	int readSize = response->readResponse();
+//	buf[readSize] = '\0';
+//	std::cout << "|" << buf << "|" << std::endl;
+//}
+
 void testRespTrace()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
-	std::string str = "GET /index.html HTTP/1.1\r\n\r\n";
-	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-
 	unsigned int bufsize = 16 * 1024;
 	char buf[bufsize];
-
+	memset(buf, 0, bufsize);
+//	RespTrace respTrace;
+//	assertResponse(str, vhost, , "only requestLine"); 
+	std::string str = "TRACE /index.html HTTP/1.1\r\n\r\n";
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 	RespTrace respTrace(ra, buf, bufsize);
 
 	int readSize = respTrace.readResponse();
-	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
+
+	Request rb(*vhost);
+	str = "TRACE /index.html HTTP/1.1\r\nHost: localhost:8080\r\nContent-length: 7\r\n\r\nbonjour";
+	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
+	memset(buf, 0, bufsize);
+	RespTrace respTrace_b(rb, buf, bufsize);
+	readSize = respTrace_b.readResponse();
+	std::cout << "|" << buf << "|" << std::endl;
+
+	Request rc(*vhost);
+	str = "TRACE /index.html HTTP/1.1\r\nHost: localhost:8080\r\ntransfer-encoding: chunked\r\n\r\n26\r\nVoici les données du premier morceau\r\n1C\r\net voici un second morceau\r\n20\r\net voici deux derniers morceaux \r\n12\r\nsans saut de ligne\r\n0\r\n\r\n";
+	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
+	memset(buf, 0, bufsize);
+	RespTrace respTrace_c(rc, buf, bufsize);
+	readSize = respTrace_c.readResponse();
+	std::cout << "|" << buf << "|" << std::endl;
+
 	delete (vhost);
 }
 
@@ -176,11 +210,11 @@ void testMimeType()
 
 void testResponse()
 {
-	testRespGet();
-	testRespPut();
-	testRespPost();
+//	testRespGet();
+//	testRespPut();
+//	testRespPost();
   	testRespTrace();
-	testRespDelete();
-	testRespOptions();
-	testMimeType();
+//	testRespDelete();
+//	testRespOptions();
+//	testMimeType();
 }

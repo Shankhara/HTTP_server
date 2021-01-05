@@ -137,6 +137,8 @@ int Request::parseBody()
 		else if (request_.size() == len)
 		{
 			msgBody_ = request_;
+			if (getMethod() == "TRACE")
+				tracePayload_.append(msgBody_); 
 			return 200;
 		}
 		if (request_.size() > len)
@@ -167,9 +169,13 @@ int Request::parseHeaders()
 	
 	while ((getNextLine(request_, line)) > -1)
 	{
+
 		ret = line.find(':', 0);
 		if (ret != std::string::npos && (line[ret - 1] < 33 || line[ret + 1] == ':'))
 			return 400;
+
+		if (getMethod() == "TRACE")
+			tracePayload_.append(line); 
 
 		headerLine = workLine(line, ':');
 		if (headerLine.empty())
@@ -301,6 +307,9 @@ int Request::parseRequestLine()
 
 	parseQueryString();
 
+	if (getMethod() == "TRACE")
+		tracePayload_.append(line); 
+
 	if (request_ == "\r\n")
 		return (200);
 
@@ -320,17 +329,15 @@ int Request::parse()
 
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
+	if (getMethod() == "TRACE")
+		tracePayload_.append(request_); 
 
 	return (statusCode_);
 }
 
 int Request::doRequest(char buf[], size_t nbytes)
 {
-	if (!headers_parsed)
-		backUpRequest_.append(buf, nbytes);
-
 	request_.append(buf, nbytes);
-
 	parse();
 
 	return (statusCode_);
@@ -400,8 +407,8 @@ int Request::getStatusCode() const
 std::string Request::getBody() const
 { return (msgBody_); }
 
-std::string Request::getBackUpRequest() const
-{ return (backUpRequest_); }
+std::string Request::getTracePayload() const
+{ return (tracePayload_); }
 
 std::string Request::getMethod() const
 { return (requestLine_[METHOD]); }

@@ -26,7 +26,6 @@ const std::string &reqTarget, const std::vector<Parsing::server> *servers, const
 	std::cout << "\033[1;32mSuccess\033[0m > " << testName << std::endl;
 }
 
-
 static void testForbiddenMethod()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;

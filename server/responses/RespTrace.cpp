@@ -2,7 +2,7 @@
 
 RespTrace::RespTrace(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-	request_ = req_.getBackUpRequest();
+	request_ = req_.getTracePayload();
 }
 
 RespTrace::~RespTrace() { }
