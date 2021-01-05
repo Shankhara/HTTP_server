@@ -281,6 +281,7 @@ int Request::accessControl_()
 	else if (!isMethodAuthorized_(location_))
 		return 405;
 
+	// TODO: this code doesnt really belong here
 	if (!location_->root.empty())
 	{
 		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], \
@@ -288,6 +289,8 @@ int Request::accessControl_()
 		if (requestLine_[REQTARGET][0] != '/')
 			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 	}
+	if (!location_->index.empty() && requestLine_[REQTARGET][requestLine_[REQTARGET].size() -1] == '/')
+		requestLine_[REQTARGET] += location_->index;
 	return statusCode_;
 }
 
