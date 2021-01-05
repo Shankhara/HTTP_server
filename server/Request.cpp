@@ -152,7 +152,7 @@ void Request::parseQueryString()
 	i = requestLine_[REQTARGET].find('?');
 	if (i != std::string::npos)
 	{
-		queryString_ = requestLine_[REQTARGET].substr(i);
+		queryString_ = requestLine_[REQTARGET].substr(i + 1);
 		requestLine_[REQTARGET].erase(i);
 	}
 }

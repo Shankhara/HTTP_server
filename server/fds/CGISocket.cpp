@@ -74,6 +74,7 @@ void CGISocket::setPid(pid_t pid) {
 }
 
 void CGISocket::parseCGIStatus(char *buf, int nbytes) {
+	buf[nbytes] = '\0';
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
 		resp_ = "HTTP/1.1 200 OK\r\n";

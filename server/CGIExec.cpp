@@ -99,7 +99,7 @@ FileDescriptor *CGIExec::run()
 			Log::get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root << std::endl;
 			write500();
 		}
-		//dupSTDERR_();
+		dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else
