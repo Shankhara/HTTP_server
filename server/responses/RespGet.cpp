@@ -39,8 +39,14 @@ int RespGet::readFile_() {
 void RespGet::openFile_(const Parsing::location *location)
 {
 	int isDir;
+	int res;
 	struct stat st;
-	stat(filePath_.c_str(), &st);
+	res = stat(filePath_.c_str(), &st);
+	if (res != 0)
+	{
+		fd_ = -1;
+		return ;
+	}
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir != 0)
 	{

@@ -191,13 +191,9 @@ int Request::parseHeaders()
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
-		ret = headerLine[HEADERTITLE].rfind("x-", 0);
-		if (ret != std::string::npos)
-		{
-			std::string::iterator end_pos = std::remove(headerLine[HEADERCONTENT].begin(), headerLine[HEADERCONTENT].end(), ' ');
-			customHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT].c_str() + std::distance(headerLine[HEADERCONTENT].begin(), end_pos);
-		}
-
+		while (headerLine[HEADERCONTENT][0] == ' ') // TODO: cant we do this in workLine?
+			headerLine[HEADERCONTENT].erase(0, 1);
+		cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
 	}
 	return 400;
 }
@@ -330,8 +326,8 @@ int Request::parse()
 int Request::doRequest(char buf[], size_t nbytes)
 {
 	if (!headers_parsed)
-		backUpRequest_.append(buf, nbytes); // TODO: duplicate raw requestLine/headers but do not duplicate body
-											// in fact we should only keep slice of this str instead of duplicating small parts
+		backUpRequest_.append(buf, nbytes);
+
 	request_.append(buf, nbytes);
 
 	parse();
@@ -451,8 +447,8 @@ std::string Request::getHeaderContentLanguage() const
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
 
-std::map<std::string, std::string> Request::getCustomHeaders() const
-{ return customHeaders_; }
+std::map<std::string, std::string> Request::getCGIHeaders() const
+{ return cgiHeaders_; }
 
 bool Request::isHeadersParsed() const
 { return headers_parsed; }
@@ -464,10 +460,3 @@ std::string Request::consumeBody()
 	return (c);
 }
 
-const std::vector<std::string> &Request::getHeadersRaw() const {
-	return headersRaw_;
-}
-
-const std::vector<std::string> &Request::getHeadersName() const {
-	return headersName;
-}

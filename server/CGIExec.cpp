@@ -25,16 +25,12 @@ CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	envs_.push_back("REDIRECT_STATUS=200");
-	std::map<std::string, std::string> cHeaders = request_.getCustomHeaders(); // should be a ref instead passing by value
+	std::map<std::string, std::string> cHeaders = request_.getCGIHeaders(); // should be a ref instead passing by value
 	std::map<std::string, std::string>::iterator it = cHeaders.begin();
 
 	while (it != cHeaders.end()) {
 		setEnvFromHeader_(it->first, it->second);
 		++it;
-	}
-	for (size_t i = 0; i < request_.getHeadersRaw().size(); i++)
-	{
-		setEnvFromHeader_(request_.getHeadersName()[i], request_.getHeadersRaw()[i]);
 	}
 }
 

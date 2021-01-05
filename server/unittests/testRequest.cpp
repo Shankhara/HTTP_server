@@ -193,7 +193,7 @@ void badHeaders()
 	delete (vhost);
 }
 
-void testCustomHeaders()
+void testCGIHeaders()
 {
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -203,7 +203,7 @@ void testCustomHeaders()
 	std::string str = "GET /qwe HTTP/1.1\r\nX-custom1: a\r\nHost: 2\r\nContent-length: 0\r\nX-custom2: b\r\nX-custom3: c\r\n\r\n";
 	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 200, "test getter");
-	std::map<std::string, std::string> tmp = a.getCustomHeaders();
+	std::map<std::string, std::string> tmp = a.getCGIHeaders();
 //	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
 //		std::cout << it->first << " => " << it->second << std::endl;
 
@@ -336,6 +336,16 @@ static void testServerMatch()
 	assertEqual(c.doRequest(const_cast<char*>(req.c_str()), req.size()), 405, "matchServer google.com:8080 GET is forbidden");
 }
 
+static void testExplode()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<std::string> res = explode("Host: 8080", ':', 1);
+	assertEqual(res.at(0), std::string("Host"), "explode title");
+	assertEqual(res.at(1), std::string(" 8080"), "explode value");
+
+}
+
 void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -345,7 +355,7 @@ void testRequest()
 	badRequestLine();
 	correctHeaders();
  	badHeaders();
-	testCustomHeaders();
+	testCGIHeaders();
 	correctSequencialReceive(5);
 	correctSequencialReceive(10);
 	correctChunkedBody();
@@ -356,4 +366,5 @@ void testRequest()
 	testIncorrectContentLength();
 	testStrToHex();
 	testServerMatch();
+	testExplode();
 }
