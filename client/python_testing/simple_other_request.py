@@ -19,7 +19,7 @@ class Test_other_request():
 
 	def test01_head(self):
 		self.print_test_value("/", "HEAD", "01")
-		for in range(100):
+		for i in range(100):
 			webserv = req.head(self.url_webserv + "/")
 			self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
 			self.tests = pt().test(webserv.text, "", "Checking for empty content", self.tests)
@@ -79,6 +79,18 @@ class Test_other_request():
 			self.tests = pt().test(str(res.status_code), "404", "Checking status code of get after deleting file", self.tests)
 
 
+	def test07_options(self):
+		self.print_test_value("/", "OPTIONS", "07")
+		#for i in range (50):
+#		webserv = req.options(self.url_webserv + "/")
+		nginx = req.options(self.url_nginx + "/")
+		print(nginx.headers)	
+#		print(webserv.headers)	
+		print(nginx.text)
+#		print(webserv.text)	
+		print(nginx.status_code)	
+#		print(webserv.status_code)	
+		
 
 	def test_simple_other_request(self):
 	#	self.test00_trace()
@@ -88,4 +100,5 @@ class Test_other_request():
 		self.test04_put()
 		self.test05_delete()
 		self.test06_delete()
+#		self.test07_options()
 		return self.tests	
