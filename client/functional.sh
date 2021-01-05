@@ -30,5 +30,5 @@ export WEBSERV_PORT="9081"
 #echo "Running test"
 #cd ../../python_testing
 cd python_testing
-python3 -W ignore main.py > file.log
-cat file.log
+python3 -W ignore main.py #> file.log
+#cat file.log

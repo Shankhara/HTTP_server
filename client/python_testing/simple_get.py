@@ -15,28 +15,28 @@ class Test_get():
 	
 
 	def print_test_content(self, path, test_number):
-		nginx = req.get(self.url_nginx + path)
-		webserv = req.get(self.url_webserv + path)
-		
 		self.print_test_value(path, test_number)	
-		self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
-		self.tests = pt().test(webserv.headers['Content-Length'], str(len(webserv.text)), "Checking header Content-Length", self.tests)
-		self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
+		for i in range (100):
+			nginx = req.get(self.url_nginx + path)
+			webserv = req.get(self.url_webserv + path)
+			self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
+			self.tests = pt().test(webserv.headers['Content-Length'], str(len(webserv.text)), "Checking header Content-Length", self.tests)
+			self.tests = pt().test(webserv.headers['Content-Type'], nginx.headers['Content-Type'], "Checking header Content-Type", self.tests)
 
 	def print_test_throw(self, path, test_name, test_number):	
-		throw_webserv = False;	
-		throw_nginx = False;
-		
 		self.print_test_value(path, test_number)	
-		try:
-			nginx = req.get(self.url_nginx + path)
-		except req.exceptions.RequestException as e:
-			throw_nginx = True;	
-		try:
-			webserv = req.get(self.url_webserv + path)
-		except req.exceptions.RequestException as e:
-			throw_webserv = True;
-		self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
+		for i in range (100):
+			throw_webserv = False;	
+			throw_nginx = False;
+			try:
+				nginx = req.get(self.url_nginx + path)
+			except req.exceptions.RequestException as e:
+				throw_nginx = True;	
+			try:
+				webserv = req.get(self.url_webserv + path)
+			except req.exceptions.RequestException as e:
+				throw_webserv = True;
+			self.tests = pt().test(str(throw_webserv), str(throw_nginx), test_name, self.tests)
 
 	def test00_get(self):
 		self.print_test_content("/", "00")
