@@ -17,7 +17,7 @@ if __name__ == "__main__":
 	tests = sg(URL_NGINX, URL_WEBSERV, tests).test_simple_get()
 	tests = sp(URL_NGINX, URL_WEBSERV, tests).test_simple_post()
 	tests = ag(URL_NGINX, URL_WEBSERV, tests).test_advanced_get()
-#	tests = other(URL_NGINX, URL_WEBSERV, tests).test_simple_other_request()
+	tests = other(URL_NGINX, URL_WEBSERV, tests).test_simple_other_request()
 
 	if tests[0] != tests[1]:
 		print("\n\n\t\t\033[1;31m" + str(tests[0]) + " / " + str(tests[1]) + "\tSuccessful Tests" + "\033[0m\n\n")
