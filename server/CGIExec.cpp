@@ -92,14 +92,14 @@ FileDescriptor *CGIExec::run()
 	}
 	if (cpid == 0)
 	{
+		pipeSTDOUT_(pipeOUT);
+		pipeSTDIN_(pipeIN);
 		if (chdir(location->root.c_str()) == -1)
 		{
 			Log::get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root << std::endl;
-			exit(EXIT_FAILURE);
+			write500();
 		}
-		pipeSTDOUT_(pipeOUT);
-		pipeSTDIN_(pipeIN);
-		dupSTDERR_();
+		//dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
 	else

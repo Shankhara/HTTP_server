@@ -222,9 +222,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[HOST].empty())
 	{
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
-		size_t pos = headerHost_.find(':', 0);
-		if (pos != std::string::npos)
-			headerHost_.assign(headerHost_, 0, pos);
+
 	}
 	else
 		return 400;
@@ -343,11 +341,17 @@ int Request::doRequest(char buf[], size_t nbytes)
 
 const Parsing::server *Request::matchServer_() const
 {
+	std::string host;
+	size_t pos = headerHost_.find(':', 0);
+	if (pos != std::string::npos)
+		host.assign(headerHost_, 0, pos);
+	else
+		host = headerHost_;
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
-			if (servers_[i].names[k] == getHeaderHost())
+			if (servers_[i].names[k] == host)
 				return (&servers_[i]);
 		}
 	}

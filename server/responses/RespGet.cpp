@@ -57,6 +57,7 @@ void RespGet::openFile_(const Parsing::location *location)
 	}
 	if (isDir)
 		fstat(fd_, &st);
-	appendHeaders(200, "text/html", st.st_size);
+	appendHeaders(200, Mime::getInstance()->getContentType(filePath_), st.st_size);
+	Log::get(logINFO) << "PATH: " << filePath_ << ":" << Mime::getInstance()->getContentType(filePath_) << std::endl;
 	headersBuilt_ = true;
 }

@@ -74,17 +74,15 @@ void CGISocket::setPid(pid_t pid) {
 }
 
 void CGISocket::parseCGIStatus(char *buf, int nbytes) {
-	buf[nbytes] = '\0';
 	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
 	{
 		resp_ = "HTTP/1.1 200 OK\r\n";
 		resp_.append(buf, nbytes);
 		return ;
 	}
-	//TODO: check if its a valid HTTP code
 	resp_ = "HTTP/1.1 ";
 	resp_.append(buf + 8, 3);
-	resp_.append("\r\n");
+	resp_.append(" OK\r\n");
 	size_t crlf = std::string(buf, nbytes).find("\r\n", 0);
 	if (crlf == std::string::npos || crlf + 2 > static_cast<size_t>(nbytes))
 		crlf = 0;

@@ -1,4 +1,5 @@
 #include "Mime.hpp"
+#include "Log.hpp"
 
 Mime * Mime::instance_ = 0;
 
@@ -54,17 +55,13 @@ void Mime::parseMimeFile()
 
 std::string Mime::getExtension(const std::string & filename) const
 {
-	size_t start, end;
+	size_t start;
 	size_t dead = std::string::npos;
-	std::string res;
 
-	start = filename.find('.', 0);
-	end = filename.find('.', ++start);
+	start = filename.find_last_of('.');
 	if (start == dead)
-		return (res);
-	if (end == dead)
-		return filename.substr(start);
-	return filename.substr(start, end - start);
+		return (filename);
+	return filename.substr(start + 1, filename.size() - start);
 }
 
 std::string Mime::getFilename(std::string & param) const
