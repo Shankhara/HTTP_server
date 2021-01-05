@@ -199,8 +199,10 @@ int Request::parseHeaders()
 		}
 		size_t notSpace = headerLine[HEADERCONTENT].find_first_not_of(' ', 0);
 		if (notSpace != std::string::npos)
-			headerLine[HEADERCONTENT].erase(0, notSpace);
-		cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
+			cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT].substr(notSpace, headerLine[HEADERCONTENT].size() - notSpace);
+		else
+			cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
+
 	}
 	return 400;
 }
