@@ -11,7 +11,7 @@ class RespPost: public RespFile
 
 	void postPayload_();
 	void makeResponse_();
-	void openFile_();
+	void manageFile_();
 	
 	public:
 	RespPost(const Request &r, char[], unsigned int);
