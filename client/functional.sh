@@ -31,4 +31,4 @@ echo "Running test"
 cd ../../python_testing
 #cd python_testing
 python3 -W ignore main.py #> file.log
-cat file.log
+#cat file.log

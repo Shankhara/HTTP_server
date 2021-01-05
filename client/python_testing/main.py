@@ -14,9 +14,9 @@ URL_WEBSERV = "http://localhost:{}".format(PORT_WEBSERV);
 
 if __name__ == "__main__":
 	tests = [0,0]
-#	tests = sg(URL_NGINX, URL_WEBSERV, tests).test_simple_get()
-#	tests = sp(URL_NGINX, URL_WEBSERV, tests).test_simple_post()
-#	tests = ag(URL_NGINX, URL_WEBSERV, tests).test_advanced_get()
+	tests = sg(URL_NGINX, URL_WEBSERV, tests).test_simple_get()
+	tests = sp(URL_NGINX, URL_WEBSERV, tests).test_simple_post()
+	tests = ag(URL_NGINX, URL_WEBSERV, tests).test_advanced_get()
 	tests = other(URL_NGINX, URL_WEBSERV, tests).test_simple_other_request()
 
 	if tests[0] != tests[1]:
