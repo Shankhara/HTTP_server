@@ -333,9 +333,11 @@ int Request::parse()
 	}
 
 	if (headers_parsed && statusCode_ == 100)
+	{
 		statusCode_ = parseBody();
-	if (getMethod() == "TRACE")
-		tracePayload_.append(request_); 
+		if (getMethod() == "TRACE")
+			tracePayload_.append(request_); 
+	}
 
 	return (statusCode_);
 }
