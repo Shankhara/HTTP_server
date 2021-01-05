@@ -39,8 +39,14 @@ int RespGet::readFile_() {
 void RespGet::openFile_(const Parsing::location *location)
 {
 	int isDir;
+	int res;
 	struct stat st;
-	stat(filePath_.c_str(), &st);
+	res = stat(filePath_.c_str(), &st);
+	if (res != 0)
+	{
+		fd_ = -1;
+		return ;
+	}
 	isDir = S_ISDIR(st.st_mode);
 	if (isDir != 0)
 	{
@@ -57,6 +63,7 @@ void RespGet::openFile_(const Parsing::location *location)
 	}
 	if (isDir)
 		fstat(fd_, &st);
-	appendHeaders(200, "text/html", st.st_size);
+	appendHeaders(200, Mime::getInstance()->getContentType(filePath_), st.st_size);
+	Log::get(logINFO) << "PATH: " << filePath_ << ":" << Mime::getInstance()->getContentType(filePath_) << std::endl;
 	headersBuilt_ = true;
 }

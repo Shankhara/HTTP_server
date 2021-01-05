@@ -27,7 +27,7 @@ public:
 
 private:
 	std::vector<std::string> 			requestLine_;
-	std::map<std::string, std::string>	customHeaders_;
+	std::map<std::string, std::string>	cgiHeaders_;
 	const std::vector<Parsing::server>	&servers_;
 	const Parsing::location *location_;
 	const Parsing::server *server_;
@@ -119,5 +119,5 @@ private:
 	std::string getHeaderAllow() const;
 	std::string getHeaderContentLanguage() const;
 	std::string getHeaderContentType() const;
-	std::map<std::string, std::string> getCustomHeaders() const;
+	std::map<std::string, std::string> getCGIHeaders() const;
 };

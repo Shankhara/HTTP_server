@@ -19,6 +19,7 @@ std::vector<Parsing::server> *createVirtualHosts()
 
 int main(int argc, char *argv[])
 {
+	Log::getInstance()->setLevel(logERROR);
 	if (argc == 2)
 	{
 		std::string arg = std::string(argv[1]);

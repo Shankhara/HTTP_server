@@ -154,7 +154,7 @@ void Request::parseQueryString()
 	i = requestLine_[REQTARGET].find('?');
 	if (i != std::string::npos)
 	{
-		queryString_ = requestLine_[REQTARGET].substr(i);
+		queryString_ = requestLine_[REQTARGET].substr(i + 1);
 		requestLine_[REQTARGET].erase(i);
 	}
 }
@@ -197,13 +197,10 @@ int Request::parseHeaders()
 				return 414;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
-		ret = headerLine[HEADERTITLE].rfind("x-", 0);
-		if (ret != std::string::npos)
-		{
-			std::string::iterator end_pos = std::remove(headerLine[HEADERCONTENT].begin(), headerLine[HEADERCONTENT].end(), ' ');
-			customHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT].c_str() + std::distance(headerLine[HEADERCONTENT].begin(), end_pos);
-		}
-
+		size_t notSpace = headerLine[HEADERCONTENT].find_first_not_of(' ', 0);
+		if (notSpace != std::string::npos)
+			headerLine[HEADERCONTENT].erase(0, notSpace);
+		cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
 	}
 	return 400;
 }
@@ -228,9 +225,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[HOST].empty())
 	{
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
-		size_t pos = headerHost_.find(':', 0);
-		if (pos != std::string::npos)
-			headerHost_.assign(headerHost_, 0, pos);
+
 	}
 	else
 		return 400;
@@ -344,7 +339,6 @@ int Request::parse()
 
 int Request::doRequest(char buf[], size_t nbytes)
 {
-
 	request_.append(buf, nbytes);
 	parse();
 
@@ -353,11 +347,17 @@ int Request::doRequest(char buf[], size_t nbytes)
 
 const Parsing::server *Request::matchServer_() const
 {
+	std::string host;
+	size_t pos = headerHost_.find(':', 0);
+	if (pos != std::string::npos)
+		host.assign(headerHost_, 0, pos);
+	else
+		host = headerHost_;
 	for (unsigned long i = 0; i < servers_.size(); i++)
 	{
 		for (unsigned long k = 0; k < servers_[i].names.size(); k++)
 		{
-			if (servers_[i].names[k] == getHeaderHost())
+			if (servers_[i].names[k] == host)
 				return (&servers_[i]);
 		}
 	}
@@ -457,8 +457,8 @@ std::string Request::getHeaderContentLanguage() const
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
 
-std::map<std::string, std::string> Request::getCustomHeaders() const
-{ return customHeaders_; }
+std::map<std::string, std::string> Request::getCGIHeaders() const
+{ return cgiHeaders_; }
 
 bool Request::isHeadersParsed() const
 { return headers_parsed; }
@@ -470,10 +470,3 @@ std::string Request::consumeBody()
 	return (c);
 }
 
-const std::vector<std::string> &Request::getHeadersRaw() const {
-	return headersRaw_;
-}
-
-const std::vector<std::string> &Request::getHeadersName() const {
-	return headersName;
-}

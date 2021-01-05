@@ -25,16 +25,12 @@ CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	envs_.push_back("REDIRECT_STATUS=200");
-	std::map<std::string, std::string> cHeaders = request_.getCustomHeaders(); // should be a ref instead passing by value
+	std::map<std::string, std::string> cHeaders = request_.getCGIHeaders(); // should be a ref instead passing by value
 	std::map<std::string, std::string>::iterator it = cHeaders.begin();
 
 	while (it != cHeaders.end()) {
 		setEnvFromHeader_(it->first, it->second);
 		++it;
-	}
-	for (size_t i = 0; i < request_.getHeadersRaw().size(); i++)
-	{
-		setEnvFromHeader_(request_.getHeadersName()[i], request_.getHeadersRaw()[i]);
 	}
 }
 
@@ -92,13 +88,13 @@ FileDescriptor *CGIExec::run()
 	}
 	if (cpid == 0)
 	{
+		pipeSTDOUT_(pipeOUT);
+		pipeSTDIN_(pipeIN);
 		if (chdir(location->root.c_str()) == -1)
 		{
 			Log::get(logERROR) << __FUNCTION__  << " Unable to chdir: " << strerror(errno) << " DIR: " << location->root << std::endl;
-			exit(EXIT_FAILURE);
+			write500();
 		}
-		pipeSTDOUT_(pipeOUT);
-		pipeSTDIN_(pipeIN);
 		dupSTDERR_();
 		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
 	}
