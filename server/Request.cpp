@@ -52,7 +52,10 @@ std::vector<std::string> Request::workLine(std::string & line, const char & c)
 			return (res);
 
 		line.erase(line.begin() + i);
-		res = explode(line, c);
+		if (c == ':')
+			res = explode(line, c, 1);
+		else
+			res = explode(line, c);
 	}
 	return (res);
 }
@@ -165,7 +168,7 @@ int Request::parseHeaders()
 	while ((getNextLine(request_, line)) > -1)
 	{
 		ret = line.find(':', 0);
-		if (ret != std::string::npos && line[ret - 1] < 33)
+		if (ret != std::string::npos && (line[ret - 1] < 33 || line[ret + 1] == ':'))
 			return 400;
 
 		headerLine = workLine(line, ':');

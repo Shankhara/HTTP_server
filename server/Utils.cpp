@@ -213,7 +213,30 @@ std::vector<std::string> explode(const std::string & str, const char & delim)
 	return (res);
 }
 
-int getNextLine(std::string & buf, std::string & line) {
+std::vector<std::string> explode(const std::string & str, const char & delim, size_t chunkNum)
+{
+	size_t start, i = 0, end = 0;
+	std::vector<std::string> res;
+
+	if (chunkNum > 0)
+	{
+		while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
+		{
+			end = str.find(delim, start);
+			res.push_back(str.substr(start, end - start));
+			i++;
+			if (i == chunkNum)
+			{
+				res.push_back(str.substr(++end));
+				break;
+			}
+		}
+	}
+	return (res);
+}
+
+int getNextLine(std::string & buf, std::string & line)
+{
 	size_t pos;
 
 	pos = buf.find("\n");

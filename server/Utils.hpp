@@ -25,6 +25,7 @@ std::string decode64(std::string const &str);
 std::string getStrDate();
 std::string ft_itoa(unsigned long);
 size_t strHexToInt(std::string str);
-std::vector<std::string> explode(const std::string & str, const char & delim);
+std::vector<std::string> explode(const std::string &, const char &);
+std::vector<std::string> explode(const std::string &, const char &, size_t);
 
 #endif

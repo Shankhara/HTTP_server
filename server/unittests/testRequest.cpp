@@ -176,17 +176,19 @@ void badHeaders()
 {
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
 	Request a(*vhost);
-	int ret;
-	std::string str = "GET /qwe HTTP/1.1\r\nHost: 2\r\nContent-length: 3\r\n\r\n";
-	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
-	assertEqual(ret, 100, "no body despite content-length header");
 
-	Request b(*vhost);
-	str = "GET /qwe HTTP/1.1\r\nReferer : 2\r\nDate: today\r\n\r\n";
-	ret = b.doRequest(const_cast<char *>(str.c_str()), str.size());
-	assertEqual(ret, 400, "whitespace between header name and colon");
+	std::string str = "GET /qwe HTTP/1.1\r\nHost: 2\r\nContent-length: 3\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "no body despite content-length header", 100);
+
+	str = "GET /qwe HTTP/1.1\r\nHost : 2\r\nDate: today\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "whitespace between header name and colon", 400);
+
+	str = "GET /qwe HTTP/1.1\r\nHost:: 2\r\nDate: today\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "two ':'", 400);
+
+	str = "GET /qwe HTTP/1.1\r\nHost::: 2\r\nDate: today\r\n\r\n";
+	assertRequest(str, "GET", "/qwe", vhost, "three ':'", 400);
 
 	delete (vhost);
 }
@@ -256,6 +258,7 @@ static void testBodyWithGet()
 
 	str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\nContent-length: 0\r\n\r\nqweqwe";
 	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 0 with a body", 200);
+	//Could work if I add more tests to parseHeadersContent for Content-len & TE
 
 	delete (vhost);
 }
