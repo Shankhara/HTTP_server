@@ -17,7 +17,8 @@ class Request
 	private:
 	int statusCode_;
 	std::string request_;
-	std::string backUpRequest_;
+
+	std::string tracePayload_;
 	std::string msgBody_;
 	std::string queryString_;
 	std::vector<std::string> 			headersRaw_;
@@ -101,7 +102,7 @@ private:
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
 	std::string getBody() const;
-	std::string getBackUpRequest() const;
+	std::string getTracePayload() const;
 	std::string consumeBody();
 	std::string getRequest() const;
 	std::string getMethod() const;
