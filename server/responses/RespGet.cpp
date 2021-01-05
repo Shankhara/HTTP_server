@@ -36,20 +36,33 @@ int RespGet::readFile_() {
 	return (currentRead + nbytes_);
 }
 
-void RespGet::openFile_(const Parsing::location *)
+void RespGet::openFile_(const Parsing::location *location)
 {
+	int isDir;
 	int res;
 	struct stat st;
-	//Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index << std::endl;
+	res = stat(filePath_.c_str(), &st);
+	if (res != 0)
+	{
+		fd_ = -1;
+		return ;
+	}
+	isDir = S_ISDIR(st.st_mode);
+	if (isDir != 0)
+	{
+		if (filePath_[filePath_.size() -1] != '/')
+			filePath_ += '/';
+		filePath_ += location->index;
+	}
+	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index << std::endl;
 	fd_ = open(filePath_.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		return ;
 	}
-	res = fstat(fd_, &st);
-	if (res != 0)
-		Log::get(logERROR) << __FUNCTION__  << " unable to fstat: " << strerror(errno) << std::endl;
+	if (isDir)
+		fstat(fd_, &st);
 	appendHeaders(200, Mime::getInstance()->getContentType(filePath_), st.st_size);
 	Log::get(logINFO) << "PATH: " << filePath_ << ":" << Mime::getInstance()->getContentType(filePath_) << std::endl;
 	headersBuilt_ = true;

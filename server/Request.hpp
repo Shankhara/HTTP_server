@@ -32,6 +32,11 @@ private:
 	const Parsing::location *location_;
 	const Parsing::server *server_;
 
+	std::string originalReqTarget_;
+public:
+	const std::string &getOriginalReqTarget() const;
+
+private:
 	int headerContentLength_;
 	std::string headerDate_;
 	std::string headerAuth_;

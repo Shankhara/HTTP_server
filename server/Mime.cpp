@@ -86,5 +86,5 @@ std::string Mime::getContentType(std::string & param) const
 				return mime_[i];
 		}
 	}
-	return "text/plain";
+	return "application/octet-stream";
 }

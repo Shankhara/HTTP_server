@@ -50,15 +50,15 @@ void CGIExec::build_(const std::string &workDir) {
 	setEnv_(CGIExec::CONTENT_TYPE, request_.getHeaderContentType());
 	setEnv_(CGIExec::GATEWAY_INTERFACE, "CGI/1.1");
 	setEnv_(CGIExec::QUERY_STRING, request_.getQueryStr());
-	setEnv_(CGIExec::PATH_INFO, request_.getReqTarget());
+	setEnv_(CGIExec::PATH_INFO, request_.getOriginalReqTarget());
 	setEnv_(CGIExec::PATH_TRANSLATED, workDir + request_.getReqTarget());
 	setEnv_(CGIExec::REMOTE_ADDR, "");
 	setEnv_(CGIExec::REMOTE_IDENT, "");
 	setEnv_(CGIExec::REMOTE_USER, "");
 	setEnv_(CGIExec::REQUEST_METHOD, request_.getMethod());
-	setEnv_(CGIExec::REQUEST_URI, request_.getReqTarget());
+	setEnv_(CGIExec::REQUEST_URI, request_.getOriginalReqTarget());
 	setEnv_(CGIExec::SCRIPT_FILENAME, workDir + request_.getReqTarget());
-	setEnv_(CGIExec::SCRIPT_NAME, request_.getReqTarget());
+	setEnv_(CGIExec::SCRIPT_NAME, request_.getOriginalReqTarget());
 	setEnv_(CGIExec::SERVER_NAME, request_.getHeaderHost());
 	setEnv_(CGIExec::SERVER_PORT, ft_itoa(request_.getServer()->port));
 	setEnv_(CGIExec::SERVER_PROTOCOL, "HTTP/1.1");

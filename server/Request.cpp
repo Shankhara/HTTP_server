@@ -282,6 +282,7 @@ int Request::accessControl_()
 		return 405;
 
 	// TODO: this code doesnt really belong here
+	originalReqTarget_ = requestLine_[REQTARGET];
 	if (!location_->root.empty())
 	{
 		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], \
@@ -473,5 +474,9 @@ std::string Request::consumeBody()
 	std::string c = msgBody_;
 	msgBody_.clear();
 	return (c);
+}
+
+const std::string &Request::getOriginalReqTarget() const {
+	return originalReqTarget_;
 }
 
