@@ -4,7 +4,6 @@ DIR=${WEBSERV}"/wordpress"
 
 echo "Bootstrapping in ${WEBSERV}"
 
-rm -Rf ${WEBSERV}/wordpress/
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
 wget -q -P ${WEBSERV} -nc https://fr.wordpress.org/latest-fr_FR.tar.gz 
 sudo apt install php-cgi php-mysql
@@ -24,4 +23,4 @@ echo "server {
 cd ${PWD}
 echo "Building webserv"
 cd ../server && make > /dev/null && cd ../tools
-valgrind ../server/webserv ${WEBSERV}/wordpress.conf
+../server/webserv ${WEBSERV}/wordpress.conf
