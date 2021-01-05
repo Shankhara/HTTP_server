@@ -66,6 +66,29 @@ void testRespPost()
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
+
+	str = "POST /new_dir/a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
+	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
+	Request rb(*vhost);
+	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
+	RespPost respPost_b(rb, buf, bufsize);
+
+	readSize = respPost_b.readResponse();
+	Log::get(logDEBUG) << "READ " << readSize << std::endl;
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+
+	str = "POST /a/b/c/d/new_dir/a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
+	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
+	Request rc(*vhost);
+	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
+	RespPost respPost_c(rc, buf, bufsize);
+
+	readSize = respPost_c.readResponse();
+	Log::get(logDEBUG) << "READ " << readSize << std::endl;
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+
 	delete (vhost);
 }
 
@@ -210,11 +233,11 @@ void testMimeType()
 
 void testResponse()
 {
-//	testRespGet();
-//	testRespPut();
-//	testRespPost();
-  	testRespTrace();
-//	testRespDelete();
-//	testRespOptions();
-//	testMimeType();
+	testRespGet();
+	testRespPut();
+	testRespPost();
+ 	testRespTrace();
+	testRespDelete();
+	testRespOptions();
+	testMimeType();
 }

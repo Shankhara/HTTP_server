@@ -12,7 +12,7 @@ RespPost::~RespPost()
 		close(fd_);
 }
 
-void RespPost::openFile_()
+void RespPost::manageFile_()
 {
 	struct stat	buffer;
 
@@ -68,7 +68,7 @@ int RespPost::readResponse()
 	nbytes_ = 0;
 
 	if (fd_ == 0)
-		openFile_();
+		manageFile_();
 	if (statusCode_ == 500)
 		return writeErrorPage(500);
 	payload_ = req_.getBody();

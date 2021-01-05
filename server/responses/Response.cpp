@@ -49,7 +49,6 @@ void Response::writeContentLength_(long value)
 void Response::writeAllow_()
 {
 	append_("Allow: ");
-	std::cout << req_.getLocation()->methods.size() << std::endl;
 	for (size_t i = 0; i < req_.getLocation()->methods.size(); i++)
     {
 	    append_(req_.getLocation()->methods[i]);
