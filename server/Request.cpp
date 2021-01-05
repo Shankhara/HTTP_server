@@ -290,7 +290,7 @@ int Request::accessControl_()
 		if (requestLine_[REQTARGET][0] != '/')
 			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 	}
-	if (!location_->index.empty() && requestLine_[REQTARGET][requestLine_[REQTARGET].size() -1] == '/')
+	if (!location_->index.empty() && !location_->autoindex && requestLine_[REQTARGET][requestLine_[REQTARGET].size() -1] == '/')
 		requestLine_[REQTARGET] += location_->index;
 	return statusCode_;
 }

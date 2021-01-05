@@ -6,7 +6,8 @@ echo "Bootstrapping in ${WEBSERV}"
 
 mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
 wget -q -P ${WEBSERV} -nc https://fr.wordpress.org/latest-fr_FR.tar.gz 
-sudo apt install php-cgi php-mysql
+sudo apt install php-cgi php-mysql mariadb-server
+echo "Untar in ${DIR}"
 tar xzf ${WEBSERV}/latest-fr_FR.tar.gz -C ${WEBSERV} 
 
 echo "server {
