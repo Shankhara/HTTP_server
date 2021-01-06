@@ -22,7 +22,6 @@ private:
 	pid_t  				pid_;
 	bool 				httpStatus_;
 	void 				parseCGIStatus(char buf[], int);
-	void				appendContentLenght_();
 
 public:
 	static unsigned int instances;

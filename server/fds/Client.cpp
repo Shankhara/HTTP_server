@@ -2,17 +2,20 @@
 
 char Client::buf_[CLIENT_BUFFER_SIZE];
 
-Client::Client(int fd, const Listener &l): request_(l.getServers()) {
+Client::Client(int fd, const Listener &l) {
 	CGIResponse_ = 0;
 	resp_ = 0;
 	fd_ = fd;
 	setLastEventTimer();
+	request_ = new Request(l.getServers());
 	Log::get(logDEBUG) << "Creating Client: " << fd_ << std::endl;
 }
 
 Client::~Client() {
 	Log::get(logDEBUG) << "Client deleted: " << fd_ << std::endl;
 	close(fd_);
+	if (request_ != 0)
+		delete (request_);
 	if (resp_ != 0)
 		delete(resp_);
 	if (CGIResponse_ != 0)
@@ -38,14 +41,14 @@ void Client::onEvent()
 void Client::constructRequest(char buf[], int nbytes) {
 	int statusCode;
 
-	statusCode = request_.doRequest(buf, nbytes);
+	statusCode = request_->doRequest(buf, nbytes);
 	Log::get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode << std::endl;
 	if (statusCode >= 400)
 	{
-		RespError resp(statusCode, request_, buf_, CLIENT_BUFFER_SIZE);
+		RespError resp(statusCode, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
-	else if (request_.getLocation() != 0)
+	else if (request_->getLocation() != 0)
 			doResponse_();
 }
 
@@ -66,12 +69,12 @@ bool Client::isFileCGI_(const Parsing::location *location, std::string filePath)
 }
 
 void Client::doResponse_() {
-	if (request_.getLocation()->cgi_extension.empty() || !isFileCGI_(request_.getLocation(), request_.getReqTarget()))
+	if (request_->getLocation()->cgi_extension.empty() || !isFileCGI_(request_->getLocation(), request_->getReqTarget()))
 	{
-		if (request_.getStatusCode() == 200 || request_.getMethod() == "PUT" || request_.getMethod() == "POST" )
+		if (request_->getStatusCode() == 200 || request_->getMethod() == "PUT" || request_->getMethod() == "POST" )
 			doStaticFile_();
 	}
-	else if (request_.getStatusCode() == 200)
+	else if (request_->getStatusCode() == 200)
 		doCGI_();
 }
 
@@ -95,27 +98,27 @@ void Client::sendResponse_(Response *resp) {
 	}
 	if (isSent)
 	{
-		//Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_.getMethod() << " http://" << request_.getHeaderHost() << request_.getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
+		//Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }
 
 void Client::responseFactory_() {
 	// TODO: factory just like CPPdays to avoid if else branching?
-	if (request_.getMethod() == "GET")
-		resp_ = new RespGet(request_, buf_, CLIENT_BUFFER_SIZE);
-	else if (request_.getMethod() == "POST")
-		resp_ = new RespPost(request_, buf_, CLIENT_BUFFER_SIZE);
-	else if (request_.getMethod() == "HEAD")
-		resp_ = new RespHead(request_, buf_, CLIENT_BUFFER_SIZE);
-	else if (request_.getMethod() == "TRACE")
-		resp_ = new RespTrace(request_, buf_, CLIENT_BUFFER_SIZE);
-	else if (request_.getMethod() == "DELETE")
-		resp_ = new RespDelete(request_, buf_, CLIENT_BUFFER_SIZE);
-	else if (request_.getMethod() == "PUT")
-		resp_ = new RespPut(request_, buf_, CLIENT_BUFFER_SIZE);
+	if (request_->getMethod() == "GET")
+		resp_ = new RespGet(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "POST")
+		resp_ = new RespPost(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "HEAD")
+		resp_ = new RespHead(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "TRACE")
+		resp_ = new RespTrace(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "DELETE")
+		resp_ = new RespDelete(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "PUT")
+		resp_ = new RespPut(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else
-		resp_ = new RespError(400, request_, buf_, CLIENT_BUFFER_SIZE);
+		resp_ = new RespError(400, *request_, buf_, CLIENT_BUFFER_SIZE);
 }
 
 void Client::doStaticFile_() {
@@ -132,7 +135,7 @@ void Client::doCGI_() {
 	}
 	if (CGISocket::instances > MAX_CGI_FORKS) {
 		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
-		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
+		RespError resp(500, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
@@ -141,11 +144,16 @@ void Client::doCGI_() {
 	CGIResponse_ = exec.run();
 	Server::getInstance()->addFileDescriptor(CGIResponse_);
 	if (CGIResponse_ == 0) {
-		RespError resp(500, request_, buf_, CLIENT_BUFFER_SIZE);
+		RespError resp(500, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 	}
 }
 
 Request &Client::getRequest() {
-	return request_;
+	return *request_;
+}
+
+void Client::flushRequest() {
+	delete request_;
+	request_ = 0;
 }

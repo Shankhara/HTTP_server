@@ -412,7 +412,7 @@ const Parsing::location *Request::getLocation() const
 int Request::getStatusCode() const
 { return (statusCode_); }
 
-std::string Request::getBody() const
+const std::string &Request::getBody() const
 { return (msgBody_); }
 
 std::string Request::getTracePayload() const

@@ -33,7 +33,7 @@ class Client: public FileDescriptor {
 private:
 	FileDescriptor						*CGIResponse_;
 	Response							*resp_;
-	Request								request_;
+	Request								*request_;
 	static char 						buf_[CLIENT_BUFFER_SIZE];
 	void 								doResponse_();
 	void 								sendResponse_(Response *);
@@ -48,6 +48,7 @@ public:
 	void 							constructRequest(char [], int);
 	void 							onEvent();
 	Request							&getRequest();
+	void 							flushRequest();
 };
 
 #endif //WEBSERV_CLIENT_HPP

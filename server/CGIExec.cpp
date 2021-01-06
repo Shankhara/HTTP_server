@@ -77,12 +77,12 @@ FileDescriptor *CGIExec::run()
 		Log::get(logERROR) << __FUNCTION__  << "Unable to pipe: " << strerror(errno) << std::endl;
 		return (0);
 	}
-	CGISocket *response = new CGISocket(pipeOUT[0], client_);
+	CGISocket *pSocket = new CGISocket(pipeOUT[0], client_);
 	build_(location->root);
 	pid_t cpid = fork();
 	if (cpid < 0)
 	{
-		delete response;
+		delete pSocket;
 		Log::get(logERROR) << __FUNCTION__  << "Unable to fork: " << strerror(errno) << std::endl;
 		return (0);
 	}
@@ -96,22 +96,25 @@ FileDescriptor *CGIExec::run()
 			write500();
 		}
 		dupSTDERR_();
-		exec_(location->cgi_path, location->root + client_.getRequest().getReqTarget());
+		std::string target = client_.getRequest().getReqTarget();
+		//client_.flushRequest();
+		exec_(location->cgi_path, location->root + target);
 	}
 	else
 	{
 		close(pipeIN[0]);
-		std::string body = client_.getRequest().getBody();
+		const std::string &body = client_.getRequest().getBody();
 		if (!body.empty())
 		{
 			Log::get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size() << std::endl;
 			write(pipeIN[1], body.c_str(), body.size());
 		}
-		response->setPid(cpid);
+		client_.flushRequest();
+		pSocket->setPid(cpid);
 		close(pipeOUT[1]);
 		close(pipeIN[1]);
 	}
-	return (response);
+	return (pSocket);
 }
 
 void CGIExec::exec_(const std::string &bin, const std::string &filename)

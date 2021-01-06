@@ -100,7 +100,7 @@ private:
 	const Parsing::location *getLocation() const;
 	int getStatusCode() const;
 	int getHeaderContentLength() const;
-	std::string getBody() const;
+	const std::string &getBody() const;
 	std::string getTracePayload() const;
 	std::string consumeBody();
 	std::string getRequest() const;

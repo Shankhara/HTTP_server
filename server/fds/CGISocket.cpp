@@ -51,7 +51,7 @@ void CGISocket::onEvent()
 		send(client_.getFd(), resp_.c_str(), resp_.size(), 0);
 	}
 	else
-		Log::get(logDEBUG) << "CGIResponse > read error " << strerror(errno) << std::endl;
+		Log::get(logERROR) << "CGIResponse > read error " << strerror(errno) << std::endl;
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
 
