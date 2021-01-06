@@ -5,7 +5,6 @@
 class RespError: public Response
 {
 	private:
-	int fd_;
 	int statusCode_;
 	
 	public:

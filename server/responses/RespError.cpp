@@ -1,9 +1,8 @@
 #include "RespError.hpp"
 
 RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int bufSize): \
-Response( r, buf, bufSize), statusCode_(statusCode)
+Response(r, buf, bufSize), statusCode_(statusCode)
 {
-	fd_ = 0;
 	Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget() << std::endl;
 }
 
@@ -11,10 +10,22 @@ RespError::~RespError() {}
 
 int RespError::readResponse()
 {
-	//TODO: #42
 	nbytes_ = 0;
-	if (fd_ == 0)
-		writeErrorPage(statusCode_);
+	
+	if (headersBuilt_)
+		return 0;
+
+	writeStatusLine_(statusCode_);
+	writeBaseHeaders_();
+	writeContentType_("text/html");
+
+	if (statusCode_ == 401)
+		writeThisHeader_("WWW-Authenticate", "Basic realm=\"simple\"");
+		//writeThisHeader_("WWW-Authenticate", "Basic realm=\"" + req_.getLocation()->auth_basic + "\""); // TODO #73
+	if (statusCode_ == 405)
+		writeAllow_();
+
+	writeErrorBody(statusCode_);
 	return nbytes_;
 }
 

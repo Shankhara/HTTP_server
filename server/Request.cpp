@@ -214,23 +214,32 @@ int Request::parseHeadersContent()
 		headerDate_ = removeSpaces(headersRaw_[DATE]);
 
 	//REQUEST HEADERS
-	if (!headersRaw_[ACCEPT_CHARSETS].empty())
-		headerAcceptCharset_ = removeSpaces(headersRaw_[ACCEPT_CHARSETS]);
+	if (!headersRaw_[ACCEPT_CHARSET].empty())
+	{
+		std::string tmp = removeSpaces(headersRaw_[ACCEPT_CHARSET]);
+  		std::transform(tmp.begin(), tmp.end(), tmp.begin(), ft_tolower);
+		size_t ret = tmp.find("*");
+		if (ret == std::string::npos)
+		{
+			ret = tmp.find("utf-8");
+			if (ret == std::string::npos)
+				return 406;
+		}
+		headerAcceptCharset_ = tmp;
+	}
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
 		headerAcceptLanguage_ = removeSpaces(headersRaw_[ACCEPT_LANGUAGE]);
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
 		headerAuth_ = decode_authorization();
-		if (headerAuth_.empty())
+		if (!isAuthenticated_(location_))
 			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
-	{
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
-
-	}
 	else
 		return 400;
+
 	if (!headersRaw_[REFERER].empty())
 		headerReferer_ = removeSpaces(headersRaw_[REFERER]);
 	if (!headersRaw_[USER_AGENT].empty())
@@ -278,7 +287,7 @@ int Request::accessControl_()
 	location_ = matchLocation_(server_);
 	if (location_ == 0)
 		return 403;
-	else if (!isMethodAuthorized_(location_))
+	if (!isMethodAuthorized_(location_))
 		return 405;
 
 	// TODO: this code doesnt really belong here
@@ -387,6 +396,16 @@ const Parsing::location *Request::matchLocation_(const Parsing::server *server) 
 		}
 	}
 	return (location);
+}
+
+bool Request::isAuthenticated_(const Parsing::location *location) const
+{
+	if (location->auth_basic.empty() || location->auth_basic == "off")
+		return true;
+
+	if (headerAuth_ == SERVER_CREDS)
+		return true;
+	return false;
 }
 
 bool 	Request::isMethodAuthorized_(const Parsing::location *location) const
