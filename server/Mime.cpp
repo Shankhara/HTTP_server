@@ -51,6 +51,7 @@ void Mime::parseMimeFile()
 		mime_.push_back(line.substr(0, endType));
 		extensions_.push_back(explode(line.substr(startExt), ' '));
 	}
+	close(fd);
 }
 
 std::string Mime::getExtension(const std::string & filename) const

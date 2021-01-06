@@ -18,6 +18,12 @@ bool RespPut::reachResource_()
 	if (filePath_[filePath_.size() - 1] == '/')
 		return false;
 
+	if (createDirectories_() == -1)
+	{
+		statusCode_ = 500;
+		return (false);
+	}
+
 	struct stat buffer = {};
 	if (stat(filePath_.c_str(), &buffer) == -1)
 		statusCode_ = 201;
