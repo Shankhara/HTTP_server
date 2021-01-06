@@ -21,7 +21,6 @@ public:
 	void 				ListenAndServe();
 	uint16_t 			htons_(uint16_t hostshort);
 	void				onNewClient();
-	unsigned int 		getPort() const;
 	const				std::vector<Parsing::server> &getServers() const;
 };
 

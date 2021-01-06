@@ -24,8 +24,8 @@ void Listener::onNewClient()
 	addrlen = sizeof(remoteaddr);
 	if ((newfd = accept(fd_, (struct sockaddr *)(&remoteaddr), &addrlen)) == -1)
 	{
-		Log::get(logERROR) << "server::onClientConnect " << strerror(errno) << std::endl;
-		exit(8);
+		Log::get(logERROR) << __FUNCTION__ << " > unable to accept a newClient: " << strerror(errno) << std::endl;
+		return ;
 	}
 	Client *client = new Client(newfd, *this);
 	Server::getInstance()->addFileDescriptor(client);
@@ -69,11 +69,6 @@ uint16_t Listener::htons_(uint16_t hostshort)
 	ui |= (hostshort & 0xFF) << 8;
 	ui |= (hostshort & 0xFF00) >> 8;
 	return (ui);
-}
-
-
-unsigned int Listener::getPort() const {
-	return port_;
 }
 
 int Listener::addServer(const Parsing::server &s) {

@@ -31,7 +31,7 @@ void Client::onEvent()
 		if (nbytes < 0)		
 			Log::get(logERROR) << __FUNCTION__ << "Client " << fd_ << " recv error" << strerror(errno) << std::endl;
 		else
-			Log::get(logINFO) << __FUNCTION__ << "Client " << fd_ << " client closed connection" << std::endl;
+			Log::get(logDEBUG) << __FUNCTION__ << "Client " << fd_ << " client closed connection" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
@@ -42,7 +42,6 @@ void Client::constructRequest(char buf[], int nbytes) {
 	int statusCode;
 
 	statusCode = request_->doRequest(buf, nbytes);
-	Log::get(logDEBUG) << __FUNCTION__ << " Client: " << fd_ << " parsing status: " << statusCode << std::endl;
 	if (statusCode >= 400)
 	{
 		RespError resp(statusCode, *request_, buf_, CLIENT_BUFFER_SIZE);
@@ -98,7 +97,7 @@ void Client::sendResponse_(Response *resp) {
 	}
 	if (isSent)
 	{
-		//Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
+		Log::get(logINFO) << "> fd: " << fd_ << " - " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }
@@ -135,7 +134,7 @@ void Client::doCGI_() {
 	}
 	if (CGISocket::instances > MAX_CGI_FORKS) {
 		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
-		RespError resp(500, *request_, buf_, CLIENT_BUFFER_SIZE);
+		RespError resp(503, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse_(&resp);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
