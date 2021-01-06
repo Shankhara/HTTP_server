@@ -25,23 +25,25 @@ CGIExec::~CGIExec() {}
 
 CGIExec::CGIExec(Client &client): request_(client.getRequest()), client_(client) {
 	envs_.push_back("REDIRECT_STATUS=200");
-	std::map<std::string, std::string> cHeaders = request_.getCGIHeaders(); // should be a ref instead passing by value
-	std::map<std::string, std::string>::iterator it = cHeaders.begin();
+	const std::vector<std::string> &cHeaders = request_.getCGIHeaders();
 
-	while (it != cHeaders.end()) {
-		setEnvFromHeader_(it->first, it->second);
-		++it;
-	}
+	for (size_t i = 0; i < cHeaders.size(); i++)
+		setEnvFromHeader_(cHeaders[i]);
 }
 
-void CGIExec::setEnvFromHeader_(std::string name, std::string value)
+void CGIExec::setEnvFromHeader_(std::string name)
 {
 	std::replace(name.begin(), name.end(), '-', '_');
 	for (size_t i = 0; i < name.size(); i++)
 	{
+		if (name[i] == ':')
+		{
+			name[i] = '=';
+			break ;
+		}
 		name[i] = std::toupper(name[i]);
 	}
-	envs_.push_back("HTTP_" + name + "=" + value);
+	envs_.push_back("HTTP_" + name);
 }
 
 void CGIExec::build_(const std::string &workDir) {
@@ -97,7 +99,6 @@ FileDescriptor *CGIExec::run()
 		}
 		dupSTDERR_();
 		std::string target = client_.getRequest().getReqTarget();
-		//client_.flushRequest();
 		exec_(location->cgi_path, location->root + target);
 	}
 	else

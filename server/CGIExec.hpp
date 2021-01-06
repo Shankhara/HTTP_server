@@ -52,7 +52,7 @@ private:
 	void 						dupSTDERR_();
 	void 						build_(const std::string &);
 	void 						write500();
-	void 						setEnvFromHeader_(std::string name, std::string value);
+	void 						setEnvFromHeader_(std::string name);
 
 public:
 	CGIExec(Client &);

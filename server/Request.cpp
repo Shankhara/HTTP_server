@@ -4,6 +4,7 @@
 Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(15);
+	cgiHeaders_.resize(30);
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
@@ -199,10 +200,9 @@ int Request::parseHeaders()
 		}
 		size_t notSpace = headerLine[HEADERCONTENT].find_first_not_of(' ', 0);
 		if (notSpace != std::string::npos)
-			cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT].substr(notSpace, headerLine[HEADERCONTENT].size() - notSpace);
+			cgiHeaders_.push_back(headerLine[HEADERTITLE] + ":" + headerLine[HEADERCONTENT].substr(notSpace, headerLine[HEADERCONTENT].size() - notSpace));
 		else
-			cgiHeaders_[headerLine[HEADERTITLE]] = headerLine[HEADERCONTENT];
-
+			cgiHeaders_.push_back(headerLine[HEADERTITLE] + ":" + headerLine[HEADERCONTENT]);
 	}
 	return 400;
 }
@@ -463,20 +463,17 @@ std::string Request::getHeaderContentLanguage() const
 std::string Request::getHeaderContentType() const
 { return (headerContentType_); }
 
-std::map<std::string, std::string> Request::getCGIHeaders() const
+const std::vector<std::string> &Request::getCGIHeaders() const
 { return cgiHeaders_; }
 
 bool Request::isHeadersParsed() const
 { return headers_parsed; }
 
-std::string Request::consumeBody()
-{
-	std::string c = msgBody_;
-	msgBody_.clear();
-	return (c);
-}
-
 const std::string &Request::getOriginalReqTarget() const {
 	return originalReqTarget_;
+}
+
+const std::string &Request::getHeaderUserAgent() const {
+	return headerUserAgent_;
 }
 

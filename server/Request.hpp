@@ -22,10 +22,8 @@ class Request
 	std::string msgBody_;
 	std::string queryString_;
 	std::vector<std::string> 			headersRaw_;
-
-private:
 	std::vector<std::string> 			requestLine_;
-	std::map<std::string, std::string>	cgiHeaders_;
+	std::vector<std::string>			cgiHeaders_;
 	const std::vector<Parsing::server>	&servers_;
 	const Parsing::location *location_;
 	const Parsing::server *server_;
@@ -40,7 +38,6 @@ private:
 	std::string headerUserAgent_;
 	std::string headerLastModified_;
 	std::string headerLocation_;
-
 	std::string headerAcceptCharset_;
 	std::string headerAcceptLanguage_;
 	std::string headerAllow_;
@@ -102,7 +99,6 @@ private:
 	int getHeaderContentLength() const;
 	const std::string &getBody() const;
 	std::string getTracePayload() const;
-	std::string consumeBody();
 	std::string getRequest() const;
 	std::string getMethod() const;
 	std::string getReqTarget() const;
@@ -118,7 +114,7 @@ private:
 	std::string getHeaderAllow() const;
 	std::string getHeaderContentLanguage() const;
 	std::string getHeaderContentType() const;
-	std::map<std::string, std::string> getCGIHeaders() const;
-	const std::vector<std::string> &getHeadersRaw() const;
+	const std::string &getHeaderUserAgent() const;
+	const std::vector<std::string> &getCGIHeaders() const;
 	const std::string &getOriginalReqTarget() const;
 };
