@@ -26,7 +26,7 @@ int CGISocket::readCGIResponse() {
 	char		buf[BUFFER_SIZE + 1];
 	int			nbytes;
 
-	if ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
+	while ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
 	{
 		if (!httpStatus_)
 		{
@@ -44,14 +44,13 @@ void CGISocket::onEvent()
 {
 	//TODO: rework this : >
 	client_.setLastEventTimer();
-	int nbytes = readCGIResponse();
-	if (nbytes > 0)
-		return ;
-	else if (nbytes == 0) {
+	if (readCGIResponse() == -1)
+	{
+		Log::get(logERROR) << "CGIResponse > read error " << strerror(errno) << std::endl;
+		// TODO: return error
+	}else{
 		send(client_.getFd(), resp_.c_str(), resp_.size(), 0);
 	}
-	else
-		Log::get(logERROR) << "CGIResponse > read error " << strerror(errno) << std::endl;
 	Server::getInstance()->deleteFileDescriptor(client_.getFd());
 }
 
