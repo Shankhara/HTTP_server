@@ -94,7 +94,6 @@ int Response::writeErrorPage(int statusCode)
 
 void Response::writeErrorBody(int statusCode)
 {
-	nbytes_ = 0;
 	std::string body = "<html>"
 					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
 					"<body bgcolor=\"white\">"
@@ -102,6 +101,8 @@ void Response::writeErrorBody(int statusCode)
 					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
 				    "</body>"
 		 			"</html>";
+	writeContentLength_(body.size());
+	writeHeadersEnd_();
 	append_(body);
 }
 

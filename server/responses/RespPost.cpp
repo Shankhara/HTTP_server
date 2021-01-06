@@ -16,13 +16,21 @@ void RespPost::manageFile_()
 {
 	struct stat	buffer;
 
+	if (createDirectories_() == -1)
+	{
+		statusCode_ = 500;
+		return;
+	}
+
 	int ret = stat(filePath_.c_str(), &buffer);
-	if (ret == -1) {
+	if (ret == -1)
+	{
 		statusCode_ = 201;
 		fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
 	}
 	else
 		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
+
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;

@@ -11,6 +11,7 @@
 #include "Log.hpp"
 
 #define CHUNK_MAX_SIZE 65536
+#define SERVER_CREDS "user42:user42"
 
 class Request
 {
@@ -45,6 +46,7 @@ class Request
 	std::string headerContentType_;
 
 	bool							isMethodAuthorized_(const Parsing::location *) const;
+	bool 							isAuthenticated_(const Parsing::location *) const;
 	const Parsing::location			*matchLocation_(const Parsing::server *) const;
 	const Parsing::server			*matchServer_() const;
 	int								accessControl_();
@@ -72,7 +74,7 @@ class Request
 
 	const std::vector<std::string> &getHeadersName() const;
 
-	enum e_headers { ACCEPT_CHARSETS, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
+	enum e_headers { ACCEPT_CHARSET, ACCEPT_LANGUAGE, ALLOW, AUTHORIZATION, CONTENT_LANGUAGE, \
 		CONTENT_LENGTH, CONTENT_LOCATION, CONTENT_TYPE, DATE, HOST, LAST_MODIFIED, LOCATION, REFERER, \
 		TRANSFER_ENCODING, USER_AGENT };
 	enum e_headerLine { HEADERTITLE, HEADERCONTENT };
