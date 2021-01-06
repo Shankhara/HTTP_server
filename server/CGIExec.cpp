@@ -129,7 +129,6 @@ void CGIExec::exec_(const std::string &bin, const std::string &filename)
 	envs.reserve(envs_.size() + 1);
 	for (size_t i = 0; i < envs_.size(); ++i) {
 		envs.push_back(const_cast<char *>(envs_[i].c_str()));
-		//Log::get(logINFO) << "ENV: " << envs[i] << std::endl;
 	}
 	envs.push_back(0);
 	if (execve(cmd[0], cmd, envs.data()) == -1)

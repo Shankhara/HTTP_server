@@ -202,7 +202,8 @@ void testCGIHeaders()
 	std::string str = "GET /qwe HTTP/1.1\r\nX-custom1: a\r\nHost: 2\r\nContent-length: 0\r\nX-custom2: b\r\nX-custom3: c\r\n\r\n";
 	ret = a.doRequest(const_cast<char *>(str.c_str()), str.size());
 	assertEqual(ret, 200, "test getter");
-	std::map<std::string, std::string> tmp = a.getCGIHeaders();
+	const std::vector<std::string> &tmp = a.getCGIHeaders();
+	assertEqual(tmp.size(), (size_t)5, "testCGI Getter");
 //	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
 //		std::cout << it->first << " => " << it->second << std::endl;
 

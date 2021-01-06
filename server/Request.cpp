@@ -4,7 +4,7 @@
 Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(15);
-	cgiHeaders_.resize(30);
+	cgiHeaders_.reserve(30);
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
