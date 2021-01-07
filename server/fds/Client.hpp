@@ -48,7 +48,6 @@ public:
 	void 							constructRequest(char [], int);
 	void 							onEvent();
 	Request							&getRequest();
-	void 							flushRequest();
 	static char						*getBuf();
 	void							sendResponse(Response *);
 };

@@ -4,9 +4,6 @@
 
 class RespError: public Response
 {
-	private:
-	int statusCode_;
-	
 	public:
 	RespError(int, const Request &r, char [], unsigned int);
 	~RespError();

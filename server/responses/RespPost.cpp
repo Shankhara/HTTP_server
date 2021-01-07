@@ -23,7 +23,6 @@ void RespPost::manageFile_()
 		statusCode_ = 201;
 
 	fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
-	Log::get(logINFO) << "BUILD CALLED FD" << fd_ << ":" << filePath_.c_str() << std::endl;
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;

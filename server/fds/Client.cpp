@@ -142,8 +142,7 @@ void Client::doCGI_() {
 		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
 		RespError resp(503, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse(&resp);
-		Server::getInstance()->deleteFileDescriptor(fd_);
-		return ;
+		return Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 	CGIExec exec = CGIExec(*this);
 	CGIResponse_ = exec.run();
@@ -156,11 +155,6 @@ void Client::doCGI_() {
 
 Request &Client::getRequest() {
 	return *request_;
-}
-
-void Client::flushRequest() {
-	delete request_;
-	request_ = 0;
 }
 
 char *Client::getBuf() {

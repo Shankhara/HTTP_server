@@ -2,12 +2,11 @@
 
 std::map<int, std::string> Response::statusMap_;
 
-Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
-	req_(r), buf_(buf), bufSize_(bufSize - 1)
+Response::Response(const Request & r, char buf[], unsigned int bufSize) :
+	req_(r), buf_(buf), bufSize_(bufSize - 1), statusCode_(200)
 {
 	nbytes_ = 0;
 	headersBuilt_ = false;
-	statusCode_ = 200;
 
 	if (statusMap_.size() == 0)
 	{

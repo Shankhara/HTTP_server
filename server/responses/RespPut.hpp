@@ -11,7 +11,6 @@ class RespPut: public RespFile
 	void putPayload_();
 	void reachResource_();
 	void makeResponse_();
-	int compareFiles_();
 
 	public:
 	RespPut(const Request &r, char[], unsigned int);
