@@ -32,7 +32,6 @@ Response::~Response() { }
 void Response::writeBaseHeaders_()
 {
 	append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
-	append_("Date: " + getStrDate() + "\r\n");
 	append_("Connection: close\r\n");
 }
 
@@ -136,6 +135,7 @@ void Response::appendHeaders(int statusCode, std::string contentType, unsigned i
 {
 	writeStatusLine_(statusCode);
 	writeBaseHeaders_();
+	append_("Date: " + getStrDate() + "\r\n");
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();

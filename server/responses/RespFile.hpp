@@ -3,6 +3,7 @@
 #include "Response.hpp"
 #include <sys/stat.h>
 #include <errno.h>
+#include "RespException.hpp"
 
 class RespFile : public Response
 {

@@ -7,7 +7,6 @@ class RespPost: public RespFile
 	private:
 	int			fd_;
 	std::string payload_;
-	size_t		payloadCursor_;
 
 	void postPayload_();
 	void makeResponse_();
@@ -17,4 +16,5 @@ class RespPost: public RespFile
 	RespPost(const Request &r, char[], unsigned int);
 	~RespPost();
 	virtual int readResponse();
+	void build();
 };

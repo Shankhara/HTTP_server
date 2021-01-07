@@ -118,15 +118,11 @@ void Client::responseFactory_() {
 		resp_ = new RespPut(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else
 		resp_ = new RespError(400, *request_, buf_, CLIENT_BUFFER_SIZE);
-
-	if (request_->getMethod() == "GET" || request_->getMethod() == "HEAD")
-	{
-		try {
-			resp_->build();
-		} catch (RespException &e) {
-			delete resp_;
-			resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
-		}
+	try {
+		resp_->build();
+	} catch (RespException &e) {
+		delete resp_;
+		resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
 	}
 }
 

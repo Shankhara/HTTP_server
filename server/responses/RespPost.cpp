@@ -3,7 +3,7 @@
 RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
 	fd_ = 0;
-	payloadCursor_ = 0;
+	payload_ = req_.getBody();
 }
 
 RespPost::~RespPost()
@@ -34,8 +34,7 @@ void RespPost::manageFile_()
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
-		return;
+		throw RespException(500);
 	}
 }
 
@@ -48,43 +47,36 @@ void RespPost::postPayload_()
 	int nbytes = write(fd_, payload_.c_str(), len);
 	if (nbytes == 0) {
 		Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
-		statusCode_ = 500;
+		throw RespException(500);
 	}
 	else if (nbytes == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
+		throw RespException(500);
 	}
-	payloadCursor_ += len;
 }
 
 void RespPost::makeResponse_()
 {
-	if (headersBuilt_ == false)
-	{
 		writeStatusLine_(statusCode_);
+		writeBaseHeaders_();
 		writeContentType_(filePath_);
 		writeThisHeader_("Content-location", filePath_);
 		writeThisHeader_("Last-Modified", getStrDate());
 		writeHeadersEnd_();
 		writeHeadersEnd_();
-	}
 }
 
 int RespPost::readResponse()
 {
 	nbytes_ = 0;
 
-	if (fd_ == 0)
-		manageFile_();
-	if (statusCode_ == 500)
-		return writeErrorPage(500);
-	payload_ = req_.getBody();
-	if (payload_.size() > payloadCursor_)
-		postPayload_();
-	if (statusCode_ == 500)
-		return writeErrorPage(500);
-	if (req_.getStatusCode() == 200)
+	if (headersBuilt_ == false)
 		makeResponse_();
 	return nbytes_;
+}
+
+void RespPost::build() {
+	manageFile_();
+	postPayload_();
 }
