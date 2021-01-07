@@ -3,7 +3,7 @@
 RespCGI::RespCGI(Client &c, int fd):    Response(c.getRequest(), Client::getBuf(), CLIENT_BUFFER_SIZE),
 										fd_(fd),
 										respCursor_(0) {
-	resp_.reserve(100000256);
+	resp_.reserve(100000256); // : )
 }
 
 
@@ -36,10 +36,8 @@ void RespCGI::build() {
 			resp_.append(buf_, nbytes);
 		}
 	}
-	if (nbytes < 0) {
-		writeErrorPage(500);
-		return ;
-	}
+	if (nbytes < 0)
+		throw RespException(500);
 	headersEnd = resp_.find("\r\n\r\n", 0);
 	if (headersEnd != std::string::npos)
 	{
