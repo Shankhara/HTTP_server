@@ -13,12 +13,17 @@
 
 class RespGet: public RespFile
 {
-	protected:
-	int			fd_;
+	private:
+	int fd_;
+	size_t payLoadSize_;
 	std::string autoIndexBody_;
-	void 		openFile_(const Parsing::location *location);
+	const Parsing::location *location_;
+	std::string reqTarget_;
+
+	void 		openFile_();
 	int		 	readFile_();
-	int 		writeAutoIndex_(stds path);
+	int 		writeAutoIndex_(stds);
+	void 		makeResponse_();
 
 	std::string doAutoIndexTemplate_(stds path);
 	std::string	returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat);

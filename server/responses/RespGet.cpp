@@ -3,66 +3,92 @@
 RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): RespFile(r, buf, bufSize)
 {
 	fd_ = 0;
+	location_ = req_.getLocation();
+	reqTarget_ = req_.getReqTarget();
 }
 
-RespGet::~RespGet() {
+RespGet::~RespGet()
+{
 	if (fd_ > 0)
 		close(fd_);
 }
 
-int RespGet::readResponse() {
-	if (fd_ == -1)
-		return 0;
-	nbytes_ = 0;
-	if (fd_ == 0)
-	{
-		const Parsing::location *location = req_.getLocation();
-		if (req_.getLocation()->autoindex && req_.getReqTarget()[req_.getReqTarget().size() - 1] == '/')
-			return (writeAutoIndex_(location->root + req_.getReqTarget()));
-		openFile_(location);
-		if (fd_ == -1)
-			return (writeErrorPage(404));
-	}
-	return(readFile_());
-}
-
-int RespGet::readFile_() {
-	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
-	Log::get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " << nbytes_ << " BUFSIZE_ " << bufSize_ << std::endl;
-	if (currentRead < 0) {
-		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
-		return (nbytes_);
-	}
-	return (currentRead + nbytes_);
-}
-
-void RespGet::openFile_(const Parsing::location *location)
+void RespGet::openFile_()
 {
-	int isDir;
-	int res;
 	struct stat st;
-	res = stat(filePath_.c_str(), &st);
-	if (res != 0)
+
+	if (stat(filePath_.c_str(), &st) == -1)
 	{
-		fd_ = -1;
-		return ;
+		statusCode_ = 404;
+		return;
 	}
-	isDir = S_ISDIR(st.st_mode);
-	if (isDir != 0)
+
+	int isDir = S_ISDIR(st.st_mode);
+	if (isDir)
 	{
 		if (filePath_[filePath_.size() -1] != '/')
 			filePath_ += '/';
-		filePath_ += location->index;
+		filePath_ += location_->index;
 	}
-	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir << " INDEX " << location->index << std::endl;
+	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir \
+	<< " INDEX " << location_->index << std::endl;
+
 	fd_ = open(filePath_.c_str(), O_RDONLY);
 	if (fd_ == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		return ;
+		statusCode_ = 500;
+		return;
 	}
-	if (isDir)
-		fstat(fd_, &st);
-	appendHeaders(200, Mime::getInstance()->getContentType(filePath_), st.st_size);
-	headersBuilt_ = true;
+//	if (isDir)
+	fstat(fd_, &st);
+	payLoadSize_ = st.st_size;
+}
+
+int RespGet::readFile_()
+{
+	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
+	Log::get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " \
+	<< nbytes_ << " BUFSIZE_ " << bufSize_ << std::endl;
+
+	if (currentRead < 0)
+	{
+		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
+		return nbytes_;
+	}
+	if (currentRead == 0)
+		return currentRead;
+
+	return nbytes_ + currentRead;
+}
+
+void RespGet::makeResponse_()
+{
+	writeStatusLine_(statusCode_);
+	if (statusCode_ != 200)
+		writeErrorBody(statusCode_);
+	else
+	{
+		writeContentType_(filePath_);
+		writeContentLength_(payLoadSize_);
+		writeHeadersEnd_();
+	}
+}
+
+int RespGet::readResponse()
+{
+	nbytes_ = 0;
+
+	if (statusCode_ != 200)
+		return nbytes_;
+
+	if (headersBuilt_ == false)
+	{
+		if (location_->autoindex && reqTarget_[reqTarget_.size() - 1] == '/')
+			return (writeAutoIndex_(location_->root + reqTarget_));
+
+		openFile_();
+		makeResponse_();
+	}
+	return readFile_();
 }

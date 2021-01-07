@@ -16,6 +16,7 @@ void testRespGet()
 	RespGet respGet(ra, buf, bufsize);
 
 	int readSize = respGet.readResponse();
+	std::cout << "#" << readSize << "#" << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
@@ -234,10 +235,10 @@ void testMimeType()
 void testResponse()
 {
 	testRespGet();
-	testRespPut();
-	testRespPost();
- 	testRespTrace();
-	testRespDelete();
-	testRespOptions();
-	testMimeType();
+//	testRespPut();
+//	testRespPost();
+// 	testRespTrace();
+//	testRespDelete();
+//	testRespOptions();
+//	testMimeType();
 }
