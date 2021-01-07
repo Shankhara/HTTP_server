@@ -232,7 +232,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
 		headerAuth_ = decode_authorization();
-		if (!isAuthenticated_(location_))
+		if (headerAuth_.empty())
 			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
@@ -289,6 +289,8 @@ int Request::accessControl_()
 		return 403;
 	if (!isMethodAuthorized_(location_))
 		return 405;
+	if (!isAuthenticated_(location_))
+		return 401;
 
 	// TODO: this code doesnt really belong here
 	originalReqTarget_ = requestLine_[REQTARGET];
@@ -495,4 +497,3 @@ const std::string &Request::getOriginalReqTarget() const {
 const std::string &Request::getHeaderUserAgent() const {
 	return headerUserAgent_;
 }
-

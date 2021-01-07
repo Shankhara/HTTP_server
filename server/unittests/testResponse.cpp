@@ -16,7 +16,6 @@ void testRespGet()
 	RespGet respGet(ra, buf, bufsize);
 
 	int readSize = respGet.readResponse();
-	std::cout << "#" << readSize << "#" << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
@@ -29,7 +28,7 @@ void testRespPut()
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
 	std::string body = "HTTP is a generic interface protocol for information systems. \
-	It is designed to hide the details of how a service is ..."; 
+	It is designed to hide the details of how a service is ...";
 	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
@@ -171,6 +170,27 @@ void testRespOptions()
 	delete (vhost);
 }
 
+void testRespError()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAuthorization: qwe\r\n\r\n";
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespError respError(401, ra, buf, bufsize);
+
+	int readSize = respError.readResponse();
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+	delete (vhost);
+}
+
+
 void testMimeType()
 {
 	Mime m;
@@ -225,5 +245,6 @@ void testResponse()
  	testRespTrace();
 	testRespDelete();
 	testRespOptions();
+	testRespError();
 	testMimeType();
 }
