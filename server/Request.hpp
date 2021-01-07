@@ -25,6 +25,8 @@ class Request
 	std::vector<std::string> 			headersRaw_;
 	std::vector<std::string> 			requestLine_;
 	std::vector<std::string>			cgiHeaders_;
+    std::vector<std::string> headerAcceptLanguage_;
+    std::map<std::string, std::string> languageLocation_;
 	const std::vector<Parsing::server>	&servers_;
 	const Parsing::location *location_;
 	const Parsing::server *server_;
@@ -40,9 +42,8 @@ class Request
 	std::string headerLastModified_;
 	std::string headerLocation_;
 	std::string headerAcceptCharset_;
-	std::string headerAcceptLanguage_;
 	std::string headerAllow_;
-	std::string headerContentLanguage_;
+	std::map<std::string, std::string> headerContentLanguage_;
 	std::string headerContentType_;
 
 	bool							isMethodAuthorized_(const Parsing::location *) const;
@@ -112,9 +113,9 @@ class Request
 	std::string getHeaderReferer() const;
 	std::string getHeaderContentLocation() const;
 	std::string getHeaderAcceptCharset() const;
-	std::string getHeaderAcceptLanguage() const;
+	std::vector<std::string> getHeaderAcceptLanguage() const;
 	std::string getHeaderAllow() const;
-	std::string getHeaderContentLanguage() const;
+	std::map<std::string, std::string> getHeaderContentLanguage() const;
 	std::string getHeaderContentType() const;
 	const std::string &getHeaderUserAgent() const;
 	const std::vector<std::string> &getCGIHeaders() const;
