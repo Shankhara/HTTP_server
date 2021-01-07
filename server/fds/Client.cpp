@@ -45,7 +45,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	if (statusCode >= 400)
 	{
 		RespError resp(statusCode, *request_, buf_, CLIENT_BUFFER_SIZE);
-		sendResponse_(&resp);
+		sendResponse(&resp);
 	}
 	else if (request_->getLocation() != 0)
 			doResponse_();
@@ -77,7 +77,7 @@ void Client::doResponse_() {
 		doCGI_();
 }
 
-void Client::sendResponse_(Response *resp) {
+void Client::sendResponse(Response *resp) {
 	bool 	isSent = false;
 	int 	nbytes;
 	size_t	sentSize = 0;
@@ -123,7 +123,7 @@ void Client::responseFactory_() {
 void Client::doStaticFile_() {
 	if (resp_ == 0)
 		responseFactory_();
-	sendResponse_(resp_);
+	sendResponse(resp_);
 }
 
 void Client::doCGI_() {
@@ -135,7 +135,7 @@ void Client::doCGI_() {
 	if (CGISocket::instances > MAX_CGI_FORKS) {
 		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
 		RespError resp(503, *request_, buf_, CLIENT_BUFFER_SIZE);
-		sendResponse_(&resp);
+		sendResponse(&resp);
 		Server::getInstance()->deleteFileDescriptor(fd_);
 		return ;
 	}
@@ -144,7 +144,7 @@ void Client::doCGI_() {
 	Server::getInstance()->addFileDescriptor(CGIResponse_);
 	if (CGIResponse_ == 0) {
 		RespError resp(500, *request_, buf_, CLIENT_BUFFER_SIZE);
-		sendResponse_(&resp);
+		sendResponse(&resp);
 	}
 }
 
@@ -155,4 +155,8 @@ Request &Client::getRequest() {
 void Client::flushRequest() {
 	delete request_;
 	request_ = 0;
+}
+
+char *Client::getBuf() {
+	return buf_;
 }

@@ -11,7 +11,7 @@ void RespHead::append_(std::string str) {
 	Response::append_(str);
 }
 
-void RespHead::append_(char str[], unsigned int size) {
+void RespHead::append_(const char str[], unsigned int size) {
 	if (headersBuilt_)
 		return ;
 	Response::append_(str, size);

@@ -110,7 +110,7 @@ FileDescriptor *CGIExec::run()
 			Log::get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size() << std::endl;
 			write(pipeIN[1], body.c_str(), body.size());
 		}
-		client_.flushRequest();
+		//client_.flushRequest();
 		pSocket->setPid(cpid);
 		close(pipeOUT[1]);
 		close(pipeIN[1]);

@@ -6,7 +6,7 @@
 class RespHead: public RespGet {
 private:
 	void append_(std::string);
-	void append_(char [], unsigned int);
+	void append_(const char [], unsigned int);
 public:
 	RespHead(const Request &r, char [], unsigned int);
 	~RespHead();
