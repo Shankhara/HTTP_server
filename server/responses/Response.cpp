@@ -36,9 +36,18 @@ void Response::writeBaseHeaders_()
 	append_("Connection: close\r\n");
 }
 
-void Response::writeContentType_(std::string value)
+void Response::writeContentType_(std::string filePath)
 {
-	append_("Content-Type: " + value + "\r\n");
+	if (!req_.getHeaderContentType().empty())
+		append_("Content-Type: " + req_.getHeaderContentType() + "\r\n");
+	else
+	{
+		std::string contentType = Mime::getInstance()->getContentType(filePath);
+		append_("Content-Type: " + contentType + "\r\n");
+
+	// filePath = Mime::getInstance()->getContentType(filePath); TODO : You choose
+	// append_("Content-Type: " + filePath + "\r\n");
+	}
 }
 
 void Response::writeContentLength_(long value)
@@ -101,6 +110,7 @@ void Response::writeErrorBody(int statusCode)
 					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
 				    "</body>"
 		 			"</html>";
+	writeThisHeader_("Content-Type", "text/html");
 	writeContentLength_(body.size());
 	writeHeadersEnd_();
 	append_(body);

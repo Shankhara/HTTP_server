@@ -53,7 +53,7 @@ void RespPut::putPayload_()
 void RespPut::makeResponse_()
 {
 	writeStatusLine_(statusCode_);
-	writeThisHeader_("Content-type", Mime::getInstance()->getContentType(filePath_));
+	writeContentType_(filePath_);
 	if (statusCode_ == 201)
 		writeThisHeader_("Location", filePath_);
 	writeThisHeader_("Last-Modified", getStrDate());

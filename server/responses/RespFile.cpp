@@ -5,8 +5,7 @@ RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Respons
 	setFilePath_();
 }
 
-RespFile::~RespFile() {
-}
+RespFile::~RespFile() { }
 
 void RespFile::setFilePath_()
 {
