@@ -27,8 +27,13 @@ void CGISocket::onEvent()
 {
 	client_.setLastEventTimer();
 	RespCGI response(client_, fd_);
-	response.build();
-	client_.sendResponse(&response);
+	try {
+		response.build();
+		client_.sendResponse(&response);
+	} catch (RespException &e) {
+		RespError err(500, client_.getRequest(), Client::getBuf(), CLIENT_BUFFER_SIZE);
+		client_.sendResponse(&err);
+	}
 }
 
 

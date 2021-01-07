@@ -30,3 +30,5 @@ int RespError::readResponse()
 	return nbytes_;
 }
 
+void RespError::build() {}
+
