@@ -23,7 +23,7 @@ class RespGet: public RespFile
 	void 		openFile_();
 	int		 	readFile_();
 	int 		writeAutoIndex_(stds);
-	void 		makeResponse_();
+	void 		writeHeaders_();
 
 	std::string doAutoIndexTemplate_(stds path);
 	std::string	returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat);

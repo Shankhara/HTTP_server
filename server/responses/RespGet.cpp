@@ -37,11 +37,11 @@ void RespGet::openFile_()
 	if (fd_ == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
+		statusCode_ = 404;
 		return;
 	}
-//	if (isDir)
-	fstat(fd_, &st);
+	if (isDir)
+		fstat(fd_, &st);
 	payLoadSize_ = st.st_size;
 }
 
@@ -56,23 +56,16 @@ int RespGet::readFile_()
 		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
 		return nbytes_;
 	}
-	if (currentRead == 0)
-		return currentRead;
-
 	return nbytes_ + currentRead;
 }
 
-void RespGet::makeResponse_()
+void RespGet::writeHeaders_()
 {
 	writeStatusLine_(statusCode_);
-	if (statusCode_ != 200)
-		writeErrorBody(statusCode_);
-	else
-	{
-		writeContentType_(filePath_);
-		writeContentLength_(payLoadSize_);
-		writeHeadersEnd_();
-	}
+	writeBaseHeaders_();
+	writeContentType_(filePath_);
+	writeContentLength_(payLoadSize_);
+	writeHeadersEnd_();
 }
 
 int RespGet::readResponse()
@@ -80,7 +73,7 @@ int RespGet::readResponse()
 	nbytes_ = 0;
 
 	if (statusCode_ != 200)
-		return nbytes_;
+		return 0;
 
 	if (headersBuilt_ == false)
 	{
@@ -88,7 +81,12 @@ int RespGet::readResponse()
 			return (writeAutoIndex_(location_->root + reqTarget_));
 
 		openFile_();
-		makeResponse_();
+		if (statusCode_ != 200)
+		{
+			writeErrorPage(statusCode_);
+			return nbytes_;
+		}
+		writeHeaders_();
 	}
 	return readFile_();
 }
