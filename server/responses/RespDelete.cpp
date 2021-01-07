@@ -11,9 +11,8 @@ int RespDelete::delDir_(std::string & param)
     DIR *dir = opendir(c_param);
 	if (!dir)
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
-		return EXIT_FAILURE;
+		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
+		throw RespException(500);
     }
 
     struct dirent *entry;
@@ -39,9 +38,9 @@ int RespDelete::delDir_(std::string & param)
     }
     if (rmdir(c_param) == -1)
 	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
-		return EXIT_FAILURE;
+		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
+		closedir(dir);
+		throw RespException(500);
     }
 
 	closedir(dir);
@@ -56,8 +55,7 @@ int RespDelete::delResource_()
 	if (ret == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 404;
-		return ret;
+		throw RespException(404);
 	}
 	if (!S_ISDIR(statbuf.st_mode))
 		return unlink(filePath_.c_str());
@@ -67,20 +65,23 @@ int RespDelete::delResource_()
 
 void RespDelete::makeResponse_()
 {
-    if (!headersBuilt_) {
         writeStatusLine_(statusCode_);
+        writeBaseHeaders_();
         writeHeadersEnd_();
-    }
+		writeHeadersEnd_();
 }
 
 int RespDelete::readResponse()
 {
 	nbytes_ = 0;
 
-	if (!delResource_())
-		statusCode_ = 204;
-
-	makeResponse_();
+	if (!headersBuilt_)
+		makeResponse_();
 
 	return nbytes_;
+}
+
+void RespDelete::build() {
+	if (!delResource_())
+		statusCode_ = 204;
 }

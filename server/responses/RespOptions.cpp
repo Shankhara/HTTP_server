@@ -6,21 +6,22 @@ RespOptions::~RespOptions() { }
 
 void RespOptions::makeResponse_()
 {
-	if (headersBuilt_ == false)
-	{
 		writeStatusLine_(statusCode_);
 		writeBaseHeaders_();
 		writeAllow_();
 		writeContentLength_(0);
 		writeHeadersEnd_();
-	}
+		writeHeadersEnd_();
 }
 
 int RespOptions::readResponse()
 {
 	nbytes_ = 0;
 
-	makeResponse_();
+	if (headersBuilt_ == false)
+		makeResponse_();
 
 	return nbytes_;
 }
+
+void RespOptions::build() {}

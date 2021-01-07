@@ -3,7 +3,6 @@
 RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
 	fd_ = 0;
-	payload_ = req_.getBody();
 }
 
 RespPost::~RespPost()
@@ -14,23 +13,17 @@ RespPost::~RespPost()
 
 void RespPost::manageFile_()
 {
-	struct stat	buffer;
+	struct stat	st;
 
 	if (createDirectories_() == -1)
-	{
-		statusCode_ = 500;
-		return;
-	}
+		throw RespException(500);
 
-	int ret = stat(filePath_.c_str(), &buffer);
+	int ret = stat(filePath_.c_str(), &st);
 	if (ret == -1)
-	{
 		statusCode_ = 201;
-		fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
-	}
-	else
-		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
 
+	fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
+	Log::get(logINFO) << "BUILD CALLED FD" << fd_ << ":" << filePath_.c_str() << std::endl;
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
@@ -41,19 +34,21 @@ void RespPost::manageFile_()
 void RespPost::postPayload_()
 {
 
-	int len = payload_.size();
-	if (len == 0)
+	payload_ = req_.getBody();
+	int len = payload_.size() - payloadCursor_;
+	if (len < 1)
 		return ;
-	int nbytes = write(fd_, payload_.c_str(), len);
+	int nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);
 	if (nbytes == 0) {
 		Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
-		throw RespException(500);
+		statusCode_ = 500;
 	}
 	else if (nbytes == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		throw RespException(500);
+		statusCode_ = 500;
 	}
+	payloadCursor_ += len;
 }
 
 void RespPost::makeResponse_()
@@ -71,12 +66,16 @@ int RespPost::readResponse()
 {
 	nbytes_ = 0;
 
-	if (headersBuilt_ == false)
+	if (statusCode_ == 500)
+		return 0;
+	postPayload_();
+	if (statusCode_ == 500)
+		return writeErrorPage(500);
+	if (headersBuilt_ == false && req_.getStatusCode() == 200)
 		makeResponse_();
 	return nbytes_;
 }
 
 void RespPost::build() {
 	manageFile_();
-	postPayload_();
 }

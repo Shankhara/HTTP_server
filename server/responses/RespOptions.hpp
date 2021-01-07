@@ -11,4 +11,5 @@ class RespOptions: public Response
 	RespOptions(const Request &r, char[], unsigned int);
 	~RespOptions();
 	virtual int readResponse();
+	void build();
 };

@@ -14,4 +14,5 @@ class RespDelete: public RespFile
 	RespDelete(const Request &r, char[], unsigned int);
 	~RespDelete();
 	virtual int readResponse();
+	void build();
 };
