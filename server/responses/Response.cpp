@@ -124,7 +124,7 @@ void Response::append_(std::string str)
 	nbytes_ += str.size();
 }
 
-void Response::append_(char str[], unsigned int size)
+void Response::append_(const char str[], unsigned int size)
 {
 	if (size + nbytes_ > bufSize_)
 		return ;

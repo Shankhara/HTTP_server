@@ -36,7 +36,6 @@ private:
 	Request								*request_;
 	static char 						buf_[CLIENT_BUFFER_SIZE];
 	void 								doResponse_();
-	void 								sendResponse_(Response *);
 	void 								doStaticFile_();
 	void 								doCGI_();
 	void								responseFactory_();
@@ -49,6 +48,8 @@ public:
 	void 							onEvent();
 	Request							&getRequest();
 	void 							flushRequest();
+	static char						*getBuf();
+	void							sendResponse(Response *);
 };
 
 #endif //WEBSERV_CLIENT_HPP

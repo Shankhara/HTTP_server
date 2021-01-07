@@ -2,7 +2,7 @@
 
 unsigned int CGISocket::instances = 0;
 
-CGISocket::CGISocket(int fd, Client &client): client_(client), httpStatus_(false)
+CGISocket::CGISocket(int fd, Client &client): client_(client)
 {
 	fd_ = fd;
 	lastEventTimer_ = 0;
@@ -22,36 +22,13 @@ CGISocket::~CGISocket()
 	instances--;
 }
 
-int CGISocket::readCGIResponse() {
-	char		buf[BUFFER_SIZE + 1];
-	int			nbytes;
-
-	while ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
-	{
-		if (!httpStatus_)
-		{
-			parseCGIStatus(buf, nbytes);
-			httpStatus_ = true;
-		}else{
-			Log::get(logDEBUG) << "CGIResponse::read > FD " << fd_ << " READ " << nbytes << std::endl;
-			resp_.append(buf, nbytes);
-		}
-	}
-	return nbytes;
-}
 
 void CGISocket::onEvent()
 {
-	//TODO: rework this : >
 	client_.setLastEventTimer();
-	if (readCGIResponse() == -1)
-	{
-		Log::get(logERROR) << "CGIResponse > read error " << strerror(errno) << std::endl;
-		// TODO: return error
-	}else{
-		send(client_.getFd(), resp_.c_str(), resp_.size(), 0);
-	}
-	Server::getInstance()->deleteFileDescriptor(client_.getFd());
+	RespCGI response(client_, fd_);
+	response.build();
+	client_.sendResponse(&response);
 }
 
 
@@ -59,21 +36,3 @@ void CGISocket::setPid(pid_t pid) {
 	pid_ = pid;
 }
 
-void CGISocket::parseCGIStatus(char *buf, int nbytes) {
-	if (nbytes < 11 || strncmp(buf, "Status: ", 8) != 0)
-	{
-		resp_ = "HTTP/1.1 200 OK\r\n";
-		resp_.append(buf, nbytes);
-		return ;
-	}
-	buf[nbytes] = '\0';
-	resp_ = "HTTP/1.1 ";
-	resp_.append(buf + 8, 3);
-	resp_.append(" OK\r\n");
-	resp_.append("Connection: Close\r\n");
-	resp_.append("Server: " + std::string(WEBSERV_ID) + "\r\n");
-	size_t crlf = std::string(buf, nbytes).find("\r\n", 0);
-	if (crlf == std::string::npos || crlf + 2 > static_cast<size_t>(nbytes))
-		crlf = 0;
-	resp_.append(buf + crlf + 2);
-}

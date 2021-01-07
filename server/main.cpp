@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
-	std::string conf("./parsing/test/wordpress.conf");
+	std::string conf("/tmp/webserv/servers.conf");
 	//Log::getInstance()->setLevel(logDEBUG);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
 		Log::getInstance()->setLevel(logDEBUG);

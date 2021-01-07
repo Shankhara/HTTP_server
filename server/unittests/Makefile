@@ -7,7 +7,7 @@ NAME		= unittests
 OBJS		= unittests.o Client.o Log.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o CGIExec.o CGISocket.o autoIndex.o Mime.o Request.o Response.o \
 			RespGet.o RespHead.o RespPut.o RespError.o RespPost.o RespDelete.o \
-			RespOptions.o RespTrace.o RespFile.o\
+			RespOptions.o RespTrace.o RespFile.o RespCGI.o\
 			testParsing.o testCGI.o testRequest.o testResponse.o
 
 CXX			= clang++
@@ -32,6 +32,7 @@ Parsing.o : ../parsing/Parsing.hpp
 Ut.o: ../parsing/Ut.hpp
 Mime.o : ../Mime.hpp
 RespGet.o: ../responses/RespGet.hpp
+RespCGI.o: ../responses/RespCGI.hpp
 RespPut.o: ../responses/RespPut.hpp
 RespHead.o: ../responses/RespHead.hpp
 RespError.o: ../responses/RespError.hpp

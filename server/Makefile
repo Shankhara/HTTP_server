@@ -21,6 +21,7 @@ SRCS	+= responses/RespError.cpp
 SRCS	+= responses/RespFile.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
+SRCS	+= responses/RespCGI.cpp
 SRCS	+= Mime.cpp
 
 CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98

@@ -323,7 +323,7 @@ int Request::parseRequestLine()
 	parseQueryString();
 
 	if (getMethod() == "TRACE")
-		tracePayload_.append(line); 
+		tracePayload_.append(line);
 
 	if (request_ == "\r\n")
 		return (200);
