@@ -10,6 +10,7 @@ RespCGI::RespCGI(Client &c, int fd):    Response(c.getRequest(), Client::getBuf(
 RespCGI::~RespCGI() {}
 
 int RespCGI::readResponse() {
+	nbytes_ = 0;
 	unsigned int remaining = resp_.size() - respCursor_;
 	unsigned int readSize;
 	if (remaining > bufSize_)
@@ -44,7 +45,6 @@ void RespCGI::build() {
 	{
 		unsigned long contentLength = resp_.size() - (headersEnd + 4);
 		resp_.insert(headersEnd, "\r\nContent-Length: "+ ft_itoa(contentLength));
-		Log::get(logINFO) << "LENGTH: " << contentLength << std::endl;
 	}
 }
 
