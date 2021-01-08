@@ -38,41 +38,24 @@ void startListeners(const std::vector<Listener*> *listeners)
 }
 
 int main(int argc, char *argv[]) {
-<<<<<<< HEAD
-	std::vector<Listener*>	listeners;
-	Parsing					p;
-	std::string				conf;
-=======
 	std::vector<Listener*> *listeners = new std::vector<Listener *>();
->>>>>>> f7729de404dca4f3a7d2676eb97e376eed097ed7
 
 	if (argc > 2)
 	{
 		std::cerr << "To many argument default usage : webserv [example.conf]" << std::endl;
 		return (EXIT_FAILURE);
 	}
-	if (argc == 2)
-		conf = std::string(argv[1]);
-	else	
-		conf = std::string("./parsing/test/wordpress.conf");
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
-<<<<<<< HEAD
-=======
 	std::string *confPath = new std::string("./parsing/test/wordpress.conf");
->>>>>>> f7729de404dca4f3a7d2676eb97e376eed097ed7
 	//Log::getInstance()->setLevel(logDEBUG);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
 		Log::getInstance()->setLevel(logDEBUG);
 	} else if (argc > 1) {
 		confPath->assign(argv[1]);
 	}
-<<<<<<< HEAD
-	p = Parsing(conf);
-=======
 	Parsing::getInstance()->setFile(*confPath);
 	delete(confPath);
->>>>>>> f7729de404dca4f3a7d2676eb97e376eed097ed7
 	try {
 		Parsing::getInstance()->parseConfig();
 	} catch (Parsing::ParsingException &e) {
