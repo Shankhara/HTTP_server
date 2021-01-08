@@ -6,10 +6,9 @@ RespOptions::~RespOptions() { }
 
 void RespOptions::makeResponse_()
 {
-	if (headersBuilt_ == false)
+	if (!headersBuilt_)
 	{
-		writeStatusLine_(statusCode_);
-		writeBaseHeaders_();
+		writeFirstPart_();
 		writeAllow_();
 		writeContentLength_(0);
 		writeHeadersEnd_();
@@ -19,8 +18,6 @@ void RespOptions::makeResponse_()
 int RespOptions::readResponse()
 {
 	nbytes_ = 0;
-
 	makeResponse_();
-
 	return nbytes_;
 }

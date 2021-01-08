@@ -9,9 +9,9 @@ RespTrace::~RespTrace() { }
 
 void RespTrace::makeResponse_()
 {
-	if (headersBuilt_ == false)
+	if (!headersBuilt_)
 	{
-		writeStatusLine_(statusCode_);
+		writeFirstPart_();
 		writeThisHeader_("Content-type", "message/html");
 		writeHeadersEnd_();
 	}
@@ -20,9 +20,7 @@ void RespTrace::makeResponse_()
 int RespTrace::readResponse()
 {
 	nbytes_ = 0;
-
 	makeResponse_();
 	append_(request_);
-
 	return nbytes_;
 }

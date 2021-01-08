@@ -62,7 +62,7 @@ void RespPost::makeResponse_()
 {
 	if (headersBuilt_ == false)
 	{
-		writeStatusLine_(statusCode_);
+		writeFirstPart_();
 		writeContentType_(filePath_);
 		writeThisHeader_("Content-location", filePath_);
 		writeThisHeader_("Last-Modified", getStrDate());

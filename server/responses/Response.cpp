@@ -9,7 +9,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 	headersBuilt_ = false;
 	statusCode_ = 200;
 
-	if (statusMap_.size() == 0)
+	if (statusMap_.empty())
 	{
 		statusMap_[200] = "OK";
 		statusMap_[201] = "Created";
@@ -29,11 +29,12 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) : \
 
 Response::~Response() { }
 
-void Response::writeBaseHeaders_()
+void Response::writeFirstPart_()
 {
-	append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
-	append_("Date: " + getStrDate() + "\r\n");
-	append_("Connection: close\r\n");
+    append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
+    append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
+    append_("Date: " + getStrDate() + "\r\n");
+    append_("Connection: close\r\n");
 }
 
 void Response::writeContentType_(std::string filePath)
@@ -44,9 +45,6 @@ void Response::writeContentType_(std::string filePath)
 	{
 		std::string contentType = Mime::getInstance()->getContentType(filePath);
 		append_("Content-Type: " + contentType + "\r\n");
-
-	// filePath = Mime::getInstance()->getContentType(filePath); TODO : You choose
-	// append_("Content-Type: " + filePath + "\r\n");
 	}
 }
 
@@ -67,12 +65,7 @@ void Response::writeAllow_()
 	append_("\r\n");
 }
 
-void Response::writeStatusLine_(int statusCode)
-{
-	append_("HTTP/1.1 " + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "\r\n");
-}
-
-void Response::writeThisHeader_(std::string name, std::string value)
+void Response::writeThisHeader_(const std::string& name, const std::string& value)
 {
 	append_(name + ": " + value + "\r\n");
 }
@@ -116,7 +109,7 @@ void Response::writeErrorBody(int statusCode)
 	append_(body);
 }
 
-void Response::append_(std::string str)
+void Response::append_(const std::string & str)
 {
 	if (str.size() + nbytes_ > bufSize_)
 		return ;
@@ -134,8 +127,8 @@ void Response::append_(const char str[], unsigned int size)
 
 void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength)
 {
-	writeStatusLine_(statusCode);
-	writeBaseHeaders_();
+    statusCode_ = statusCode;
+	writeFirstPart_();
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();

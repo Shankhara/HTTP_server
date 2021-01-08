@@ -259,14 +259,15 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
     {
         std::vector<std::string> vec_tmp = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
+        std::string tmp;
+        size_t pos = requestLine_[REQTARGET].rfind('/');
         for(size_t i = 0; i < vec_tmp.size(); i++)
         {
-            std::string tmp;
-            size_t pos = requestLine_[REQTARGET].rfind('/');
+            tmp = requestLine_[REQTARGET];
             if (pos != std::string::npos)
-                tmp = requestLine_[REQTARGET].insert(++pos, vec_tmp[i] + "/");
+                tmp.insert(pos + 1, vec_tmp[i] + "/");
             else
-                tmp = "/" + vec_tmp[i] + "/" + requestLine_[REQTARGET];
+                tmp.insert(0,"/" + vec_tmp[i] + "/");
             headerContentLanguage_[vec_tmp[i]] = tmp;
         }
     }

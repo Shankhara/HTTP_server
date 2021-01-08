@@ -52,7 +52,7 @@ void RespPut::putPayload_()
 
 void RespPut::makeResponse_()
 {
-	writeStatusLine_(statusCode_);
+    writeFirstPart_();
 	writeContentType_(filePath_);
 	if (statusCode_ == 201)
 		writeThisHeader_("Location", filePath_);

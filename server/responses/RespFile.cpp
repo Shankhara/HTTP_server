@@ -2,12 +2,13 @@
 
 RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-	setFilePath_();
+	addFilePathRoot_();
+    langNegotiation_();
 }
 
 RespFile::~RespFile() { }
 
-void RespFile::setFilePath_()
+void RespFile::addFilePathRoot_()
 {
 	if (!req_.getLocation()->root.empty())
 		filePath_ = req_.getLocation()->root + req_.getReqTarget();
@@ -31,4 +32,26 @@ int RespFile::createDirectories_()
 			return -1;
 	}
 	return 0;
+}
+
+void RespFile::langNegotiation_()
+{
+    langNegotiated_ = false;
+    if (!req_.getHeaderAcceptLanguage().empty())
+    {
+        std::string tmp = filePath_;
+        for(size_t i = 0; i < req_.getHeaderAcceptLanguage().size(); ++i)
+        {
+            size_t pos = tmp.rfind('/'); // garantie de toujours trouver un "/" ?
+            tmp.insert(++pos, req_.getHeaderAcceptLanguage()[i] + "/");
+            struct stat st;
+            int ret = stat(tmp.c_str(), &st);
+            if (ret != -1)
+            {
+                filePath_ = tmp;
+                langNegotiated_ = true;
+            }
+        }
+        return;
+    }
 }
