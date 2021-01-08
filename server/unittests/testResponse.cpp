@@ -1,6 +1,18 @@
 #include "unittests.hpp"
 #include <string.h>
 
+static bool assertBuildWithoutException(Response *resp, const std::string &testName)
+{
+	try {
+		resp->build();
+		std::cout << "\033[1;32mSuccess\033[0m > " << testName << " > no exception as expected" << std::endl;
+		return true;
+	} catch (RespException &e) {
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > got unexpected exception" << std::endl;
+		return false;
+	}
+}
+
 void testRespGet()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -14,6 +26,8 @@ void testRespGet()
 	char buf[bufsize];
 
 	RespGet respGet(ra, buf, bufsize);
+	if (!assertBuildWithoutException(&respGet, __FUNCTION__ ))
+		return ;
 
 	int readSize = respGet.readResponse();
 	buf[readSize] = '\0';
@@ -37,6 +51,7 @@ void testRespPut()
 	char buf[bufsize];
 
 	RespPut respPut(ra, buf, bufsize);
+	assertBuildWithoutException(&respPut, __FUNCTION__ );
 
 	int readSize = respPut.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -61,7 +76,7 @@ void testRespPost()
 	char buf[bufsize];
 
 	RespPost respPost(ra, buf, bufsize);
-	respPost.build();
+	assertBuildWithoutException(&respPost, __FUNCTION__ );
 
 	int readSize = respPost.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -72,8 +87,9 @@ void testRespPost()
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
 	Request rb(*vhost);
 	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
+
 	RespPost respPost_b(rb, buf, bufsize);
-	respPost_b.build();
+	assertBuildWithoutException(&respPost_b, __FUNCTION__ );
 
 	readSize = respPost_b.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -85,7 +101,7 @@ void testRespPost()
 	Request rc(*vhost);
 	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
 	RespPost respPost_c(rc, buf, bufsize);
-	respPost_c.build();
+	assertBuildWithoutException(&respPost_c, __FUNCTION__ );
 
 	readSize = respPost_c.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -108,7 +124,7 @@ void testRespDelete()
 	char buf[bufsize];
 
 	RespDelete respDel(r, buf, bufsize);
-	respDel.build();
+	assertBuildWithoutException(&respDel, __FUNCTION__ );
 
 	int readSize = respDel.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -130,8 +146,8 @@ void testRespTrace()
     std::string str = "TRACE /index.html HTTP/1.1\r\n\r\n";
     ra.doRequest(const_cast<char*>(str.c_str()), str.size());
     RespTrace respTrace(ra, buf, bufsize);
+	assertBuildWithoutException(&respTrace, __FUNCTION__ );
 
-	respTrace.build();
 	respTrace.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -140,8 +156,8 @@ void testRespTrace()
 	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_b(rb, buf, bufsize);
+	assertBuildWithoutException(&respTrace_b, __FUNCTION__ );
 
-	respTrace_b.build();
 	respTrace_b.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -150,7 +166,7 @@ void testRespTrace()
 	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_c(rc, buf, bufsize);
-	respTrace_c.build();
+	assertBuildWithoutException(&respTrace_c, __FUNCTION__ );
 	respTrace_c.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -171,7 +187,7 @@ void testRespOptions()
 	char buf[bufsize];
 
 	RespOptions respOptions(ra, buf, bufsize);
-	respOptions.build();
+	assertBuildWithoutException(&respOptions, __FUNCTION__ );
 
 	int readSize = respOptions.readResponse();
 	buf[readSize] = '\0';
@@ -192,7 +208,7 @@ void testRespError()
 	char buf[bufsize];
 
 	RespError respError(401, ra, buf, bufsize);
-	respError.build();
+	assertBuildWithoutException(&respError, __FUNCTION__ );
 
 	int readSize = respError.readResponse();
 	buf[readSize] = '\0';
