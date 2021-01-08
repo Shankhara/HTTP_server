@@ -38,8 +38,9 @@ void startListeners(const std::vector<Listener*> *listeners)
 }
 
 int main(int argc, char *argv[]) {
-	std::vector<Listener*> *listeners = new std::vector<Listener *>();
-
+	std::vector<Listener*>	*listeners = new std::vector<Listener *>();
+	std::string				*confPath;
+	
 	if (argc > 2)
 	{
 		std::cerr << "To many argument default usage : webserv [example.conf]" << std::endl;
@@ -47,7 +48,10 @@ int main(int argc, char *argv[]) {
 	}
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
-	std::string *confPath = new std::string("./parsing/test/wordpress.conf");
+	if (argc == 1)
+		confPath = new std::string("./parsing/test/wordpress.conf");
+	else	
+		confPath = new std::string(argv[1]);
 	//Log::getInstance()->setLevel(logDEBUG);
 	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
 		Log::getInstance()->setLevel(logDEBUG);
