@@ -12,6 +12,9 @@
 
 # include "Parsing.hpp"
 
+
+Parsing *Parsing::instance_ = 0;
+
 typedef std::string           			stds;
 typedef stds::iterator        			iterator;
 typedef std::pair<int, stds> 			pi;
@@ -460,4 +463,16 @@ void				Parsing::skipWhite(iterator *first, iterator end, bool inc)
 		if (**first != '#' && !std::isspace(**first))
 			break;
 	}
+}
+
+
+Parsing *Parsing::getInstance()
+{
+	if (instance_ == 0)
+		instance_ = new Parsing();
+	return instance_;
+}
+
+void Parsing::setFile(const stds &file) {
+	file_ = file;
 }

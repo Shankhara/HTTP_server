@@ -2,14 +2,15 @@
 
 static void assertThrow(std::string path, std::string testName)
 {
-	Parsing p(path);
+	Parsing::getInstance()->setFile(path);
 	try {
-		p.parseConfig();
+		Parsing::getInstance()->parseConfig();
 	} catch (Parsing::ParsingException &e) {
 		std::cout << "\033[1;32mSuccess\033[0m > " << testName << " > exception as expected" << std::endl;
 		return ;
 	}
 	std::cout << "\033[1;31mFail\033[0m: > " << testName << " > expected a throw." << std::endl;
+	delete Parsing::getInstance();
 }
 
 static void assertLoad(Parsing &p, std::string testName)
@@ -19,14 +20,6 @@ static void assertLoad(Parsing &p, std::string testName)
 	} catch (Parsing::ParsingException &e) {
 		std::cout << "\033[1;31mFail\033[0m: > " << testName << "> expecting no exception got " << e.what() << std::endl;
 	}
-}
-
-void testDuplicateServerName()
-{
-	std::string testName = __FUNCTION__ ;
-	Parsing p("./parsing/duplicateServerName.conf");
-	assertLoad(p, testName);
-	assertEqual(p.getServers().size(), (unsigned long)2, testName);
 }
 
 void testParsing()
@@ -45,7 +38,4 @@ void testParsing()
 	assertThrow("./parsing/noArguments.conf", " no arguments provide");
 	assertThrow("./parsing/missingBrackets.conf", " missing brackets");
 	assertThrow("./parsing/missingBrackets.conf", " missing brackets");
-
-
-//	testDuplicateServerName();
 }
