@@ -1,6 +1,5 @@
 #include "Request.hpp"
 
-
 Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 {
 	headersRaw_.resize(15);
@@ -227,11 +226,20 @@ int Request::parseHeadersContent()
 		headerAcceptCharset_ = tmp;
 	}
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
-		headerAcceptLanguage_ = removeSpaces(headersRaw_[ACCEPT_LANGUAGE]);
+    {
+		headerAcceptLanguage_ = explode(removeSpaces(headersRaw_[ACCEPT_LANGUAGE]), ',');
+		for(size_t i = 0; i < headerAcceptLanguage_.size(); i++)
+		{
+		    size_t ret = headerAcceptLanguage_[i].find(';');
+		    if (ret != std::string::npos)
+		        headerAcceptLanguage_[i].erase(ret);
+		} //ex: da, en-gb;q=0.8, en;q=0.7 INTO |da|en-gb|en|
+
+    }
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
 		headerAuth_ = decode_authorization();
-		if (!isAuthenticated_(location_))
+		if (headerAuth_.empty())
 			return 401;
 	}
 	if (!headersRaw_[HOST].empty())
@@ -248,9 +256,21 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[ALLOW].empty())
 		headerAllow_ = removeSpaces(headersRaw_[ALLOW]);
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
-		headerContentLanguage_ = removeSpaces(headersRaw_[CONTENT_LANGUAGE]);
+    {
+        std::vector<std::string> vec_tmp = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
+        for(size_t i = 0; i < vec_tmp.size(); i++)
+        {
+            std::string tmp;
+            size_t pos = requestLine_[REQTARGET].rfind('/');
+            if (pos != std::string::npos)
+                tmp = requestLine_[REQTARGET].insert(++pos, vec_tmp[i] + "/");
+            else
+                tmp = "/" + vec_tmp[i] + "/" + requestLine_[REQTARGET];
+            headerContentLanguage_[vec_tmp[i]] = tmp;
+        }
+    }
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]).c_str());
+		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
 	if (!headersRaw_[CONTENT_LOCATION].empty())
 		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
@@ -288,6 +308,8 @@ int Request::accessControl_()
 		return 403;
 	if (!isMethodAuthorized_(location_))
 		return 405;
+	if (!isAuthenticated_(location_))
+		return 401;
 
 	// TODO: this code doesnt really belong here
 	originalReqTarget_ = requestLine_[REQTARGET];
@@ -469,13 +491,13 @@ std::string Request::getHeaderContentLocation() const
 std::string Request::getHeaderAcceptCharset() const
 { return (headerAcceptCharset_); }
 
-std::string Request::getHeaderAcceptLanguage() const
+std::vector<std::string> Request::getHeaderAcceptLanguage() const
 { return (headerAcceptLanguage_); }
 
 std::string Request::getHeaderAllow() const
 { return (headerAllow_); }
 
-std::string Request::getHeaderContentLanguage() const
+std::map<std::string, std::string> Request::getHeaderContentLanguage() const
 { return (headerContentLanguage_); }
 
 std::string Request::getHeaderContentType() const
@@ -494,4 +516,3 @@ const std::string &Request::getOriginalReqTarget() const {
 const std::string &Request::getHeaderUserAgent() const {
 	return headerUserAgent_;
 }
-

@@ -16,7 +16,6 @@ void testRespGet()
 	RespGet respGet(ra, buf, bufsize);
 
 	int readSize = respGet.readResponse();
-	std::cout << "#" << readSize << "#" << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
@@ -29,7 +28,7 @@ void testRespPut()
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
 	std::string body = "HTTP is a generic interface protocol for information systems. \
-	It is designed to hide the details of how a service is ..."; 
+	It is designed to hide the details of how a service is ...";
 	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
@@ -113,38 +112,22 @@ void testRespDelete()
 	std::cout << "|" << buf << "|" << std::endl;
 }
 
-//static void assertResponse(const std::string & str, const std::vector<Parsing::server> *server, \
-//Response * response, const std::string &testName, int expectedStatus=200)
-//{
-//	Request r(*server);
-//	unsigned int bufsize = 16 * 1024;
-//	char buf[bufsize];
-//
-//	int status = r.doRequest(const_cast<char *>(str.c_str()), str.size());
-//	
-//	response(r, buf, bufsize);
-//
-//	int readSize = response->readResponse();
-//	buf[readSize] = '\0';
-//	std::cout << "|" << buf << "|" << std::endl;
-//}
-
 void testRespTrace()
 {
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
+
 	unsigned int bufsize = 16 * 1024;
 	char buf[bufsize];
 	memset(buf, 0, bufsize);
-//	RespTrace respTrace;
-//	assertResponse(str, vhost, , "only requestLine"); 
-	std::string str = "TRACE /index.html HTTP/1.1\r\n\r\n";
-	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-	RespTrace respTrace(ra, buf, bufsize);
 
-	int readSize = respTrace.readResponse();
+    std::string str = "TRACE /index.html HTTP/1.1\r\n\r\n";
+    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespTrace respTrace(ra, buf, bufsize);
+
+	respTrace.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
 	Request rb(*vhost);
@@ -152,7 +135,7 @@ void testRespTrace()
 	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_b(rb, buf, bufsize);
-	readSize = respTrace_b.readResponse();
+	respTrace_b.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
 	Request rc(*vhost);
@@ -160,11 +143,12 @@ void testRespTrace()
 	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_c(rc, buf, bufsize);
-	readSize = respTrace_c.readResponse();
+	respTrace_c.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
 	delete (vhost);
 }
+
 
 void testRespOptions()
 {
@@ -185,6 +169,27 @@ void testRespOptions()
 	std::cout << "|" << buf << "|" << std::endl;
 	delete (vhost);
 }
+
+void testRespError()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+	std::vector<Parsing::server> *vhost = createVirtualHosts();
+	Request ra(*vhost);
+	std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAuthorization: qwe\r\n\r\n";
+	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+
+	unsigned int bufsize = 16 * 1024;
+	char buf[bufsize];
+
+	RespError respError(401, ra, buf, bufsize);
+
+	int readSize = respError.readResponse();
+	buf[readSize] = '\0';
+	std::cout << "|" << buf << "|" << std::endl;
+	delete (vhost);
+}
+
 
 void testMimeType()
 {
@@ -235,10 +240,11 @@ void testMimeType()
 void testResponse()
 {
 	testRespGet();
-//	testRespPut();
-//	testRespPost();
-// 	testRespTrace();
-//	testRespDelete();
-//	testRespOptions();
-//	testMimeType();
+	testRespPut();
+	testRespPost();
+ 	testRespTrace();
+	testRespDelete();
+	testRespOptions();
+	testRespError();
+	testMimeType();
 }
