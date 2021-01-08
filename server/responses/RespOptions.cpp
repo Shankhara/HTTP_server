@@ -6,22 +6,21 @@ RespOptions::~RespOptions() { }
 
 void RespOptions::makeResponse_()
 {
-		writeStatusLine_(statusCode_);
-		writeBaseHeaders_();
-		writeAllow_();
-		writeContentLength_(0);
-		writeHeadersEnd_();
-		writeHeadersEnd_();
+	if (!headersBuilt_)
+    {
+        writeFirstPart_ ();
+        writeAllow_ ();
+        writeContentLength_ (0);
+        writeHeadersEnd_ ();
+        writeHeadersEnd_ ();
+    }
 }
 
 int RespOptions::readResponse()
 {
 	nbytes_ = 0;
-
 	if (headersBuilt_ == false)
 		makeResponse_();
-
 	return nbytes_;
 }
-
 void RespOptions::build() {}

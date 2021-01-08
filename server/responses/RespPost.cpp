@@ -53,13 +53,15 @@ void RespPost::postPayload_()
 
 void RespPost::makeResponse_()
 {
-		writeStatusLine_(statusCode_);
-		writeBaseHeaders_();
-		writeContentType_(filePath_);
-		writeThisHeader_("Content-location", filePath_);
-		writeThisHeader_("Last-Modified", getStrDate());
-		writeHeadersEnd_();
-		writeHeadersEnd_();
+	if (headersBuilt_ == false)
+    {
+        writeFirstPart_ ();
+        writeContentType_ (filePath_);
+        writeThisHeader_ ("Content-location", filePath_);
+        writeThisHeader_ ("Last-Modified", getStrDate ());
+        writeHeadersEnd_ ();
+        writeHeadersEnd_ ();
+    }
 }
 
 int RespPost::readResponse()
@@ -74,6 +76,7 @@ int RespPost::readResponse()
 	return nbytes_;
 }
 
-void RespPost::build() {
+void RespPost::build()
+{
 	manageFile_();
 }
