@@ -13,15 +13,6 @@ static void assertThrow(std::string path, std::string testName)
 	delete Parsing::getInstance();
 }
 
-static void assertLoad(Parsing &p, std::string testName)
-{
-	try {
-		p.parseConfig();
-	} catch (Parsing::ParsingException &e) {
-		std::cout << "\033[1;31mFail\033[0m: > " << testName << "> expecting no exception got " << e.what() << std::endl;
-	}
-}
-
 void testParsing()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__  << "\033[0m" << std::endl;
