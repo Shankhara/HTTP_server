@@ -46,7 +46,7 @@ void RespGet::writeHeaders_()
 	writeFirstPart_();
 	writeContentType_(filePath_);
 	writeContentLength_(payLoadSize_);
-    if (langNegotiated_)
+    if (acceptLangNegotiated_)
     {
         writeThisHeader_("Content-Location", filePath_);
     }

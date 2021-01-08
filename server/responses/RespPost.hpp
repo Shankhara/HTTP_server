@@ -5,10 +5,6 @@
 class RespPost: public RespFile
 {
 	private:
-	std::string payload_;
-	unsigned int payloadCursor_;
-
-	void postPayload_();
 	void makeResponse_();
 	void manageFile_();
 	

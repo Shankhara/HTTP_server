@@ -286,7 +286,7 @@ void testResponse()
 {
 //	testRespGet();
 //	testRespPut();
-//	testRespPost();
+	testRespPost();
 // 	testRespTrace();
 //	testRespDelete();
 //	testRespOptions();
