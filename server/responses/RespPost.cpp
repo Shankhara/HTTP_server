@@ -3,6 +3,7 @@
 RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
 	fd_ = 0;
+	payloadCursor_ = 0;
 }
 
 RespPost::~RespPost()

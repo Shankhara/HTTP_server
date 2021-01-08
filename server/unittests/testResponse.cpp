@@ -8,7 +8,7 @@ static bool assertBuildWithoutException(Response *resp, const std::string &testN
 		std::cout << "\033[1;32mSuccess\033[0m > " << testName << " > no exception as expected" << std::endl;
 		return true;
 	} catch (RespException &e) {
-		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > got unexpected exception" << std::endl;
+		std::cout << "\033[1;31mFail\033[0m: > " << testName << " > got unexpected exception: " << e.getStatusCode() << std::endl;
 		return false;
 	}
 }
