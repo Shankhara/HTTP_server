@@ -368,9 +368,9 @@ void testContentLanguage ()
 
     std::string str = "GET qwe HTTP/1.1\r\nHost: webserv\r\ncontent-language: da, en-gb, en\r\n\r\n";
     a.doRequest(const_cast<char *>(str.c_str()), str.size());
-    std::cout << a.getHeaderContentLanguage()["da"] << std::endl;
-    std::cout << a.getHeaderContentLanguage()["en-gb"] << std::endl;
-    std::cout << a.getHeaderContentLanguage()["en"] << std::endl;
+    assertStringEqual(a.getHeaderContentLanguage()["da"], "/da/qwe", "content-language da");
+    assertStringEqual(a.getHeaderContentLanguage()["en-gb"], "/en-gb/qwe", "language en-gb");
+    assertStringEqual(a.getHeaderContentLanguage()["en"], "/en/qwe", "language en");
 }
 
 void testRequest()
