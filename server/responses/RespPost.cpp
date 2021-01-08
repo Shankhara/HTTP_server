@@ -8,8 +8,7 @@ RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFil
 
 RespPost::~RespPost()
 {
-	if (fd_ > 0)
-		close(fd_);
+
 }
 
 void RespPost::manageFile_()
@@ -23,12 +22,7 @@ void RespPost::manageFile_()
 	if (ret == -1)
 		statusCode_ = 201;
 
-	fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
-	if (fd_ == -1)
-	{
-		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		throw RespException(500);
-	}
+	openFile_(O_CREAT | O_WRONLY, 500);
 }
 
 void RespPost::postPayload_()
@@ -53,15 +47,12 @@ void RespPost::postPayload_()
 
 void RespPost::makeResponse_()
 {
-	if (headersBuilt_ == false)
-    {
-        writeFirstPart_ ();
-        writeContentType_ (filePath_);
-        writeThisHeader_ ("Content-location", filePath_);
-        writeThisHeader_ ("Last-Modified", getStrDate ());
-        writeHeadersEnd_ ();
-        writeHeadersEnd_ ();
-    }
+	writeFirstPart_ ();
+	writeContentType_ (filePath_);
+	writeContentLength_(0);
+	writeThisHeader_ ("Content-location", filePath_);
+	writeThisHeader_ ("Last-Modified", getStrDate ());
+	writeHeadersEnd_ ();
 }
 
 int RespPost::readResponse()
