@@ -121,6 +121,8 @@ void Client::responseFactory_() {
 		resp_ = new RespDelete(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_->getMethod() == "PUT")
 		resp_ = new RespPut(*request_, buf_, CLIENT_BUFFER_SIZE);
+	else if (request_->getMethod() == "OPTIONS")
+		resp_ = new RespOptions(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else
 		resp_ = new RespError(400, *request_, buf_, CLIENT_BUFFER_SIZE);
 	try {
