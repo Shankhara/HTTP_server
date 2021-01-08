@@ -24,7 +24,7 @@ class Response
 	void writeThisHeader_(const std::string&, const std::string&);
 
 	virtual void 	append_(const std::string &);
-	void 	append_(const char [], unsigned int);
+	virtual void 	append_(const char [], unsigned int);
 
 	public:
 	Response(const Request &, char[], unsigned int bufSize);

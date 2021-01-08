@@ -4,7 +4,7 @@ RespHead::RespHead(const Request &r, char *buf, unsigned int bufSize) : RespGet(
 
 RespHead::~RespHead() {}
 
-void RespHead::append_(std::string str) {
+void RespHead::append_(const std::string &str) {
 
 	if (headersBuilt_)
 		return ;
