@@ -43,7 +43,7 @@ class Request
 	std::string headerLocation_;
 	std::string headerAcceptCharset_;
 	std::string headerAllow_;
-	std::map<std::string, std::string> headerContentLanguage_;
+	std::vector<std::string> headerContentLanguage_;
 	std::string headerContentType_;
 
 	bool							isMethodAuthorized_(const Parsing::location *) const;
@@ -113,9 +113,9 @@ class Request
 	std::string getHeaderReferer() const;
 	std::string getHeaderContentLocation() const;
 	std::string getHeaderAcceptCharset() const;
+    std::string getHeaderAllow() const;
 	std::vector<std::string> getHeaderAcceptLanguage() const;
-	std::string getHeaderAllow() const;
-	std::map<std::string, std::string> getHeaderContentLanguage() const;
+	std::vector<std::string> getHeaderContentLanguage() const;
 	std::string getHeaderContentType() const;
 	const std::string &getHeaderUserAgent() const;
 	const std::vector<std::string> &getCGIHeaders() const;

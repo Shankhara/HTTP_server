@@ -9,7 +9,7 @@ class RespFile : public Response
 {
 	private:
 	void addFilePathRoot_();
-    void langNegotiation_();
+    void negotiateLangAccepted_();
 
 	protected:
 	std::string filePath_;
@@ -20,4 +20,5 @@ class RespFile : public Response
 	RespFile(const Request &r, char[], unsigned int);
 	~RespFile();
 
+void contentLangNegotiation ();
 };

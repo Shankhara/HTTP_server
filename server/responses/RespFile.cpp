@@ -3,7 +3,7 @@
 RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
 	addFilePathRoot_();
-    langNegotiation_();
+	negotiateLangAccepted_();
 }
 
 RespFile::~RespFile() { }
@@ -34,24 +34,47 @@ int RespFile::createDirectories_()
 	return 0;
 }
 
-void RespFile::langNegotiation_()
+void RespFile::negotiateLangAccepted_()
 {
     langNegotiated_ = false;
     if (!req_.getHeaderAcceptLanguage().empty())
     {
-        std::string tmp = filePath_;
+        std::string tmp;
+        size_t pos = filePath_.rfind('/'); // garantie de toujours trouver un "/" ?
         for(size_t i = 0; i < req_.getHeaderAcceptLanguage().size(); ++i)
         {
-            size_t pos = tmp.rfind('/'); // garantie de toujours trouver un "/" ?
-            tmp.insert(++pos, req_.getHeaderAcceptLanguage()[i] + "/");
+            if (req_.getHeaderAcceptLanguage()[i].find('*') != std::string::npos)
+                return;
+            tmp = filePath_;
+            tmp.insert(pos + 1, req_.getHeaderAcceptLanguage()[i] + "/");
             struct stat st;
             int ret = stat(tmp.c_str(), &st);
             if (ret != -1)
             {
                 filePath_ = tmp;
                 langNegotiated_ = true;
+                return;
             }
         }
         return;
+    }
+}
+
+void RespFile::contentLangNegotiation()
+{
+    if (!req_.getHeaderContentLanguage().empty())
+    {
+        std::vector<std::string> vector = req_.getHeaderContentLanguage();
+        size_t pos = filePath_.rfind('/');
+        for(size_t i = 0; i < vector.size(); ++i)
+        {
+            std::transform(vector[i].begin(), vector[i].end(), vector[i].begin(), ft_toupper);
+            if (pos != std::string::npos)
+                filePath_.insert(pos + 1, vector[i] + "/");
+            else
+                filePath_.insert(0,"/" + vector[i] + "/");
+            createDirectories_();
+        }
+
     }
 }

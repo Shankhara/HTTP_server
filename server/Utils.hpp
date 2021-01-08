@@ -14,6 +14,7 @@ int ft_atoi(std::string const &str);
 int getNextLine(std::string & buf, std::string & line);
 unsigned long getTime();
 char ft_tolower(char);
+char ft_toupper(char);
 char *ft_strcat(char *s1, char *s2);
 char *ft_strncpy(char *dest, const char *src, size_t n);
 size_t ft_strlen(char *str);

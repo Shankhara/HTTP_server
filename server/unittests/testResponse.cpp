@@ -272,9 +272,10 @@ void testLangNegotiation()
     unsigned int bufsize = 16 * 1024;
     char buf[bufsize];
 
-    std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAccept-language: FR\r\n\r\n";
+    std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAccept-language: fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5\r\n\r\n";
     ra.doRequest(const_cast<char*>(str.c_str()), str.size());
     RespGet respGet(ra, buf, bufsize);
+    respGet.build();
     int readSize = respGet.readResponse();
     buf[readSize] = '\0';
     std::cout << "|" << buf << "|" << std::endl;

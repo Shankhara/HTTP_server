@@ -29,6 +29,7 @@ std::string removeSpaces(std::string & str)
 }
 
 char ft_tolower(char i) { return std::tolower(i); }
+char ft_toupper(char i) { return std::toupper(i); }
 
 bool boolFind(std::string const & haystack, std::string const & needle)
 {
@@ -179,7 +180,7 @@ size_t strHexToInt(std::string str)
 	static const std::string baseHexa = "0123456789abcdef";
 	size_t index, res = 0, pow = 0;
 
-	std::transform(str.begin(), str.end(),str.begin(), ::toupper);
+	std::transform(str.begin(), str.end(),str.begin(), ft_toupper);
 	for (std::string::const_reverse_iterator i = str.rbegin(); i != str.rend(); i++)
 	{
 		index = baseHexa.find(ft_tolower(*i));

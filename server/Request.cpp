@@ -233,7 +233,7 @@ int Request::parseHeadersContent()
 		    size_t ret = headerAcceptLanguage_[i].find(';');
 		    if (ret != std::string::npos)
 		        headerAcceptLanguage_[i].erase(ret);
-		} //ex: da, en-gb;q=0.8, en;q=0.7 INTO |da|en-gb|en|
+		}
 
     }
 	if (!headersRaw_[AUTHORIZATION].empty())
@@ -256,20 +256,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[ALLOW].empty())
 		headerAllow_ = removeSpaces(headersRaw_[ALLOW]);
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
-    {
-        std::vector<std::string> vec_tmp = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
-        std::string tmp;
-        size_t pos = requestLine_[REQTARGET].rfind('/');
-        for(size_t i = 0; i < vec_tmp.size(); i++)
-        {
-            tmp = requestLine_[REQTARGET];
-            if (pos != std::string::npos)
-                tmp.insert(pos + 1, vec_tmp[i] + "/");
-            else
-                tmp.insert(0,"/" + vec_tmp[i] + "/");
-            headerContentLanguage_[vec_tmp[i]] = tmp;
-        }
-    }
+        headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
 	if (!headersRaw_[CONTENT_LOCATION].empty())
@@ -498,7 +485,7 @@ std::vector<std::string> Request::getHeaderAcceptLanguage() const
 std::string Request::getHeaderAllow() const
 { return (headerAllow_); }
 
-std::map<std::string, std::string> Request::getHeaderContentLanguage() const
+std::vector<std::string> Request::getHeaderContentLanguage() const
 { return (headerContentLanguage_); }
 
 std::string Request::getHeaderContentType() const

@@ -346,32 +346,29 @@ static void testExplode()
 
 }
 
-//void testAcceptLanguage()
-//{
-//    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-//    std::vector<Parsing::server> *vhost = createVirtualHosts();
-//    Request a(*vhost);
-//
-//    std::string str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\naccept-language: da, en-gb;q=0.8, en;q=0.7\r\n\r\n";
-//    a.doRequest(const_cast<char *>(str.c_str()), str.size());
-//    for(size_t i = 0; i < a.getHeaderAcceptLanguage().size(); ++i)
-//    {
-//        std::cout << a.getHeaderAcceptLanguage()[i] << std::endl;
-//    }
-//}
-
-void testContentLanguage ()
+void testAcceptLanguage()
 {
     std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
     std::vector<Parsing::server> *vhost = createVirtualHosts();
     Request a(*vhost);
 
-    std::string str = "GET qwe HTTP/1.1\r\nHost: webserv\r\ncontent-language: da, en-gb, en\r\n\r\n";
+    std::string str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\naccept-language:fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5\r\n\r\n";
     a.doRequest(const_cast<char *>(str.c_str()), str.size());
-    std::cout << a.getHeaderContentLanguage()["da"] << std::endl;
-    std::cout << a.getHeaderContentLanguage()["en-gb"] << std::endl;
-    std::cout << a.getHeaderContentLanguage()["en"] << std::endl;
+    for(size_t i = 0; i < a.getHeaderAcceptLanguage().size(); ++i)
+    {
+        std::cout << a.getHeaderAcceptLanguage()[i] << std::endl;
+    }
 }
+
+//void testContentLanguage ()
+//{
+//    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+//    std::vector<Parsing::server> *vhost = createVirtualHosts();
+//    Request a(*vhost);
+//
+//    std::string str = "GET qwe HTTP/1.1\r\nHost: webserv\r\ncontent-language: da, en-gb, en\r\n\r\n";
+//    a.doRequest(const_cast<char *>(str.c_str()), str.size());
+//}
 
 void testRequest()
 {
@@ -394,6 +391,6 @@ void testRequest()
 	testStrToHex();
 	testServerMatch();
 	testExplode();
-	//testAcceptLanguage();
-	testContentLanguage();
+	testAcceptLanguage();
+//	testContentLanguage();
 }
