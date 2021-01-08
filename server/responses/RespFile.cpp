@@ -23,10 +23,7 @@ void RespFile::openFile_(int flags, int exceptionCode)
 {
 	fd_ = open(filePath_.c_str(), flags, 0664);
 	if (fd_ == -1)
-	{
-		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
 		throw RespException(exceptionCode);
-	}
 }
 
 int RespFile::createDirectories_()

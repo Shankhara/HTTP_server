@@ -38,12 +38,12 @@ void startListeners(const std::vector<Listener*> *listeners)
 }
 
 int main(int argc, char *argv[]) {
-	std::vector<Listener*>	*listeners = new std::vector<Listener *>();
+	std::vector<Listener*>	*listeners;
 	std::string				*confPath;
-	
+
 	if (argc > 2)
 	{
-		std::cerr << "To many argument default usage : webserv [example.conf]" << std::endl;
+		std::cerr << "To many arguments default usage : webserv [./example.conf]" << std::endl;
 		return (EXIT_FAILURE);
 	}
 	signal(SIGCHLD,SIG_IGN);
@@ -53,23 +53,17 @@ int main(int argc, char *argv[]) {
 	else	
 		confPath = new std::string(argv[1]);
 	//Log::getInstance()->setLevel(logDEBUG);
-	if (argc > 1 && std::string(argv[1]).compare("-v") == 0) {
-		Log::getInstance()->setLevel(logDEBUG);
-	} else if (argc > 1) {
-		confPath->assign(argv[1]);
-	}
 	Parsing::getInstance()->setFile(*confPath);
 	delete(confPath);
 	try {
 		Parsing::getInstance()->parseConfig();
 	} catch (Parsing::ParsingException &e) {
 		Log::get(logERROR) << " Unable to parse: " << e.what() << std::endl;
-		delete listeners;
 		delete Parsing::getInstance();
-		delete Log::getInstance();
 		return (EXIT_FAILURE);
 	}
 	Server *webserv = Server::getInstance();
+	listeners = new std::vector<Listener *>();
 	for (size_t i = 0; i < Parsing::getInstance()->getServers().size(); i++) {
 		addListener(Parsing::getInstance()->getServers()[i], listeners);
 	}
