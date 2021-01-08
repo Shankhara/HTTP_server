@@ -7,13 +7,9 @@ RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): RespFile(r
 	reqTarget_ = req_.getReqTarget();
 }
 
-RespGet::~RespGet()
-{
-	if (fd_ > 0)
-		close(fd_);
-}
+RespGet::~RespGet(){}
 
-void RespGet::openFile_()
+void RespGet::reachRessource_()
 {
 	struct stat st;
 
@@ -27,15 +23,7 @@ void RespGet::openFile_()
 			filePath_ += '/';
 		filePath_ += location_->index;
 	}
-	Log::get(logDEBUG) << __FUNCTION__  << " PATH: " << filePath_ << " IS_DIR " << isDir \
-	<< " INDEX " << location_->index << std::endl;
-
-	fd_ = open(filePath_.c_str(), O_RDONLY);
-	if (fd_ == -1)
-	{
-		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		throw RespException(404);
-	}
+	openFile_(O_RDONLY, 404);
 	if (isDir)
 		fstat(fd_, &st);
 	payLoadSize_ = st.st_size;
@@ -68,7 +56,7 @@ void RespGet::writeHeaders_()
 void RespGet::build()
 {
 	if (location_->autoindex == false || reqTarget_[reqTarget_.size() - 1] != '/')
-		openFile_();
+		reachRessource_();
 }
 
 int RespGet::readResponse()

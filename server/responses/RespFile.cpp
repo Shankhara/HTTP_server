@@ -6,7 +6,10 @@ RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Respons
 	negotiateLangAccepted_();
 }
 
-RespFile::~RespFile() { }
+RespFile::~RespFile() {
+	if (fd_ > 0)
+		close(fd_);
+}
 
 void RespFile::addFilePathRoot_()
 {
@@ -14,6 +17,13 @@ void RespFile::addFilePathRoot_()
 		filePath_ = req_.getLocation()->root + req_.getReqTarget();
 	else
 		filePath_ = req_.getServer()->root + req_.getReqTarget();
+}
+
+void RespFile::openFile_(int flags, int exceptionCode)
+{
+	fd_ = open(filePath_.c_str(), flags, 0664);
+	if (fd_ == -1)
+		throw RespException(exceptionCode);
 }
 
 int RespFile::createDirectories_()

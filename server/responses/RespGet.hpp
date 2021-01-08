@@ -15,13 +15,12 @@
 class RespGet: public RespFile
 {
 private:
-	int fd_;
 	size_t payLoadSize_;
 	std::string autoIndexBody_;
 	const Parsing::location *location_;
 	std::string reqTarget_;
 
-	void 		openFile_();
+	void 		reachRessource_();
 	int		 	readFile_();
 	int 		writeAutoIndex_(stds);
 	void 		writeHeaders_();

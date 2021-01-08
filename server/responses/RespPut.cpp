@@ -2,15 +2,10 @@
 
 RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
-	fd_ = 0;
 	payloadCursor_ = 0;
 }
 
-RespPut::~RespPut()
-{
-	if (fd_ > 0)
-		close(fd_);
-}
+RespPut::~RespPut(){}
 
 void RespPut::reachResource_()
 {
@@ -24,12 +19,7 @@ void RespPut::reachResource_()
 	if (stat(filePath_.c_str(), &buffer) == -1)
 		statusCode_ = 201;
 
-	fd_ = open(filePath_.c_str(), O_CREAT | O_TRUNC | O_RDWR, 0664);
-	if (fd_ == -1)
-	{
-		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		throw RespException(500);
-	}
+	openFile_(O_CREAT | O_TRUNC | O_RDWR, 500);
 }
 
 void RespPut::putPayload_()

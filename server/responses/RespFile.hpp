@@ -12,9 +12,11 @@ class RespFile : public Response
     void negotiateLangAccepted_();
 
 	protected:
+	int fd_;
 	std::string filePath_;
 	bool langNegotiated_;
 	int createDirectories_();
+	void openFile_(int exceptionStatus, int flags);
 
 	public:
 	RespFile(const Request &r, char[], unsigned int);

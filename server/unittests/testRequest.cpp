@@ -354,10 +354,6 @@ void testAcceptLanguage()
 
     std::string str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\naccept-language:fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5\r\n\r\n";
     a.doRequest(const_cast<char *>(str.c_str()), str.size());
-    for(size_t i = 0; i < a.getHeaderAcceptLanguage().size(); ++i)
-    {
-        std::cout << a.getHeaderAcceptLanguage()[i] << std::endl;
-    }
 }
 
 //void testContentLanguage ()

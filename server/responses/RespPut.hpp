@@ -5,7 +5,6 @@
 class RespPut: public RespFile
 {
 	private:
-	int fd_;
 	size_t payloadCursor_;
 
 	void putPayload_();
