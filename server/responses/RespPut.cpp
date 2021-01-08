@@ -47,6 +47,7 @@ void RespPut::putPayload_()
 void RespPut::makeResponse_()
 {
 	writeStatusLine_(statusCode_);
+	writeBaseHeaders_();
 	writeContentType_(filePath_);
 	if (statusCode_ == 201)
 		writeThisHeader_("Location", filePath_);
@@ -61,10 +62,7 @@ int RespPut::readResponse()
 
 	putPayload_();
 	if (statusCode_ == 500)
-	{
-		writeErrorPage(500);
-		return nbytes_;
-	}
+		return -1;
 	if (req_.getStatusCode() == 200 && !headersBuilt_)
 		makeResponse_();
 	return nbytes_;

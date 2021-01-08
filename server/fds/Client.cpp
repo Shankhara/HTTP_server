@@ -95,6 +95,11 @@ void Client::sendResponse(Response *resp) {
 			break ;
 		}
 	}
+	if (nbytes < 0 && !isSent)
+	{
+		RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
+		return (sendResponse(&err));
+	}
 	if (isSent)
 	{
 		Log::get(logINFO) << request_->getHeaderUserAgent() << "- referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;

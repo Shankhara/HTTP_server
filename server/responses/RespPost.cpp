@@ -65,11 +65,9 @@ int RespPost::readResponse()
 {
 	nbytes_ = 0;
 
-	if (statusCode_ == 500)
-		return 0;
 	postPayload_();
 	if (statusCode_ == 500)
-		return writeErrorPage(500);
+		return -1;
 	if (headersBuilt_ == false && req_.getStatusCode() == 200)
 		makeResponse_();
 	return nbytes_;
