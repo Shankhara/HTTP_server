@@ -65,19 +65,19 @@ int RespDelete::delResource_()
 
 void RespDelete::makeResponse_()
 {
-        writeStatusLine_(statusCode_);
-        writeBaseHeaders_();
-        writeHeadersEnd_();
-		writeHeadersEnd_();
+    if (!headersBuilt_)
+    {
+        writeFirstPart_ ();
+        writeHeadersEnd_ ();
+        writeHeadersEnd_ ();
+    }
 }
 
 int RespDelete::readResponse()
 {
 	nbytes_ = 0;
-
 	if (!headersBuilt_)
 		makeResponse_();
-
 	return nbytes_;
 }
 

@@ -104,12 +104,15 @@ class Parsing
 private :
 	stds					file_;
 	std::vector<server>		servers_;
+	static Parsing          *instance_;
+	Parsing();
+	Parsing(stds file);
 
-	public :
-		Parsing();	
-		Parsing(stds file);
+public :
 		~Parsing();
 
+		static 						Parsing *getInstance();
+		void 						setFile(const stds &file);
 		void						parseConfig();
 		void						parseServer();
 		Parsing::server				parseProps(iterator first, iterator end);

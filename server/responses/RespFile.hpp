@@ -8,13 +8,16 @@
 class RespFile : public Response
 {
 	private:
-	void setFilePath_();
+	void addFilePathRoot_();
+    void langNegotiation_();
 
 	protected:
 	std::string filePath_;
+	bool langNegotiated_;
 	int createDirectories_();
 
 	public:
 	RespFile(const Request &r, char[], unsigned int);
 	~RespFile();
+
 };

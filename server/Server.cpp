@@ -25,7 +25,7 @@ void Server::run_()
 	for (;;)
 	{
 		conn_fds = master_;
-		if (select(fdmax_+1, &conn_fds, NULL, NULL, &tv) == -1)
+		if (select(fdmax_ + 1, &conn_fds, NULL, NULL, &tv) == -1)
 		{
 			Log::get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
 			exit(EXIT_FAILURE);

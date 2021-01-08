@@ -55,10 +55,11 @@ int RespGet::readFile_()
 
 void RespGet::writeHeaders_()
 {
-	writeStatusLine_(statusCode_);
-	writeBaseHeaders_();
+	writeFirstPart_();
 	writeContentType_(filePath_);
 	writeContentLength_(payLoadSize_);
+    if(langNegotiated_)
+        writeThisHeader_("Content-Location", filePath_);
 	writeHeadersEnd_();
 }
 

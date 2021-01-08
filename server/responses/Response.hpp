@@ -13,18 +13,18 @@ class Response
 	int							nbytes_;
 	bool 						headersBuilt_;
 	int 						statusCode_;
+	std::vector<std::string> headers_;
 	static std::map<int, std::string> statusMap_;
 
-	void						writeStatusLine_(int);
-	void						writeBaseHeaders_();
-	void						writeContentType_(std::string);
-	void						writeContentLength_(long);
-    void                        writeAllow_();
-	void 						writeHeadersEnd_();
-	void 						writeThisHeader_(std::string, std::string);
+    void writeFirstPart_ ();
+	void writeContentType_(std::string);
+	void writeContentLength_(long);
+    void writeAllow_();
+	void writeHeadersEnd_();
+	void writeThisHeader_(const std::string&, const std::string&);
 
-	virtual void 	append_(std::string);
-	void 	append_(const char [], unsigned int);
+	virtual void 	append_(const std::string &);
+	virtual void 	append_(const char [], unsigned int);
 
 	public:
 	Response(const Request &, char[], unsigned int bufSize);
@@ -35,4 +35,5 @@ class Response
 	virtual int		readResponse() = 0;
 	virtual void 	build() = 0;
 	int 			getStatusCode() const;
+
 };
