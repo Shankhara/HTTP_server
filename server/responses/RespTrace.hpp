@@ -5,6 +5,7 @@
 class RespTrace: public Response
 {
 	private:
+	size_t cursor_;
 	void writeHeaders_();
 	std::string request_;
 	

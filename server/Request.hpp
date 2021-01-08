@@ -18,7 +18,7 @@ class Request
 	private:
 	int statusCode_;
 	std::string request_;
-
+	bool traceDebug_;
 	std::string tracePayload_;
 	std::string msgBody_;
 	std::string queryString_;

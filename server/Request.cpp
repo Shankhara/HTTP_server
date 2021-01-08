@@ -7,6 +7,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
+	traceDebug_ = false;
 	headerContentLength_ = 0;
 
 	static const std::string str_list[7] = { "GET", "HEAD", "POST", "PUT", "DELETE", \
@@ -65,7 +66,7 @@ int Request::checkMethod()
 	for (size_t i = 0; i < methods.size(); i++)
 	{
 		if (methods[i] == requestLine_[METHOD])
-				return (0);
+			return (0);
 	}
 	return (1);
 }
@@ -136,8 +137,6 @@ int Request::parseBody()
 		else if (request_.size() == len)
 		{
 			msgBody_ = request_;
-			if (getMethod() == "TRACE")
-				tracePayload_.append(msgBody_); 
 			return 200;
 		}
 		if (request_.size() > len)
@@ -172,9 +171,6 @@ int Request::parseHeaders()
 		ret = line.find(':', 0);
 		if (ret != std::string::npos && (line[ret - 1] < 33 || line[ret + 1] == ':'))
 			return 400;
-
-		if (getMethod() == "TRACE")
-			tracePayload_.append(line); 
 
 		headerLine = workLine(line, ':');
 		if (headerLine.empty())
@@ -329,10 +325,14 @@ int Request::parseRequestLine()
 	if (checkVersion())
 		return 505;
 
+	if (getMethod() == "TRACE")
+	{
+		traceDebug_ = true;
+		tracePayload_.assign(line + "\r\n" + request_);
+	}
+
 	parseQueryString();
 
-	if (getMethod() == "TRACE")
-		tracePayload_.append(line);
 
 	if (request_ == "\r\n")
 		return (200);
@@ -351,12 +351,11 @@ int Request::parse()
 			statusCode_ = parseHeaders();
 	}
 
+	if (traceDebug_)
+		tracePayload_.append(request_);
+
 	if (headers_parsed && statusCode_ == 100)
-	{
 		statusCode_ = parseBody();
-		if (getMethod() == "TRACE")
-			tracePayload_.append(request_); 
-	}
 
 	return (statusCode_);
 }
