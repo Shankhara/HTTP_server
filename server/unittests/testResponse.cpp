@@ -61,6 +61,7 @@ void testRespPost()
 	char buf[bufsize];
 
 	RespPost respPost(ra, buf, bufsize);
+	respPost.build();
 
 	int readSize = respPost.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -72,6 +73,7 @@ void testRespPost()
 	Request rb(*vhost);
 	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
 	RespPost respPost_b(rb, buf, bufsize);
+	respPost_b.build();
 
 	readSize = respPost_b.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -83,6 +85,7 @@ void testRespPost()
 	Request rc(*vhost);
 	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
 	RespPost respPost_c(rc, buf, bufsize);
+	respPost_c.build();
 
 	readSize = respPost_c.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -105,6 +108,7 @@ void testRespDelete()
 	char buf[bufsize];
 
 	RespDelete respDel(r, buf, bufsize);
+	respDel.build();
 
 	int readSize = respDel.readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
@@ -127,6 +131,7 @@ void testRespTrace()
     ra.doRequest(const_cast<char*>(str.c_str()), str.size());
     RespTrace respTrace(ra, buf, bufsize);
 
+	respTrace.build();
 	respTrace.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -135,6 +140,8 @@ void testRespTrace()
 	rb.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_b(rb, buf, bufsize);
+
+	respTrace_b.build();
 	respTrace_b.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -143,6 +150,7 @@ void testRespTrace()
 	rc.doRequest(const_cast<char*>(str.c_str()), str.size());
 	memset(buf, 0, bufsize);
 	RespTrace respTrace_c(rc, buf, bufsize);
+	respTrace_c.build();
 	respTrace_c.readResponse();
 	std::cout << "|" << buf << "|" << std::endl;
 
@@ -163,6 +171,7 @@ void testRespOptions()
 	char buf[bufsize];
 
 	RespOptions respOptions(ra, buf, bufsize);
+	respOptions.build();
 
 	int readSize = respOptions.readResponse();
 	buf[readSize] = '\0';
@@ -183,6 +192,7 @@ void testRespError()
 	char buf[bufsize];
 
 	RespError respError(401, ra, buf, bufsize);
+	respError.build();
 
 	int readSize = respError.readResponse();
 	buf[readSize] = '\0';
