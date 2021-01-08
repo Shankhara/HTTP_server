@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/04 13:25:50 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/08 12:29:42 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,10 +167,6 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 	}
 	else if (line[0] == "error_page")
 	{
-		if ((*prop)[1] == 0)
-			(*prop)[1] = 1;
-		else
-			throw (PpE(this->file_, stds(" error_page duplicated ")));
 		if (line.size() == 3)
 			server.error_pages.push_back(pi(to_int(line[1].c_str(), line[1].size()), line[2]));
 		else
@@ -187,7 +183,6 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 				for (size_t j = 0; j < this->getServers()[i].names.size(); j++)
 					if (line[k + 1] == this->getServers()[i].names[j])
 						return server;
-					//	throw (PpE(this->file_, stds(" duplicated server_name ")));
 		for (size_t i = 0; i < line.size() - 1; i++)
 			server.names.push_back(line[i + 1]);
 	}
