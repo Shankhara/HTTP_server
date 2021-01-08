@@ -95,6 +95,11 @@ void Client::sendResponse(Response *resp) {
 			break ;
 		}
 	}
+	if (nbytes < 0 && !isSent)
+	{
+		RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
+		return (sendResponse(&err));
+	}
 	if (isSent)
 	{
 		Log::get(logINFO) << request_->getHeaderUserAgent() << "- referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
@@ -118,6 +123,12 @@ void Client::responseFactory_() {
 		resp_ = new RespPut(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else
 		resp_ = new RespError(400, *request_, buf_, CLIENT_BUFFER_SIZE);
+	try {
+		resp_->build();
+	} catch (RespException &e) {
+		delete resp_;
+		resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
+	}
 }
 
 void Client::doStaticFile_() {
@@ -136,8 +147,7 @@ void Client::doCGI_() {
 		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
 		RespError resp(503, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse(&resp);
-		Server::getInstance()->deleteFileDescriptor(fd_);
-		return ;
+		return Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 	CGIExec exec = CGIExec(*this);
 	CGIResponse_ = exec.run();
@@ -150,11 +160,6 @@ void Client::doCGI_() {
 
 Request &Client::getRequest() {
 	return *request_;
-}
-
-void Client::flushRequest() {
-	delete request_;
-	request_ = 0;
 }
 
 char *Client::getBuf() {

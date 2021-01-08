@@ -14,38 +14,31 @@ RespPost::~RespPost()
 
 void RespPost::manageFile_()
 {
-	struct stat	buffer;
+	struct stat	st;
 
 	if (createDirectories_() == -1)
-	{
-		statusCode_ = 500;
-		return;
-	}
+		throw RespException(500);
 
-	int ret = stat(filePath_.c_str(), &buffer);
+	int ret = stat(filePath_.c_str(), &st);
 	if (ret == -1)
-	{
 		statusCode_ = 201;
-		fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
-	}
-	else
-		fd_ = open(filePath_.c_str(), O_APPEND | O_WRONLY, 0664);
 
+	fd_ = open(filePath_.c_str(), O_CREAT | O_WRONLY, 0664);
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 500;
-		return;
+		throw RespException(500);
 	}
 }
 
 void RespPost::postPayload_()
 {
 
-	int len = payload_.size();
-	if (len == 0)
+	payload_ = req_.getBody();
+	int len = payload_.size() - payloadCursor_;
+	if (len < 1)
 		return ;
-	int nbytes = write(fd_, payload_.c_str(), len);
+	int nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);
 	if (nbytes == 0) {
 		Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
 		statusCode_ = 500;
@@ -61,30 +54,29 @@ void RespPost::postPayload_()
 void RespPost::makeResponse_()
 {
 	if (headersBuilt_ == false)
-	{
-		writeFirstPart_();
-		writeContentType_(filePath_);
-		writeThisHeader_("Content-location", filePath_);
-		writeThisHeader_("Last-Modified", getStrDate());
-		writeHeadersEnd_();
-		writeHeadersEnd_();
-	}
+    {
+        writeFirstPart_ ();
+        writeContentType_ (filePath_);
+        writeThisHeader_ ("Content-location", filePath_);
+        writeThisHeader_ ("Last-Modified", getStrDate ());
+        writeHeadersEnd_ ();
+        writeHeadersEnd_ ();
+    }
 }
 
 int RespPost::readResponse()
 {
 	nbytes_ = 0;
 
-	if (fd_ == 0)
-		manageFile_();
+	postPayload_();
 	if (statusCode_ == 500)
-		return writeErrorPage(500);
-	payload_ = req_.getBody();
-	if (payload_.size() > payloadCursor_)
-		postPayload_();
-	if (statusCode_ == 500)
-		return writeErrorPage(500);
-	if (req_.getStatusCode() == 200)
+		return -1;
+	if (headersBuilt_ == false && req_.getStatusCode() == 200)
 		makeResponse_();
 	return nbytes_;
+}
+
+void RespPost::build()
+{
+	manageFile_();
 }

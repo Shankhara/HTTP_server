@@ -2,7 +2,7 @@
 
 RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int bufSize): Response(r, buf, bufSize)
 {
-    statusCode_ = statusCode;
+	statusCode_ = statusCode;
 }
 
 RespError::~RespError() {}
@@ -25,4 +25,6 @@ int RespError::readResponse()
 	writeErrorBody(statusCode_);
 	return nbytes_;
 }
+
+void RespError::build() {}
 

@@ -7,8 +7,9 @@ NAME		= unittests
 OBJS		= unittests.o Client.o Log.o Server.o Utils.o Listener.o \
 			Parsing.o Ut.o CGIExec.o CGISocket.o autoIndex.o Mime.o Request.o Response.o \
 			RespGet.o RespHead.o RespPut.o RespError.o RespPost.o RespDelete.o \
-			RespOptions.o RespTrace.o RespFile.o RespCGI.o\
+			RespOptions.o RespTrace.o RespFile.o RespCGI.o RespException.o\
 			testParsing.o testCGI.o testRequest.o testResponse.o
+			
 
 CXX			= clang++
 CXXFLAGS	= -Wall -Wextra -Werror -g3
@@ -39,6 +40,7 @@ RespError.o: ../responses/RespError.hpp
 RespPost.o: ../responses/RespPost.hpp
 RespDelete.o: ../responses/RespDelete.hpp
 RespDelete.o: ../responses/RespFile.hpp
+RespException.o: ../responses/RespException.hpp
 testRequest.o: testRequest.cpp
 testResponse.o: testResponse.cpp
 testParsing.o: testParsing.cpp

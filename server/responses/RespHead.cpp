@@ -20,3 +20,8 @@ void RespHead::append_(const char str[], unsigned int size) {
 int RespHead::readResponse() {
 	return RespGet::readResponse();
 }
+
+void RespHead::build() {
+	RespGet::build();
+}
+

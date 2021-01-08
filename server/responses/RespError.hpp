@@ -8,6 +8,7 @@ class RespError: public Response
 	RespError(int, const Request &r, char [], unsigned int);
 	~RespError();
 	int readResponse();
+	void build();
 };
 
 #endif //WEBSERV_RESPERROR_HPP

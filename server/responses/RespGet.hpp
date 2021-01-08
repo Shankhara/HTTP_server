@@ -10,10 +10,11 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <time.h>
+#include "RespException.hpp"
 
 class RespGet: public RespFile
 {
-	private:
+private:
 	int fd_;
 	size_t payLoadSize_;
 	std::string autoIndexBody_;
@@ -28,8 +29,9 @@ class RespGet: public RespFile
 	std::string doAutoIndexTemplate_(stds path);
 	std::string	returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat);
 
-	public:
+public:
 	RespGet(const Request &r, char[], unsigned int);
 	~RespGet();
 	virtual int readResponse();
+	virtual void build();
 };

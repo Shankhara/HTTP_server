@@ -33,6 +33,7 @@ class Response
 	void 			writeErrorBody(int);
 	void 			appendHeaders(int, std::string, unsigned int);
 	virtual int		readResponse() = 0;
+	virtual void 	build() = 0;
 	int 			getStatusCode() const;
 
 };

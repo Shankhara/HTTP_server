@@ -9,12 +9,12 @@ class RespPut: public RespFile
 	size_t payloadCursor_;
 
 	void putPayload_();
-	bool reachResource_();
+	void reachResource_();
 	void makeResponse_();
-	int compareFiles_();
 
 	public:
 	RespPut(const Request &r, char[], unsigned int);
 	~RespPut();
 	virtual int readResponse();
+	virtual void build();
 };

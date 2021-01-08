@@ -11,6 +11,7 @@ public:
 	RespHead(const Request &r, char [], unsigned int);
 	~RespHead();
 	virtual int readResponse();
+	virtual void build();
 };
 
 

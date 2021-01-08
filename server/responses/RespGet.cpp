@@ -18,10 +18,7 @@ void RespGet::openFile_()
 	struct stat st;
 
 	if (stat(filePath_.c_str(), &st) == -1)
-	{
-		statusCode_ = 404;
-		return;
-	}
+		throw RespException(404);
 
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
@@ -37,8 +34,7 @@ void RespGet::openFile_()
 	if (fd_ == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-		statusCode_ = 404;
-		return;
+		throw RespException(404);
 	}
 	if (isDir)
 		fstat(fd_, &st);
@@ -48,8 +44,6 @@ void RespGet::openFile_()
 int RespGet::readFile_()
 {
 	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
-	Log::get(logDEBUG) << __FUNCTION__  << " currentRead " << currentRead << " NBYTES_ " \
-	<< nbytes_ << " BUFSIZE_ " << bufSize_ << std::endl;
 
 	if (currentRead < 0)
 	{
@@ -69,25 +63,22 @@ void RespGet::writeHeaders_()
 	writeHeadersEnd_();
 }
 
+void RespGet::build()
+{
+	if (location_->autoindex == false || reqTarget_[reqTarget_.size() - 1] != '/')
+		openFile_();
+}
+
 int RespGet::readResponse()
 {
 	nbytes_ = 0;
-
-	if (statusCode_ != 200)
-		return 0;
 
 	if (headersBuilt_ == false)
 	{
 		if (location_->autoindex && reqTarget_[reqTarget_.size() - 1] == '/')
 			return (writeAutoIndex_(location_->root + reqTarget_));
-
-		openFile_();
-		if (statusCode_ != 200)
-		{
-			writeErrorPage(statusCode_);
-			return nbytes_;
-		}
 		writeHeaders_();
 	}
 	return readFile_();
 }
+

@@ -129,8 +129,7 @@ int Request::parseBody()
 {
 	if (headerTransferEncoding_ == "chunked")
 		return getChunkedBody();
-	else
-	{
+	else {
 		size_t len = headerContentLength_;
 		if (request_.size() > location_->client_max_body_size)
 			return 413;

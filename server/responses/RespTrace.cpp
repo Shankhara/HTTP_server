@@ -7,20 +7,26 @@ RespTrace::RespTrace(const Request &r, char buf[], unsigned int bufSize) : Respo
 
 RespTrace::~RespTrace() { }
 
-void RespTrace::makeResponse_()
+void RespTrace::writeHeaders_()
 {
 	if (!headersBuilt_)
-	{
-		writeFirstPart_();
-		writeThisHeader_("Content-type", "message/html");
-		writeHeadersEnd_();
-	}
+    {
+        writeFirstPart_();
+        writeThisHeader_("Content-type", "message/html");
+        writeHeadersEnd_();
+    }
 }
 
 int RespTrace::readResponse()
 {
 	nbytes_ = 0;
-	makeResponse_();
-	append_(request_);
+	if (headersBuilt_ == false)
+		writeHeaders_();
+	append_(request_); // TODO if request.size() > bufSize output will be truncated
 	return nbytes_;
+}
+
+void RespTrace::build()
+{
+
 }
