@@ -33,10 +33,10 @@ int main(int argc, char *argv[])
 		else if (arg.compare("-p") == 0)
 			testParsing();
 	}else{
-		testRequest();
-		//testCGI();
 		testParsing();
+		testRequest();
+		testCGI();
+		testResponse();
 	}
-//	testResponseBuild();
 	return 0;
 }

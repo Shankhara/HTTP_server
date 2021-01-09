@@ -44,6 +44,9 @@ static std::string readAllCGIResponse(int fd)
 void assertCGIFailed(const std::string &filename, const std::string &status, const std::string &name)
 {
 	std::vector<Parsing::server> *servers = createVirtualHosts();
+	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
+	servers->at(0).locations.at(0).cgi_extension.push_back(".php");
+	servers->at(0).locations.at(0).cgi_path = "/usr/bin/php-cgi";
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *listener);
@@ -52,8 +55,6 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 	if (httpStatus != 200)
 		Log::get(logERROR) << "expecting status 200 got " << status << std::endl;
 	CGIExec cgi(*client);
-	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
-	servers->at(0).locations.at(0).cgi_path = "/usr/bin/php-cgi";
 	FileDescriptor *resp = cgi.run();
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, status, name);
@@ -67,6 +68,9 @@ void assertCGIFailed(const std::string &filename, const std::string &status, con
 void assertCGISuccess(const std::string &filename, const std::string &name)
 {
 	std::vector<Parsing::server> *servers = createVirtualHosts();
+	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
+	servers->at(0).locations.at(0).cgi_extension.push_back(".bla");
+	servers->at(0).locations.at(0).cgi_path = "/tmp/webserv/ubuntu_cgi_tester";
 	Listener *listener = new Listener();
 	listener->addServer(servers->at(0));
 	Client *client = new Client(12, *listener);
@@ -75,8 +79,6 @@ void assertCGISuccess(const std::string &filename, const std::string &name)
 	if (status != 200)
 		Log::get(logERROR) << "expecting status 200 got " << status << std::endl;
 	CGIExec cgi(*client);
-	servers->at(0).locations.at(0).root = get_working_path() + "/cgi";
-	servers->at(0).locations.at(0).cgi_path = "/usr/local/bin/ubuntu_cgi_tester";
 	FileDescriptor *resp = cgi.run();
 	std::string response = readAllCGIResponse(resp->getFd());
 	assertHeaderStatus(response, "200", name);
