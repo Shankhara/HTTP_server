@@ -36,8 +36,6 @@ class Test_modifying_header():
 		self.test_request_get_headers(headers)
 		headers = {'ACCEPt-charset' : 'utf-8, iso-8859-1;q=0.5, *;q=0.1'}
 		self.test_request_get_headers(headers)
-		headers = {'ACCEPt-charset ' : 'utf-8, iso-8859-1;q=0.5, *;q=0.1'}
-		self.test_request_get_headers(headers)
 		headers = {'ACCEPt-charsett' : 'utf-8, iso-8859-1;q=0.5, *;q=0.1'}
 		self.test_request_get_headers(headers)
 		headers = {'ACCEPt-c' : 'utf-8, iso-8859-1;q=0.5, *;q=0.1'}
