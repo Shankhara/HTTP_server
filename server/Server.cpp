@@ -86,15 +86,6 @@ void Server::stop() {
 	}
 }
 
-void Server::releaseInstance()
-{
-	if (instance_ != 0)
-	{
-		delete instance_;
-		instance_ = 0;
-	}
-}
-
 void Server::garbageCollector_()
 {
 	for (int i = 0; i <= fdmax_; i++)

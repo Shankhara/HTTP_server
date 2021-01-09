@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <sys/time.h>
 
-#define WEBSERV_ID "webserv/0.0.1"
+#define WEBSERV_ID "webserv/0.0.2"
 
 int ft_atoi(std::string const &str);
 int getNextLine(std::string & buf, std::string & line);
