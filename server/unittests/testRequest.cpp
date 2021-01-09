@@ -366,6 +366,15 @@ void testAcceptLanguage()
 //    a.doRequest(const_cast<char *>(str.c_str()), str.size());
 //}
 
+static void testDecode64()
+{
+	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+	assertStringEqual(decode64("dXNlcjQy"), "user42", __FUNCTION__ );
+	assertStringEqual(decode64("diq##@"), "", "decode64 invalid");
+	assertStringEqual(decode64("dXkqag=="), "uy*j", "decode64 equal sign");
+}
+
+
 void testRequest()
 {
 	std::cout << std::endl << "\033[1;35m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -387,6 +396,7 @@ void testRequest()
 	testStrToHex();
 	testServerMatch();
 	testExplode();
+	testDecode64();
 	testAcceptLanguage();
 //	testContentLanguage();
 }

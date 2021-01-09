@@ -49,9 +49,11 @@ std::string decode64(std::string const &str)
 
 	for (size_t i = 0; i < str.size(); i++)
 	{
+		if (str[i] == '=')
+			break;
 		index = base64.find(str[i]);
 		if (index == std::string::npos)
-			return (0);
+			return ("");
 
 		for (int i = 0; i < 6; i++)
 		{
