@@ -87,7 +87,6 @@ std::string RespGet::doAutoIndexTemplate_(stds path) {
 }
 
 int RespGet::writeAutoIndex_(stds path) {
-	nbytes_ = 0;
 	if (autoIndexBody_.empty() && !headersBuilt_) {
 		autoIndexBody_ = doAutoIndexTemplate_(path);
 		appendHeaders(200, "text/html", autoIndexBody_.size());
