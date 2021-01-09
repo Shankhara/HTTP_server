@@ -2,7 +2,6 @@
 
 RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
 {
-    payload_ = req_.getBody();
     payloadCursor_ = 0;
 
 	addFilePathRoot_();
@@ -44,7 +43,8 @@ void RespFile::openFile_(int flags, int exceptionCode)
 
 void RespFile::write_()
 {
-    size_t len = payload_.size() - payloadCursor_;
+	payload_ = req_.getBody();
+	size_t len = payload_.size() - payloadCursor_;
     if (len < 1)
         return;
     int nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);

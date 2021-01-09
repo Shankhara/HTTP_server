@@ -102,7 +102,7 @@ void Client::sendResponse(Response *resp) {
 	}
 	if (isSent)
 	{
-		Log::get(logINFO) << request_->getHeaderUserAgent() << "- referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
+		Log::get(logINFO) << request_->getHeaderUserAgent() << " - referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
 		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 }

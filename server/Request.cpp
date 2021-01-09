@@ -246,7 +246,7 @@ int Request::parseHeadersContent()
 	if (!headersRaw_[REFERER].empty())
 		headerReferer_ = removeSpaces(headersRaw_[REFERER]);
 	if (!headersRaw_[USER_AGENT].empty())
-		headerTransferEncoding_ = removeSpaces(headersRaw_[USER_AGENT]);
+		headerUserAgent_ = removeSpaces(headersRaw_[USER_AGENT]);
 
 	//ENTITY HEADERS
 	if (!headersRaw_[ALLOW].empty())
