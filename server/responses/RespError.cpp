@@ -14,7 +14,7 @@ int RespError::readResponse()
 	if (headersBuilt_ == true)
 		return 0;
 
-	writeFirstPart_();
+	initHeaders();
 	if (statusCode_ == 401)
 		writeThisHeader_("WWW-Authenticate", "Basic realm=\"simple\"");
 	if (statusCode_ == 405)

@@ -10,7 +10,7 @@ RespTrace::~RespTrace() { }
 
 void RespTrace::writeHeaders_()
 {
-    writeFirstPart_();
+	initHeaders();
     writeThisHeader_("Content-type", "message/html");
     writeContentLength_(request_.size());
 	writeHeadersEnd_();

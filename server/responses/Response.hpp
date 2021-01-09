@@ -16,7 +16,7 @@ class Response
 	std::vector<std::string> headers_;
 	static std::map<int, std::string> statusMap_;
 
-    void writeFirstPart_ ();
+    void initHeaders ();
 	void writeContentType_(std::string);
 	void writeContentLength_(long);
     void writeAllow_();

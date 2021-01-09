@@ -67,7 +67,7 @@ void RespDelete::makeResponse_()
 {
     if (!headersBuilt_)
     {
-        writeFirstPart_ ();
+		initHeaders();
         writeHeadersEnd_ ();
         writeHeadersEnd_ ();
     }

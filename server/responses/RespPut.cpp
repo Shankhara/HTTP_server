@@ -22,7 +22,7 @@ void RespPut::reachResource_()
 
 void RespPut::makeResponse_()
 {
-    writeFirstPart_();
+	initHeaders();
 	writeContentType_(filePath_);
 	if (statusCode_ == 201)
 		writeThisHeader_("Location", filePath_);

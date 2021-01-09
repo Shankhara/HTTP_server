@@ -24,7 +24,7 @@ void RespPost::manageFile_()
 
 void RespPost::makeResponse_()
 {
-	writeFirstPart_ ();
+	initHeaders();
 	writeContentType_ (filePath_);
 	writeContentLength_(0);
 	writeThisHeader_ ("Content-location", filePath_);

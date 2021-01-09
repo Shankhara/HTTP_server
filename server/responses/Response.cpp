@@ -28,7 +28,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) :
 
 Response::~Response() { }
 
-void Response::writeFirstPart_()
+void Response::initHeaders()
 {
     append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
     append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
@@ -127,7 +127,7 @@ void Response::append_(const char str[], unsigned int size)
 void Response::appendHeaders(int statusCode, std::string contentType, unsigned int contentLength)
 {
     statusCode_ = statusCode;
-	writeFirstPart_();
+	initHeaders();
 	writeContentType_(contentType);
 	writeContentLength_(contentLength);
 	writeHeadersEnd_();

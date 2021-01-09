@@ -43,7 +43,7 @@ int RespGet::readFile_()
 
 void RespGet::writeHeaders_()
 {
-	writeFirstPart_();
+	initHeaders();
 	writeContentType_(filePath_);
 	writeContentLength_(payLoadSize_);
     if (acceptLangNegotiated_)
@@ -63,12 +63,13 @@ int RespGet::readResponse()
 {
 	nbytes_ = 0;
 
-	if (headersBuilt_ == false)
+	if (fd_ == 0)
+		return (writeAutoIndex_(location_->root + reqTarget_));
+	else
 	{
-		if (location_->autoindex && reqTarget_[reqTarget_.size() - 1] == '/')
-			return (writeAutoIndex_(location_->root + reqTarget_));
-		writeHeaders_();
+		if (!headersBuilt_)
+			writeHeaders_();
+		return readFile_();
 	}
-	return readFile_();
 }
 

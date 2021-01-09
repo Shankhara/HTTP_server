@@ -8,7 +8,7 @@ void RespOptions::makeResponse_()
 {
 	if (!headersBuilt_)
     {
-        writeFirstPart_ ();
+		initHeaders();
         writeAllow_ ();
         writeContentLength_ (0);
         writeHeadersEnd_ ();
