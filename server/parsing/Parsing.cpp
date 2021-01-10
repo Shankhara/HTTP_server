@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/09 16:12:43 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/10 23:56:43 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -470,11 +470,11 @@ Parsing *Parsing::getInstance()
 	return instance_;
 }
 
-stds	Parsing:getErrorPage(Parsing::server server, int status_code)
+stds	Parsing::getErrorPage(Parsing::server server, int status_code)
 {
-	for (int i = 0; i < server.error_page.size(); i++)
-		if (server.error_page[i].second == status_code)
-			return server.error_page[i].first;
+	for (size_t i = 0; i < server.error_pages.size(); i++)
+		if (server.error_pages[i].first == status_code)
+			return server.error_pages[i].second;
 	return "";
 }
 

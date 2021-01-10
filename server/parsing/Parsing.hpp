@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/04 13:27:16 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/10 23:57:05 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ public :
 		std::vector<int>			getTableDef();
 		bool           	    		compString(iterator *first, iterator end, stds src);
 		bool                		parseSemi(stds *src);
+		stds						getErrorPage(Parsing::server server, int status_code);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
 		std::vector<server>			getServers() {	return (this->servers_); }

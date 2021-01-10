@@ -95,7 +95,7 @@ int Response::writeErrorPage(int statusCode)
 
 void Response::writeErrorBody(int statusCode)
 {
-	std::string path = Parsing::getInstance()->getErrorPage(*(this->req_.getServer()), statusCode);
+	std::string path = Parsing::getInstance()->getErrorPage(this->req_.getServer(), statusCode);
 	std::string body;
 	
 	if (path != "")
