@@ -11,8 +11,9 @@ echo "<html><head><title>Static</title></head>
 <li><a href=\"./dir\">dir</a></li>
 <li><a href=\"./dir/\">dir</a></li>
 </ul>
-<body><html>" > ${DIR}/index.html
+<body><html>" > ${DIR}/page.html
 
+ln -s ${DIR}/page.html ${DIR}/index.html
 
 echo "server {
 	listen 127.0.0.1:8080;

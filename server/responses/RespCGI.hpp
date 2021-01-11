@@ -10,10 +10,10 @@ class RespCGI: public Response {
 
 private:
 	int 	fd_;
-	//size_t 	headersEnd_;
 	std::string resp_;
 	size_t respCursor_;
 	void parseCGIStatus_(int nbytes);
+	void setStatusCode_(const std::string &);
 
 public:
 	RespCGI(Client &, int fd);

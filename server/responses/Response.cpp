@@ -76,9 +76,6 @@ void Response::writeHeadersEnd_()
 	headersBuilt_ = true;
 }
 
-
-
-
 void Response::append_(const std::string & str)
 {
 	if (str.size() + nbytes_ > bufSize_)

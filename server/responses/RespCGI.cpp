@@ -23,20 +23,19 @@ int RespCGI::readResponse() {
 }
 
 void RespCGI::build() {
-	int		nbytes;
 	size_t  headersEnd;
 	bool	statusParsed = false;
 
-	while ((nbytes = read(fd_, buf_, bufSize_)) > 0)
+	while ((nbytes_ = read(fd_, buf_, bufSize_)) > 0)
 	{
 		if (!statusParsed) {
-			parseCGIStatus_(nbytes);
+			parseCGIStatus_(nbytes_);
 			statusParsed = true;
 		}else{
-			resp_.append(buf_, nbytes);
+			resp_.append(buf_, nbytes_);
 		}
 	}
-	if (nbytes < 0)
+	if (nbytes_ < 0)
 		throw RespException(500);
 	headersEnd = resp_.find("\r\n\r\n", 0);
 	if (headersEnd != std::string::npos)
@@ -47,21 +46,30 @@ void RespCGI::build() {
 }
 
 void RespCGI::parseCGIStatus_(int nbytes) {
-	if (nbytes < 11 || strncmp(buf_, "Status: ", 8) != 0)
-	{
-		resp_ = "HTTP/1.1 200 OK\r\n";
-		resp_.append(buf_, nbytes);
-		return ;
-	}
-	buf_[nbytes] = '\0';
-	resp_ = "HTTP/1.1 ";
-	resp_.append(buf_ + 8, 3);
-	resp_.append(" OK\r\n");
-	resp_.append("Connection: Close\r\n");
-	resp_.append("Server: " + std::string(WEBSERV_ID) + "\r\n");
+	if (nbytes < 11)
+		throw RespException(500);
 	std::string resp(buf_, nbytes);
-	size_t crlf = resp.find("\r\n", 0);
-	if (crlf == std::string::npos || crlf + 2 > static_cast<size_t>(nbytes))
-		crlf = 0;
-	resp_.append(buf_ + crlf + 2);
+	if (resp.rfind("Status: ", 0) == std::string::npos)
+		statusCode_ = 200;
+	else
+		setStatusCode_(resp);
+	size_t statusLineEnd = resp.find("\r\n", 0);
+	if (statusLineEnd == std::string::npos)
+		throw RespException(500);
+	nbytes_ = 0;
+	initHeaders();
+	resp_.assign(buf_, nbytes_);
+	resp_.append(resp.c_str() + statusLineEnd + 2);
+}
+
+void RespCGI::setStatusCode_(const std::string &resp) {
+	std::string statusCode;
+	statusCode.reserve(3);
+	for (int i = 0; i < 3; i++)
+	{
+		if (resp.c_str()[8 + i] < '0' || resp.c_str()[8 + i] > '9')
+			throw RespException(500);
+		statusCode.push_back(buf_[i + 8]);
+	}
+	statusCode_ = ft_atoi(statusCode);
 }
