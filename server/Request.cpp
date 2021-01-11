@@ -7,7 +7,10 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
-	server_ = 0;
+	if (servers.size() == 1)
+		server_ = &server_[0];
+	else
+		server_ = 0;
 	traceDebug_ = false;
 	headerContentLength_ = 0;
 	totalHeaderSize_ = 0;
@@ -288,7 +291,8 @@ int Request::parseHeadersContent()
 
 int Request::accessControl_()
 {
-	server_ = matchServer_();
+	if (server_ == 0)
+		server_ = matchServer_();
 	location_ = matchLocation_(server_);
 	if (location_ == 0)
 		return 403;
