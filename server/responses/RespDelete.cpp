@@ -49,9 +49,24 @@ int RespDelete::delDir_(std::string & param)
 
 int RespDelete::delResource_()
 {
+    int ret;
     struct stat statbuf = {};
- 
-    int ret = stat(filePath_.c_str(), &statbuf);
+
+    if (contentLangNegotiated_)
+    {
+        for(size_t i = 0; i < langFilePath_.size(); ++i)
+        {
+            ret = stat(langFilePath_[i].c_str(), &statbuf);
+            if (S_ISDIR(statbuf.st_mode))
+                delDir_(langFilePath_[i]);
+            else
+                unlink(langFilePath_[i].c_str());
+        }
+        if (!ret)
+            return 0;
+    }
+    else
+        ret = stat(filePath_.c_str(), &statbuf);
 	if (ret == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
@@ -68,7 +83,6 @@ void RespDelete::makeResponse_()
     if (!headersBuilt_)
     {
 		initHeaders();
-        writeHeadersEnd_ ();
         writeHeadersEnd_ ();
     }
 }
