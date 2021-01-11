@@ -7,6 +7,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	headers_parsed = false;
 	statusCode_ = 100;
 	location_ = 0;
+	server_ = 0;
 	traceDebug_ = false;
 	headerContentLength_ = 0;
 	totalHeaderSize_ = 0;
