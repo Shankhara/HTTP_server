@@ -19,6 +19,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) :
 		statusMap_[403] = "Forbidden";
 		statusMap_[404] = "Not Found";
 		statusMap_[405] = "Method Not Allowed";
+        statusMap_[406] = "Not Acceptable";
 		statusMap_[413] = "Request Entity Too Large";
 		statusMap_[414] = "Request-URI Too Long";
 		statusMap_[500] = "Internal Server Error";

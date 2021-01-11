@@ -21,6 +21,8 @@ int RespError::readResponse()
 		writeAllow_();
 	if (statusCode_ == 503)
 		writeThisHeader_("Retry-After", "10");
+	if (statusCode_ == 406)
+        writeThisHeader_("Accept-charset", "utf-8");
 
 	writeErrorBody_(statusCode_);
 	return nbytes_;

@@ -15,7 +15,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	std::vector<std::string> tmp(str_list, str_list + 7);
 	methods = tmp;
 
-	static const std::string str_list2[15] = { "accept-charsets", "accept-language", "allow", \
+	static const std::string str_list2[15] = { "accept-charset", "accept-language", "allow", \
 		"authorization", "content-language", "content-length", "content-location", \
 		"content-type", "date", "host", "last-modified", "location", "referer", \
 		"transfer-encoding", "user-agent" };
@@ -210,10 +210,10 @@ int Request::parseHeadersContent()
 	{
 		std::string tmp = removeSpaces(headersRaw_[ACCEPT_CHARSET]);
   		std::transform(tmp.begin(), tmp.end(), tmp.begin(), ft_tolower);
-		size_t ret = tmp.find("*");
+        size_t ret = tmp.find("utf-8");
 		if (ret == std::string::npos)
 		{
-			ret = tmp.find("utf-8");
+            ret = tmp.find("*");
 			if (ret == std::string::npos)
 				return 406;
 		}
