@@ -9,6 +9,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	location_ = 0;
 	traceDebug_ = false;
 	headerContentLength_ = 0;
+	totalHeaderSize_ = 0;
 
 	static const std::string str_list[7] = { "GET", "HEAD", "POST", "PUT", "DELETE", \
 		"OPTIONS", "TRACE" };
@@ -165,7 +166,9 @@ int Request::parseHeaders()
 	
 	while ((getNextLine(request_, line)) > -1)
 	{
-
+        if (totalHeaderSize_ + line.size() > MAX_HEADER_SIZE)
+            return 400;
+        totalHeaderSize_ += line.size();
 		ret = line.find(':', 0);
 		if (ret != std::string::npos && (line[ret - 1] < 33 || line[ret + 1] == ':'))
 			return 400;

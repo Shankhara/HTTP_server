@@ -12,11 +12,13 @@
 
 #define CHUNK_MAX_SIZE 65536
 #define SERVER_CREDS "user42:user42"
+#define MAX_HEADER_SIZE 8192
 
 class Request
 {
 	private:
 	int statusCode_;
+    int totalHeaderSize_;
 	std::string request_;
 	bool traceDebug_;
 	std::string tracePayload_;
@@ -120,4 +122,5 @@ class Request
 	const std::string &getHeaderUserAgent() const;
 	const std::vector<std::string> &getCGIHeaders() const;
 	const std::string &getOriginalReqTarget() const;
+
 };
