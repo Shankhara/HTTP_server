@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Utils.hpp                                          :+:      :+:    :+:   */
+/*   Ut.hpp                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:25:31 by racohen           #+#    #+#             */
-/*   Updated: 2020/12/14 21:56:55 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/11 18:02:13 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,7 @@ iterator			getBrackets(iterator next, iterator end);
 size_t				getMcbs(stds s);
 std::vector<stds>	splitWhitespace(stds str);
 int					to_int(char const *s, size_t count);
-
+char				*ft_strdup(const char *src);
+char				*ft_strjoin_free(char *src, const char *dst);
+int					ft_strlen(const char *str);
 #endif

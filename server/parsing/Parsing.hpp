@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/10 23:57:05 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/11 18:15:50 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,13 @@
 # define PARSING_HPP
 
 # include <string>
-# include <sstream>
-# include <fstream>
 # include <iostream>
 # include <list>
 # include <map>
 # include <unistd.h>
 # include <fcntl.h>
 # include "Ut.hpp"
+# include "../fds/FileDescriptor.hpp"
 # include <iostream>
 # include <cstdlib>
 # include <vector>
@@ -65,7 +64,7 @@ static const char		*locationProps_[] = {	"method",
 static int	line_;
 static int	char_;
 
-class Parsing
+class Parsing : public FileDescriptor
 {
 	public :
 		typedef std::string					stds;
@@ -103,6 +102,7 @@ class Parsing
 
 private :
 	stds					file_;
+	char					*contentCStr_;
 	std::vector<server>		servers_;
 	static Parsing          *instance_;
 	Parsing();
@@ -113,6 +113,7 @@ public :
 
 		static 						Parsing *getInstance();
 		void 						setFile(const stds &file);
+		void 						onEvent();
 		void						parseConfig();
 		void						parseServer();
 		Parsing::server				parseProps(iterator first, iterator end);

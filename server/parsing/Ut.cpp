@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:29:45 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/04 13:30:45 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/11 18:20:54 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,45 @@ int                 to_int(char const *s, size_t count)
             break;
      }
      return result;
+}
+
+char	*ft_strdup(const char *src)
+{
+	int		i = -1;
+	char	*tmp;
+
+	if ((tmp = (char*)malloc(sizeof(char) * (ft_strlen(src) + 1))) == NULL)
+		return (NULL);
+	while (src[++i] != '\0')
+		tmp[i] = src[i];
+	tmp[i] = '\0';
+	return (tmp);
+}
+
+char	*ft_strjoin_free(char *src, const char *dst)
+{
+	int		i = -1;
+	char 	*res;
+
+	if ((res = (char*)malloc(sizeof(char) * (ft_strlen(src) + ft_strlen(dst) + 1))) == NULL)
+		return (NULL);
+	while (src[++i] != '\0')
+		res[i] = src[i];
+	while (dst[i] != '\0')
+	{
+		res[i] = dst[i];
+		i++;
+	}
+	res[i] = '\0';
+	free(src);
+	return (res);
+}
+
+int		ft_strlen(const char *str)
+{
+	int i = 0;
+
+	while (str[i] != '\0')
+		i++;
+	return i;
 }

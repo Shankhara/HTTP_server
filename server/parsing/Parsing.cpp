@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/10 23:56:43 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/11 18:18:58 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,51 @@ typedef Parsing::ParsingException		PpE;
 
 stds 	content;
 
-Parsing::Parsing(void) : file_(stds(DEFAULT_PATH)), servers_() {}
+Parsing::Parsing(void) : file_(stds(DEFAULT_PATH)), servers_() 
+{
+	this->contentCStr_ = ft_strdup("");
+}
 
-Parsing::Parsing(stds file) : file_(file), servers_() {}
+Parsing::Parsing(stds file) : file_(file), servers_()
+{
+	this->contentCStr_ = ft_strdup("");
+}
 
 Parsing::~Parsing(void) {}
+
+void 				Parsing::onEvent()
+{
+	char	buf[512];
+	int		ret;
+
+	this->setFd(open(this->file_.c_str(), O_RDONLY, 0664));
+	if (this->getFd() == -1)
+		throw (PpE(this->file_, stds("Failed to open .conf file")));
+	while ((ret = read(this->getFd(), buf, 512)) <= 0)
+	{
+		buf[ret] = '\0';
+		if ((this->contentCStr_ = ft_strjoin_free(this->contentCStr_, (char*)buf)) == NULL)
+		{
+			close(this->getFd());
+			throw (PpE(this->file_, stds("Malloc failed")));
+		}
+	}
+	close(this->getFd());
+}
 
 void				Parsing::parseConfig(void)
 {
 	iterator	first;
 	iterator	next;
+	stds		content;
 
 	line_ = 1;
 	char_ = 1;
 	if (this->file_.length() < 6 ||
 		this->file_.substr(this->file_.length() - 5).compare(stds(".conf")) != 0)
 			throw (PpE(this->file_, stds("File should have the .conf extension")));
-	std::ifstream	file(this->file_.c_str());
-	if (file.is_open() == false)
-		throw (PpE(this->file_, stds("File doesn't exist")));
-	content = stds((ist(file)), (ist()));
+	content = stds(this->contentCStr_);
 	first = content.begin();
-	file.close();
 	while (first != content.end())
 	{
 		this->skipWhite(&first, content.end(), true);
