@@ -66,7 +66,9 @@ int RespDelete::delResource_()
             return 0;
     }
     else
+    {
         ret = stat(filePath_.c_str(), &statbuf);
+    }
 	if (ret == -1)
 	{
 		Log::get(logDEBUG) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
