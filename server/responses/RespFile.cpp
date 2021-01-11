@@ -9,9 +9,15 @@ RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Respons
     negotiateContentLang_();
 }
 
-RespFile::~RespFile() {
+RespFile::~RespFile()
+{
 	if (fd_ > 0)
 		close(fd_);
+    for(size_t i = 0; i < fds_.size(); ++i)
+    {
+        if (fds_[i] > 0)
+            close(fds_[i]);
+    }
 }
 
 void RespFile::addFilePathRoot_()
@@ -53,7 +59,7 @@ void RespFile::write_()
             nbytes = write(fds_[i], payload_.c_str() + payloadCursor_, len);
             if (nbytes == 0 || nbytes == -1)
             {
-                Log::get(logERROR) << __FUNCTION__  << " file language version write failed : " \
+                Log::get(logERROR) << __FUNCTION__  << " copying resource in language repository failed : " \
                 << strerror (errno) << std::endl;
                 statusCode_ = 500;
             }

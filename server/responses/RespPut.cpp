@@ -33,7 +33,6 @@ void RespPut::makeResponse_()
 		writeThisHeader_("Location", filePath_);
 	writeThisHeader_("Last-Modified", getStrDate());
 	writeHeadersEnd_();
-	writeHeadersEnd_();
 }
 
 int RespPut::readResponse()

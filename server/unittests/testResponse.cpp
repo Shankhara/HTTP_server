@@ -111,26 +111,6 @@ void testRespPost()
 	delete (vhost);
 }
 
-void testRespDelete()
-{
-	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
-	Request r(*vhost);
-	std::string str = "DELETE /a.txt HTTP/1.1\r\nHost: webserv\r\n\r\n";
-	r.doRequest(const_cast<char*>(str.c_str()), str.size());
-
-	unsigned int bufsize = 16 * 1024;
-	char buf[bufsize];
-
-	RespDelete respDel(r, buf, bufsize);
-	assertBuildWithoutException(&respDel, __FUNCTION__ );
-
-	int readSize = respDel.readResponse();
-	Log::get(logDEBUG) << "READ " << readSize << std::endl;
-	buf[readSize] = '\0';
-	std::cout << "|" << buf << "|" << std::endl;
-}
 
 void testRespTrace()
 {
@@ -263,26 +243,6 @@ void testMimeType()
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
 }
 
-void testNegotiateAcceptLang()
-{
-    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-    std::vector<Parsing::server> *vhost = createVirtualHosts();
-    Request ra(*vhost);
-    unsigned int bufsize = 16 * 1024;
-    char buf[bufsize];
-
-    std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAccept-language: fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5\r\n\r\n";
-    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-    RespGet respGet(ra, buf, bufsize);
-    if (!assertBuildWithoutException(&respGet, __FUNCTION__ ))
-    	return ;
-    int readSize = respGet.readResponse();
-    buf[readSize] = '\0';
-    std::cout << "|" << buf << "|" << std::endl;
-    delete (vhost);
-}
-
 void testNegotiateContentLang ()
 {
     std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -302,10 +262,11 @@ void testNegotiateContentLang ()
     buf[readSize] = '\0';
     std::cout << "|" << buf << "|" << std::endl;
 
+    Request rb(*vhost);
     str = "PUT /index.html HTTP/1.1\r\nHost: localhost:8080\r\ncontent-language: "
-                      "fr-CH, FR, DE, US\r\ncontent-length: 5\r\n\r\nabcde";
-    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-    RespPut respPut(ra, buf, bufsize);
+          "fr-CH, FR, DE, US\r\ncontent-length: 5\r\n\r\nabcde";
+    rb.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespPut respPut(rb, buf, bufsize);
     if (!assertBuildWithoutException(&respPut, __FUNCTION__ ))
         return ;
     readSize = respPut.readResponse();
@@ -314,12 +275,60 @@ void testNegotiateContentLang ()
     delete (vhost);
 }
 
+void testNegotiateAcceptLang()
+{
+    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+    std::vector<Parsing::server> *vhost = createVirtualHosts();
+    Request ra(*vhost);
+    unsigned int bufsize = 16 * 1024;
+    char buf[bufsize];
+
+    std::string str = "GET /index.html HTTP/1.1\r\nHost: localhost:8080\r\nAccept-language: fr-CH, "
+                      "FR, de, uS\r\n\r\n";
+    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespGet respGet(ra, buf, bufsize);
+    if (!assertBuildWithoutException(&respGet, __FUNCTION__ ))
+    	return ;
+    int readSize = respGet.readResponse();
+    buf[readSize] = '\0';
+    std::cout << "|" << buf << "|" << std::endl;
+    delete (vhost);
+}
+
+
+void testRespDelete()
+{
+    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+    std::vector<Parsing::server> *vhost = createVirtualHosts();
+    Request r(*vhost);
+    std::string str = "DELETE /a HTTP/1.1\r\nHost: webserv\r\ncontent-language:FR, US\r\n\r\n";
+
+    unsigned int bufsize = 16 * 1024;
+    char buf[bufsize];
+
+    r.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespDelete respDel(r, buf, bufsize);
+    assertBuildWithoutException(&respDel, __FUNCTION__ );
+
+    int readSize = respDel.readResponse();
+    Log::get(logDEBUG) << "READ " << readSize << std::endl;
+    buf[readSize] = '\0';
+    std::cout << "|" << buf << "|" << std::endl;
+}
+
 void testResponse()
 {
-//	testRespGet();
-//	testRespPut();
-//	testRespPost();
-// 	testRespTrace();
+	testRespGet();
+	testRespPut();
+	testRespPost();
+ 	testRespTrace();
+	testRespOptions();
+	testRespError();
+	testMimeType();
+//	testNegotiateContentLang();
+//	testNegotiateAcceptLang();
 //	testRespDelete();
 //	testRespOptions();
 	testRespError();
