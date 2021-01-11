@@ -470,13 +470,6 @@ Parsing *Parsing::getInstance()
 	return instance_;
 }
 
-stds	Parsing::getErrorPage(Parsing::server server, int status_code)
-{
-	for (size_t i = 0; i < server.error_pages.size(); i++)
-		if (server.error_pages[i].first == status_code)
-			return server.error_pages[i].second;
-	return "";
-}
 
 void Parsing::setFile(const stds &file) {
 	file_ = file;

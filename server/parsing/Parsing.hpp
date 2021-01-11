@@ -124,7 +124,6 @@ public :
 		std::vector<int>			getTableDef();
 		bool           	    		compString(iterator *first, iterator end, stds src);
 		bool                		parseSemi(stds *src);
-		stds						getErrorPage(Parsing::server server, int status_code);
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
 		std::vector<server>			getServers() {	return (this->servers_); }

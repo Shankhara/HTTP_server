@@ -322,8 +322,8 @@ void testResponse()
 // 	testRespTrace();
 //	testRespDelete();
 //	testRespOptions();
-//	testRespError();
-//	testMimeType();
-//    testNegotiateAcceptLang ();
+	testRespError();
+	testMimeType();
+    testNegotiateAcceptLang ();
     testNegotiateContentLang();
 }

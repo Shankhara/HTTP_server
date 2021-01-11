@@ -13,7 +13,6 @@ class Response
 	int							nbytes_;
 	bool 						headersBuilt_;
 	int 						statusCode_;
-	std::vector<std::string> headers_;
 	static std::map<int, std::string> statusMap_;
 
     void initHeaders ();
@@ -29,8 +28,6 @@ class Response
 	public:
 	Response(const Request &, char[], unsigned int bufSize);
 	virtual			~Response();
-	int				writeErrorPage(int);
-	void 			writeErrorBody(int);
 	void 			appendHeaders(int, std::string, unsigned int);
 	virtual int		readResponse() = 0;
 	virtual void 	build() = 0;

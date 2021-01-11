@@ -75,46 +75,8 @@ void Response::writeHeadersEnd_()
 	headersBuilt_ = true;
 }
 
-int Response::writeErrorPage(int statusCode)
-{
-	statusCode_ = statusCode;
-	if (headersBuilt_)
-		return 0;
-	nbytes_ = 0;
-	std::string body = "<html>"
-					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
-					"<body bgcolor=\"white\">"
-					"<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"
-					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
-				    "</body>"
-		 			"</html>";
-	appendHeaders(statusCode, "text/html", body.size());
-	append_(body);
-	return (nbytes_);
-}
 
-void Response::writeErrorBody(int statusCode)
-{
-	std::string path = Parsing::getInstance()->getErrorPage(*(this->req_.getServer()), statusCode);
-	std::string body;
-	
-	if (path != "")
-		body = "Suppose to be the file";
-	else
-	{
-		body = 		"<html>"
-					"<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
-					"<body bgcolor=\"white\">"
-					"<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"
-					"<hr><center>"+ std::string(WEBSERV_ID) +"</center>"
-				   	"</body>"
-		 			"</html>";
-	}
-	writeThisHeader_("Content-Type", "text/html");
-	writeContentLength_(body.size());
-	writeHeadersEnd_();
-	append_(body);
-}
+
 
 void Response::append_(const std::string & str)
 {

@@ -4,7 +4,12 @@
 
 class RespError: public Response
 {
-	public:
+
+private:
+	void	writeErrorBody_(int);
+	std::string getErrorPage_(int statusCode);
+
+public:
 	RespError(int, const Request &r, char [], unsigned int);
 	~RespError();
 	int readResponse();
