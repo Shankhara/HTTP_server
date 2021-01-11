@@ -43,11 +43,27 @@ void RespFile::openFile_(int flags, int exceptionCode)
 
 void RespFile::write_()
 {
+    int nbytes;
 	payload_ = req_.getBody();
 	size_t len = payload_.size() - payloadCursor_;
     if (len < 1)
+    {
+        for(size_t i = 1; i < fds_.size(); ++i)
+        {
+            nbytes = write(fds_[i], payload_.c_str() + payloadCursor_, len);
+            if (nbytes == 0 || nbytes == -1)
+            {
+                Log::get(logERROR) << __FUNCTION__  << " file language version write failed : " \
+                << strerror (errno) << std::endl;
+                statusCode_ = 500;
+            }
+        }
         return;
-    int nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);
+    }
+    if (contentLangNegotiated_)
+        nbytes = write(fds_[0], payload_.c_str() + payloadCursor_, len);
+    else
+        nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);
     if (nbytes == 0)
     {
         Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;

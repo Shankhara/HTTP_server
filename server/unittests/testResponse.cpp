@@ -263,7 +263,7 @@ void testMimeType()
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
 }
 
-void testLangNegotiation()
+void testNegotiateAcceptLang()
 {
     std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 
@@ -283,15 +283,47 @@ void testLangNegotiation()
     delete (vhost);
 }
 
+void testNegotiateContentLang ()
+{
+    std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+
+    std::vector<Parsing::server> *vhost = createVirtualHosts();
+    Request ra(*vhost);
+    unsigned int bufsize = 16 * 1024;
+    char buf[bufsize];
+
+    std::string str = "POST /index.html HTTP/1.1\r\nHost: localhost:8080\r\ncontent-language: "
+                      "fr-CH, FR, DE, US\r\ncontent-length: 5\r\n\r\nabcde";
+    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespPost respPost(ra, buf, bufsize);
+    if (!assertBuildWithoutException(&respPost, __FUNCTION__ ))
+        return ;
+    int readSize = respPost.readResponse();
+    buf[readSize] = '\0';
+    std::cout << "|" << buf << "|" << std::endl;
+
+    str = "PUT /index.html HTTP/1.1\r\nHost: localhost:8080\r\ncontent-language: "
+                      "fr-CH, FR, DE, US\r\ncontent-length: 5\r\n\r\nabcde";
+    ra.doRequest(const_cast<char*>(str.c_str()), str.size());
+    RespPut respPut(ra, buf, bufsize);
+    if (!assertBuildWithoutException(&respPut, __FUNCTION__ ))
+        return ;
+    readSize = respPut.readResponse();
+    buf[readSize] = '\0';
+    std::cout << "|" << buf << "|" << std::endl;
+    delete (vhost);
+}
+
 void testResponse()
 {
 //	testRespGet();
 //	testRespPut();
-	testRespPost();
+//	testRespPost();
 // 	testRespTrace();
 //	testRespDelete();
 //	testRespOptions();
 //	testRespError();
 //	testMimeType();
-	testLangNegotiation();
+//    testNegotiateAcceptLang ();
+    testNegotiateContentLang();
 }

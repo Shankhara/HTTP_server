@@ -27,7 +27,13 @@ void RespPost::makeResponse_()
 	initHeaders();
 	writeContentType_ (filePath_);
 	writeContentLength_(0);
-	writeThisHeader_ ("Content-location", filePath_);
+	if (contentLangNegotiated_)
+    {
+        for(size_t i = 0; i < langFilePath_.size(); ++i)
+            writeThisHeader_ ("Content-location", langFilePath_[i]);
+    }
+	else
+    	writeThisHeader_ ("Content-location", filePath_);
 	writeThisHeader_ ("Last-Modified", getStrDate ());
 	writeHeadersEnd_ ();
 }

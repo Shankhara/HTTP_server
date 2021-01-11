@@ -23,10 +23,10 @@ class RespFile : public Response
     std::vector<std::string> langFilePath_;
     int createDirectories_ (const std::string & str);
 	void openFile_(int exceptionStatus, int flags);
+    void write_();
 
 	public:
 	RespFile(const Request &r, char[], unsigned int);
 	~RespFile();
 
-void write_ ();
 };

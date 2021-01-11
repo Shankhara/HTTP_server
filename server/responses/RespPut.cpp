@@ -24,7 +24,12 @@ void RespPut::makeResponse_()
 {
 	initHeaders();
 	writeContentType_(filePath_);
-	if (statusCode_ == 201)
+    if (contentLangNegotiated_)
+    {
+        for(size_t i = 0; i < langFilePath_.size(); ++i)
+            writeThisHeader_ ("Content-location", langFilePath_[i]);
+    }
+    else if (statusCode_ == 201)
 		writeThisHeader_("Location", filePath_);
 	writeThisHeader_("Last-Modified", getStrDate());
 	writeHeadersEnd_();
