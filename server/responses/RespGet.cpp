@@ -2,7 +2,6 @@
 
 RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): RespFile(r, buf, bufSize)
 {
-	fd_ = 0;
 	location_ = req_.getLocation();
 	reqTarget_ = req_.getReqTarget();
 }
@@ -29,17 +28,7 @@ void RespGet::reachRessource_()
 	payLoadSize_ = st.st_size;
 }
 
-int RespGet::readFile_()
-{
-	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
 
-	if (currentRead < 0)
-	{
-		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
-		return nbytes_;
-	}
-	return nbytes_ + currentRead;
-}
 
 void RespGet::writeHeaders_()
 {
@@ -69,7 +58,7 @@ int RespGet::readResponse()
 	{
 		if (!headersBuilt_)
 			writeHeaders_();
-		return readFile_();
+		return read_();
 	}
 }
 

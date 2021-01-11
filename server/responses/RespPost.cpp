@@ -1,6 +1,6 @@
 #include "RespPost.hpp"
 
-RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
+RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFiles(r, buf, bufSize)
 {
 	fd_ = 0;
 	payloadCursor_ = 0;
@@ -19,7 +19,7 @@ void RespPost::manageFile_()
 	if (ret == -1)
 		statusCode_ = 201;
 
-	openFile_(O_CREAT | O_WRONLY, 500);
+	openFiles_(O_CREAT | O_WRONLY, 500);
 }
 
 void RespPost::makeResponse_()
@@ -42,7 +42,7 @@ int RespPost::readResponse()
 {
 	nbytes_ = 0;
 
-	write_();
+	writeFiles_();
 	if (statusCode_ == 500)
 		return -1;
 	if (!headersBuilt_ && req_.getStatusCode() == 200)

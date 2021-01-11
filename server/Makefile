@@ -20,6 +20,7 @@ SRCS	+= responses/RespTrace.cpp
 SRCS	+= responses/RespError.cpp
 SRCS	+= responses/RespException.cpp
 SRCS	+= responses/RespFile.cpp
+SRCS	+= responses/RespFiles.cpp
 SRCS	+= responses/Response.cpp
 SRCS	+= responses/autoIndex.cpp
 SRCS	+= responses/RespCGI.cpp

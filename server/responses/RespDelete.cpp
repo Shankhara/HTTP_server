@@ -1,6 +1,6 @@
 #include "RespDelete.hpp"
 
-RespDelete::RespDelete(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize) { }
+RespDelete::RespDelete(const Request &r, char buf[], unsigned int bufSize) : RespFiles(r, buf, bufSize) { }
 
 RespDelete::~RespDelete() { }
 

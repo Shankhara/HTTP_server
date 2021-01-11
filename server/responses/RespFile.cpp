@@ -1,86 +1,30 @@
 #include "RespFile.hpp"
 
-RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize)
+RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize), fd_(0)
 {
-    payloadCursor_ = 0;
-
-	addFilePathRoot_();
-    negotiateAcceptLang_ ();
-    negotiateContentLang_();
+	payloadCursor_ = 0;
+	setFilePath_();
 }
 
-RespFile::~RespFile()
-{
+RespFile::~RespFile() {
 	if (fd_ > 0)
 		close(fd_);
-    for(size_t i = 0; i < fds_.size(); ++i)
-    {
-        if (fds_[i] > 0)
-            close(fds_[i]);
-    }
 }
 
-void RespFile::addFilePathRoot_()
+void RespFile::setFilePath_()
 {
 	if (!req_.getLocation()->root.empty())
 		filePath_ = req_.getLocation()->root + req_.getReqTarget();
 	else
 		filePath_ = req_.getServer()->root + req_.getReqTarget();
+	prefixFilePathWithAcceptLang_();
 }
 
 void RespFile::openFile_(int flags, int exceptionCode)
 {
-    if (contentLangNegotiated_)
-    {
-        for (size_t i = 0; i < langFilePath_.size() ; ++i)
-        {
-            fds_.push_back(open(langFilePath_[i].c_str(), flags, 0664));
-            if (fds_[i] == -1)
-                throw RespException(exceptionCode);
-        }
-    }
-    else
-    {
-        fd_ = open(filePath_.c_str(), flags, 0664);
-        if (fd_ == -1)
-            throw RespException(exceptionCode);
-    }
-}
-
-void RespFile::write_()
-{
-    int nbytes;
-	payload_ = req_.getBody();
-	size_t len = payload_.size() - payloadCursor_;
-    if (len < 1)
-    {
-        for(size_t i = 1; i < fds_.size(); ++i)
-        {
-            nbytes = write(fds_[i], payload_.c_str() + payloadCursor_, len);
-            if (nbytes == 0 || nbytes == -1)
-            {
-                Log::get(logERROR) << __FUNCTION__  << " copying resource in language repository failed : " \
-                << strerror (errno) << std::endl;
-                statusCode_ = 500;
-            }
-        }
-        return;
-    }
-    if (contentLangNegotiated_)
-        nbytes = write(fds_[0], payload_.c_str() + payloadCursor_, len);
-    else
-        nbytes = write(fd_, payload_.c_str() + payloadCursor_, len);
-    if (nbytes == 0)
-    {
-        Log::get(logERROR) << __FUNCTION__ << " undefined state" << std::endl;
-        statusCode_ = 500;
-    }
-    else if (nbytes == -1)
-    {
-        Log::get(logERROR) << __FUNCTION__  << " unable to open: " << strerror(errno) << std::endl;
-        statusCode_ = 500;
-    }
-    payloadCursor_ += len;
+	fd_ = open(filePath_.c_str(), flags, 0664);
+	if (fd_ == -1)
+		throw RespException(exceptionCode);
 }
 
 int RespFile::createDirectories_(const std::string & str)
@@ -94,58 +38,47 @@ int RespFile::createDirectories_(const std::string & str)
 	{
 		name.append("/");
 		name.append(dirs[i]);
-		ret = mkdir(name.c_str(), 0777); 
+		ret = mkdir(name.c_str(), 0755);
 		if (ret == -1 && errno != EEXIST)
 			return -1;
 	}
 	return 0;
 }
 
-void RespFile::negotiateAcceptLang_()
+int RespFile::read_()
 {
-    acceptLangNegotiated_ = false;
-    if (!req_.getHeaderAcceptLanguage().empty())
-    {
-        std::string tmp;
-        size_t pos = filePath_.rfind('/'); // garantie de toujours trouver un "/" ?
-        for(size_t i = 0; i < req_.getHeaderAcceptLanguage().size(); ++i)
-        {
-            if (req_.getHeaderAcceptLanguage()[i].find('*') != std::string::npos)
-                return;
-            tmp = filePath_;
-            tmp.insert(pos + 1, req_.getHeaderAcceptLanguage()[i] + "/");
-            struct stat st;
-            int ret = stat(tmp.c_str(), &st);
-            if (ret != -1)
-            {
-                filePath_ = tmp;
-                acceptLangNegotiated_ = true;
-                return;
-            }
-        }
-        return;
-    }
+	int currentRead = read(fd_, buf_ + nbytes_, bufSize_ - (nbytes_ + 1));
+
+	if (currentRead < 0)
+	{
+		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
+		return nbytes_;
+	}
+	return nbytes_ + currentRead;
 }
 
-void RespFile::negotiateContentLang_()
+void RespFile::prefixFilePathWithAcceptLang_()
 {
-    contentLangNegotiated_ = false;
-    if (!req_.getHeaderContentLanguage().empty())
-    {
-        std::vector<std::string> vector = req_.getHeaderContentLanguage();
-        std::string tmp;
-        size_t pos = filePath_.rfind('/');
-        for(size_t i = 0; i < vector.size(); ++i)
-        {
-            tmp = filePath_;
-            std::transform(vector[i].begin(), vector[i].end(), vector[i].begin(), ft_toupper);
-            if (pos != std::string::npos)
-                tmp.insert(pos + 1, vector[i] + "/");
-            else
-                tmp.insert(0,"/" + vector[i] + "/");
-            langFilePath_.push_back(tmp);
-            createDirectories_(tmp);
-        }
-        contentLangNegotiated_ = true;
-    }
+	acceptLangNegotiated_ = false;
+	if (!req_.getHeaderAcceptLanguage().empty())
+	{
+		std::string tmp;
+		size_t pos = filePath_.rfind('/'); // garantie de toujours trouver un "/" ?
+		for(size_t i = 0; i < req_.getHeaderAcceptLanguage().size(); ++i)
+		{
+			if (req_.getHeaderAcceptLanguage()[i].find('*') != std::string::npos)
+				return;
+			tmp = filePath_;
+			tmp.insert(pos + 1, req_.getHeaderAcceptLanguage()[i] + "/");
+			struct stat st;
+			int ret = stat(tmp.c_str(), &st);
+			if (ret != -1)
+			{
+				filePath_ = tmp;
+				acceptLangNegotiated_ = true;
+				return;
+			}
+		}
+		return;
+	}
 }

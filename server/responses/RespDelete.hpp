@@ -1,9 +1,9 @@
 #pragma once
 
-#include "RespFile.hpp"
+#include "RespFiles.hpp"
 #include <dirent.h>
 
-class RespDelete: public RespFile
+class RespDelete: public RespFiles
 {
 	private:
 	int delDir_(std::string &);

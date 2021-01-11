@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RespFile.hpp"
+#include "RespFiles.hpp"
 
-class RespPost: public RespFile
+class RespPost: public RespFiles
 {
 	private:
 	void makeResponse_();

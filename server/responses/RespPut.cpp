@@ -1,6 +1,6 @@
 #include "RespPut.hpp"
 
-RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
+RespPut::RespPut(const Request &r, char buf[], unsigned int bufSize) : RespFiles(r, buf, bufSize)
 { }
 
 RespPut::~RespPut(){}
@@ -17,7 +17,7 @@ void RespPut::reachResource_()
 	if (stat(filePath_.c_str(), &buffer) == -1)
 		statusCode_ = 201;
 
-	openFile_(O_CREAT | O_TRUNC | O_RDWR, 500);
+	openFiles_(O_CREAT | O_TRUNC | O_RDWR, 500);
 }
 
 void RespPut::makeResponse_()
@@ -39,7 +39,7 @@ int RespPut::readResponse()
 {
 	nbytes_ = 0;
 
-	write_();
+	writeFiles_();
 	if (statusCode_ == 500)
 		return -1;
 	if (req_.getStatusCode() == 200 && !headersBuilt_)

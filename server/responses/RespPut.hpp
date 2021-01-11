@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RespFile.hpp"
+#include "RespFiles.hpp"
 
-class RespPut: public RespFile
+class RespPut: public RespFiles
 {
 	private:
 	void reachResource_();

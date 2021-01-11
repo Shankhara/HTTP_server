@@ -21,7 +21,6 @@ private:
 	std::string reqTarget_;
 
 	void 		reachRessource_();
-	int		 	readFile_();
 	int 		writeAutoIndex_(stds);
 	void 		writeHeaders_();
 
