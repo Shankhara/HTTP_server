@@ -48,6 +48,8 @@ void RespError::writeErrorBody_(int statusCode)
 	writeThisHeader_("Content-Type", "text/html");
 	writeContentLength_(body.size());
 	writeHeadersEnd_();
+	if (req_.getMethod() == "HEAD")
+		return ;
 	append_(body);
 }
 

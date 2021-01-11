@@ -35,12 +35,14 @@ private:
 	FileDescriptor						*CGIResponse_;
 	Response							*resp_;
 	Request								*request_;
+	const Listener						&listener_;
 	static char 						buf_[CLIENT_BUFFER_SIZE];
 	void 								doResponse_();
 	void 								doStaticFile_();
 	void 								doCGI_();
 	void								responseFactory_();
 	bool 								isFileCGI_(const Parsing::location *, std::string);
+	void 								clear_();
 
 public:
 	Client(int, const Listener &);

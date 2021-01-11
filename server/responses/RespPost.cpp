@@ -25,7 +25,7 @@ void RespPost::manageFile_()
 void RespPost::makeResponse_()
 {
 	initHeaders();
-	writeContentType_ (filePath_);
+	writeContentType_(filePath_);
 	writeContentLength_(0);
 	if (contentLangNegotiated_)
     {

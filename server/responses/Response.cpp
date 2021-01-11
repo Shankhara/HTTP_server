@@ -24,7 +24,7 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) :
 		statusMap_[414] = "Request-URI Too Long";
 		statusMap_[500] = "Internal Server Error";
 	}
-	Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget() << std::endl;
+	//Log::get(logDEBUG) << __FUNCTION__  << " Generating response for " << req_.getReqTarget() << std::endl;
 }
 
 Response::~Response() { }
@@ -34,7 +34,7 @@ void Response::initHeaders()
     append_("HTTP/1.1 " + ft_itoa(statusCode_) + " " + statusMap_[statusCode_] + "\r\n");
     append_("Server: " + std::string(WEBSERV_ID) + "\r\n");
     append_("Date: " + getStrDate() + "\r\n");
-    append_("Connection: close\r\n");
+    //append_("Connection: close\r\n");
 }
 
 void Response::writeContentType_(std::string filePath)

@@ -2,9 +2,10 @@
 
 char Client::buf_[CLIENT_BUFFER_SIZE];
 
-Client::Client(int fd, const Listener &l) {
+Client::Client(int fd, const Listener &l): listener_(l) {
 	CGIResponse_ = 0;
 	resp_ = 0;
+	request_ = 0;
 	fd_ = fd;
 	setLastEventTimer();
 	request_ = new Request(l.getServers());
@@ -14,12 +15,7 @@ Client::Client(int fd, const Listener &l) {
 Client::~Client() {
 	Log::get(logDEBUG) << "Client deleted: " << fd_ << std::endl;
 	close(fd_);
-	if (request_ != 0)
-		delete (request_);
-	if (resp_ != 0)
-		delete(resp_);
-	if (CGIResponse_ != 0)
-		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
+	clear_();
 }
 
 void Client::onEvent()
@@ -103,7 +99,12 @@ void Client::sendResponse(Response *resp) {
 	if (isSent)
 	{
 		Log::get(logINFO) << request_->getHeaderUserAgent() << " - referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
-		Server::getInstance()->deleteFileDescriptor(fd_);
+		if (resp->getStatusCode() >= 400)
+			Server::getInstance()->deleteFileDescriptor(fd_);
+		else {
+			clear_();
+			request_ = new Request(listener_.getServers());
+		}
 	}
 }
 
@@ -166,4 +167,19 @@ Request &Client::getRequest() {
 
 char *Client::getBuf() {
 	return buf_;
+}
+
+void Client::clear_() {
+	if (request_ != 0) {
+		delete (request_);
+		request_ = 0;
+	}
+	if (resp_ != 0)	{
+		delete(resp_);
+		resp_ = 0;
+	}
+	if (CGIResponse_ != 0) {
+		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
+		CGIResponse_ = 0;
+	}
 }

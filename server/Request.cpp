@@ -451,14 +451,25 @@ const std::string &Request::getBody() const
 std::string Request::getTracePayload() const
 { return (tracePayload_); }
 
-std::string Request::getMethod() const
-{ return (requestLine_[METHOD]); }
+std::string Request::getMethod() const {
+	if (!requestLine_.empty())
+		return (requestLine_[METHOD]);
+	return "";
+}
 
 std::string Request::getReqTarget() const
-{ return (requestLine_[REQTARGET]); }
+{
+	if (requestLine_.size() > 1)
+		return (requestLine_[REQTARGET]);
+	return "";
+}
 
 std::string Request::getQueryStr() const
-{ return (queryString_); }
+{
+	if (requestLine_.size() > 2)
+		return (queryString_);
+	return "";
+}
 
 std::string Request::getVersion() const
 { return (requestLine_[VERSION]); }

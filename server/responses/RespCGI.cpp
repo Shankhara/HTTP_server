@@ -46,20 +46,24 @@ void RespCGI::build() {
 }
 
 void RespCGI::parseCGIStatus_(int nbytes) {
-	if (nbytes < 11)
-		throw RespException(500);
 	std::string resp(buf_, nbytes);
+	size_t statusLineEnd = 0;
 	if (resp.rfind("Status: ", 0) == std::string::npos)
 		statusCode_ = 200;
 	else
+	{
+		if (nbytes < 11)
+			throw RespException(500);
 		setStatusCode_(resp);
-	size_t statusLineEnd = resp.find("\r\n", 0);
-	if (statusLineEnd == std::string::npos)
-		throw RespException(500);
+		statusLineEnd = resp.find("\r\n", 0);
+		if (statusLineEnd == std::string::npos)
+			throw RespException(500);
+		statusLineEnd += 2;
+	}
 	nbytes_ = 0;
 	initHeaders();
 	resp_.assign(buf_, nbytes_);
-	resp_.append(resp.c_str() + statusLineEnd + 2);
+	resp_.append(resp.c_str() + statusLineEnd);
 }
 
 void RespCGI::setStatusCode_(const std::string &resp) {
