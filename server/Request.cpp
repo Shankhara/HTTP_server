@@ -8,7 +8,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	statusCode_ = 100;
 	location_ = 0;
 	if (servers.size() == 1)
-		server_ = &server_[0];
+		server_ = &servers_[0];
 	else
 		server_ = 0;
 	traceDebug_ = false;
