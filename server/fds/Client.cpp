@@ -14,7 +14,6 @@ Client::Client(int fd, const Listener &l): listener_(l) {
 
 Client::~Client() {
 	Log::get(logDEBUG) << "Client deleted: " << fd_ << std::endl;
-	close(fd_);
 	clear_();
 }
 

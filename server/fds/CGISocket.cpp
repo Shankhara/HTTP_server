@@ -17,7 +17,6 @@ CGISocket::~CGISocket()
 	pid_t result = waitpid(pid_, &status, WNOHANG);
 	if (result == 0)
 		kill(pid_, 9);
-	close(fd_);
 	Log::get(logDEBUG) << "CGIResponse deleted " << fd_ << std::endl;
 	instances--;
 }

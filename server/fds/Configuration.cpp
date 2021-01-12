@@ -2,9 +2,7 @@
 
 Configuration::Configuration(std::string path): configPath_(path) {}
 
-Configuration::~Configuration() {
-	close(fd_);
-}
+Configuration::~Configuration() {}
 
 void Configuration::onEvent() {
 	char buf[8192];

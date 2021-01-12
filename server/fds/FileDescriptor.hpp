@@ -11,7 +11,10 @@ protected:
 
 public:
 	virtual void	onEvent() = 0;
-	virtual ~FileDescriptor(){};
+	virtual ~FileDescriptor(){
+		if (fd_ > 0)
+			close(fd_);
+	};
 	int getFd() const {
 		return fd_;
 	}
