@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <vector>
+#include <map>
 
 #include "Utils.hpp"
 
@@ -13,17 +14,15 @@
 class Mime
 {
 	private:
-	std::vector<std::string> mime_;
-	std::vector<std::vector<std::string> > extensions_;
+	std::map<std::string, std::string> mimeTypes_;
 	static Mime * instance_;
 
 	public:
 	Mime();
 	~Mime();
 	void parseMimeFile();
-	std::string getContentType(std::string &) const;
-	std::string getExtension(const std::string &) const;
+	std::string getContentType(std::string &);
+	std::string getExtension(const std::string &);
 	std::string getFilename(std::string &) const;
 	static Mime * getInstance();
-	static void releaseInstance();
 };

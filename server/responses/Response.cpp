@@ -14,7 +14,6 @@ Response::Response(const Request & r, char buf[], unsigned int bufSize) :
 		statusMap_[201] = "Created";
 		statusMap_[202] = "Accepted";
 		statusMap_[204] = "No Content";
-        statusMap_[303] = "See Other";
 		statusMap_[400] = "Bad Request";
 		statusMap_[401] = "Unauthorized";
 		statusMap_[403] = "Forbidden";

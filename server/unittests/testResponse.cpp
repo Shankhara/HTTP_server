@@ -312,12 +312,12 @@ void testResponse()
 {
 	testRespPut();
     testRespGet();
-//	testRespPost();
-// 	testRespTrace();
-//	testRespOptions();
-//	testRespError();
-//	testMimeType();
-//	testNegotiateContentLang();
-//    testNegotiateAcceptLang();
-//    testRespDelete();
+	testRespPost();
+ 	testRespTrace();
+	testRespOptions();
+	testRespError();
+	testMimeType();
+	testNegotiateContentLang();
+    testNegotiateAcceptLang();
+    testRespDelete();
 }
