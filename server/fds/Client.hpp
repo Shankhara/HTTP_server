@@ -1,7 +1,6 @@
 #ifndef WEBSERV_CLIENT_HPP
 #define WEBSERV_CLIENT_HPP
 
-#include <unistd.h>
 #include <iostream>
 #include <errno.h>
 #include <cstring>

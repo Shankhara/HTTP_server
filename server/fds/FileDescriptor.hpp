@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Log.hpp"
 #include "../Utils.hpp"
+#include <unistd.h>
 
 class FileDescriptor {
 protected:
