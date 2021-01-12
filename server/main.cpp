@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
 		confPath = new std::string(DEFAULT_PATH);
 	else	
 		confPath = new std::string(argv[1]);
-	Log::getInstance()->setLevel(logDEBUG);
+	//Log::getInstance()->setLevel(logDEBUG);
 	Configuration *conf = new Configuration(*confPath);
 	delete(confPath);
 	if (conf->openFile() != 0) {
