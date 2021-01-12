@@ -199,44 +199,35 @@ void testRespError()
 
 void testMimeType()
 {
-	Mime m;
 	std::string fileName = "index.html";
 	std::string ret;
 
-	ret = m.getContentType(fileName);
-	assertStringEqual(ret, "text/html", "fileName: " + fileName);
-
-	fileName = "index.html.fr";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "text/html", "fileName: " + fileName);
 
 	fileName = "file.rar";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "application/rar", "fileName: " + fileName);
 
 	fileName = "pres.ppt";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "application/vnd.ms-powerpoint", "fileName: " + fileName);
 
 	fileName = "image.tiff";
-	ret = m.getContentType(fileName);
-	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
-
-	fileName = "image.tiff.fr.DE.GE";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
 
 	fileName = "dir/image.tiff";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
 
 	fileName = "/path/dir/image.tiff";
-	ret = m.getContentType(fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
 	assertStringEqual(ret, "image/tiff", "fileName: " + fileName);
 
 	fileName = "/path/dir/image/";
-	ret = m.getContentType(fileName);
-	assertStringEqual(ret, "", "fileName: " + fileName);
+    ret = Mime::getInstance()->getContentType(fileName);
+	assertStringEqual(ret, "application/octet-stream", "fileName: " + fileName);
 
 	fileName = "image.tiff";
 	ret = Mime::getInstance()->getContentType(fileName);
@@ -320,14 +311,14 @@ void testRespDelete()
 
 void testResponse()
 {
-//	testRespPut();
-//    testRespGet();
-//	testRespPost();
-// 	testRespTrace();
-//	testRespOptions();
-//	testRespError();
-//	testMimeType();
-//  testNegotiateContentLang();
+	testRespPut();
+    testRespGet();
+	testRespPost();
+ 	testRespTrace();
+	testRespOptions();
+	testRespError();
+	testMimeType();
+	testNegotiateContentLang();
     testNegotiateAcceptLang();
     testRespDelete();
 }
