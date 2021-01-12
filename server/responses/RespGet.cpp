@@ -8,7 +8,7 @@ RespGet::RespGet(const Request &r, char buf[], unsigned int bufSize): RespFile(r
 
 RespGet::~RespGet(){}
 
-void RespGet::reachRessource_()
+void RespGet::reachResource_()
 {
 	struct stat st;
 
@@ -45,7 +45,7 @@ void RespGet::writeHeaders_()
 void RespGet::build()
 {
 	if (location_->autoindex == false || reqTarget_[reqTarget_.size() - 1] != '/')
-		reachRessource_();
+	    reachResource_ ();
 }
 
 int RespGet::readResponse()

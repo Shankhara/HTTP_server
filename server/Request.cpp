@@ -231,6 +231,8 @@ int Request::parseHeadersContent()
 		headerAcceptLanguage_ = explode(removeSpaces(headersRaw_[ACCEPT_LANGUAGE]), ',');
 		for(size_t i = 0; i < headerAcceptLanguage_.size(); i++)
 		{
+		    std::transform(headerAcceptLanguage_[i].begin(), headerAcceptLanguage_[i].end(),
+		    headerAcceptLanguage_[i].begin(), ft_toupper);
 		    size_t ret = headerAcceptLanguage_[i].find(';');
 		    if (ret != std::string::npos)
 		        headerAcceptLanguage_[i].erase(ret);

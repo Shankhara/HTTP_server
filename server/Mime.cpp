@@ -76,16 +76,16 @@ std::string Mime::getFilename(std::string & param) const
 std::string Mime::getContentType(std::string & param) const
 {
 	std::string ext = getExtension(getFilename(param));
-	if (ext.empty())
-		return (ext);
-
-	for (size_t i = 0; i < extensions_.size(); i++)
-	{
-		for (size_t j = 0; j < extensions_[i].size(); j++)
-		{
-			if (extensions_[i][j].compare(ext) == 0)
-				return mime_[i];
-		}
-	}
-	return "application/octet-stream";
+    if(!ext.empty())
+    {
+        for(size_t i = 0; i < extensions_.size(); i++)
+        {
+            for(size_t j = 0; j < extensions_[i].size(); j++)
+            {
+                if(extensions_[i][j].compare(ext) == 0)
+                    return mime_[i];
+            }
+        }
+    }
+    return "application/octet-stream";
 }
