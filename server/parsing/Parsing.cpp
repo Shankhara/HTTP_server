@@ -22,11 +22,8 @@ typedef std::pair<stds, stds> 			ps;
 typedef std::istreambuf_iterator<char>	ist;
 typedef Parsing::ParsingException		PpE;
 
-stds 	content;
+Parsing::Parsing(void):  servers_() {}
 
-Parsing::Parsing(void) : file_(stds(DEFAULT_PATH)), servers_() {}
-
-Parsing::Parsing(stds file) : file_(file), servers_() {}
 
 Parsing::~Parsing(void) {}
 
@@ -37,30 +34,22 @@ void				Parsing::parseConfig(void)
 
 	line_ = 1;
 	char_ = 1;
-	if (this->file_.length() < 6 ||
-		this->file_.substr(this->file_.length() - 5).compare(stds(".conf")) != 0)
-			throw (PpE(this->file_, stds("File should have the .conf extension")));
-	std::ifstream	file(this->file_.c_str());
-	if (file.is_open() == false)
-		throw (PpE(this->file_, stds("File doesn't exist")));
-	content = stds((ist(file)), (ist()));
-	first = content.begin();
-	file.close();
-	while (first != content.end())
+	first = content_.begin();
+	while (first != content_.end())
 	{
-		this->skipWhite(&first, content.end(), true);
-		if (compString(&first, content.end(), stds("server")) == false)
+		this->skipWhite(&first, content_.end(), true);
+		if (compString(&first, content_.end(), stds("server")) == false)
 			throw (PpE(this->file_, stds("Expected \"server\"")));
 		if (*first != '{')
 			throw (PpE(this->file_, stds("Expected token {")));
 		next = first;
-		if (*(next = getBrackets(next, content.end())) != '}')
+		if (*(next = getBrackets(next, content_.end())) != '}')
 			throw (PpE(this->file_, stds("Expected token }")));
 		char_++;
-		this->skipWhite(&(++first), content.end(), true);
+		this->skipWhite(&(++first), content_.end(), true);
 		this->servers_.push_back(this->parseProps(first, next));
 		first = next + 1;		
-		this->skipWhite(&first, content.end(), true);
+		this->skipWhite(&first, content_.end(), true);
 	}
 	if (this->servers_.empty())
 		throw (PpE(this->file_, stds("No server defined")));
@@ -473,4 +462,8 @@ Parsing *Parsing::getInstance()
 
 void Parsing::setFile(const stds &file) {
 	file_ = file;
+}
+
+void Parsing::setContent(const stds &content) {
+	content_ = content;
 }

@@ -105,6 +105,9 @@ private :
 	stds					file_;
 	std::vector<server>		servers_;
 	static Parsing          *instance_;
+	stds					content_;
+
+private:
 	Parsing();
 	Parsing(stds file);
 
@@ -127,6 +130,7 @@ public :
 		stds						getNextLine(iterator *first, iterator end);
 		void						skipWhite(iterator *first, iterator end, bool inc);
 		std::vector<server>			getServers() {	return (this->servers_); }
+		void setContent(const stds &content);
 
 	class ParsingException : public std::exception
 	{
