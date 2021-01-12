@@ -10,15 +10,6 @@ Mime * Mime::getInstance()
 	return instance_;
 }
 
-void Mime::releaseInstance()
-{
-	if (instance_)
-	{
-		delete instance_;
-		instance_ = 0;
-	}
-}
-
 Mime::Mime()
 {
 	parseMimeFile();
@@ -48,13 +39,14 @@ void Mime::parseMimeFile()
 		startExt = line.find_first_not_of(line[endType], endType);
 		if (startExt == std::string::npos)
 			continue;
-		mime_.push_back(line.substr(0, endType));
-		extensions_.push_back(explode(line.substr(startExt), ' '));
+        std::vector<std::string> tmp = explode(line.substr(startExt), ' ');
+        for(size_t i = 0; i < tmp.size(); ++i)
+            mimeTypes_[tmp[i]] = line.substr(0, endType);
 	}
 	close(fd);
 }
 
-std::string Mime::getExtension(const std::string & filename) const
+std::string Mime::getExtension(const std::string & filename)
 {
 	size_t start;
 	size_t dead = std::string::npos;
@@ -67,25 +59,16 @@ std::string Mime::getExtension(const std::string & filename) const
 
 std::string Mime::getFilename(std::string & param) const
 {
-	size_t start = param.rfind("/");
+	size_t start = param.rfind('/');
 	if (start != std::string::npos)
 		return param.substr(start + 1);
 	return param;
 }
 
-std::string Mime::getContentType(std::string & param) const
+std::string Mime::getContentType(std::string & param)
 {
 	std::string ext = getExtension(getFilename(param));
     if(!ext.empty())
-    {
-        for(size_t i = 0; i < extensions_.size(); i++)
-        {
-            for(size_t j = 0; j < extensions_[i].size(); j++)
-            {
-                if(extensions_[i][j].compare(ext) == 0)
-                    return mime_[i];
-            }
-        }
-    }
+        return mimeTypes_[ext];
     return "application/octet-stream";
 }
