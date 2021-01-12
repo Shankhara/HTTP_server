@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/10 23:57:05 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/12 23:39:18 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 # define PARSING_HPP
 
 # include <string>
-# include <sstream>
-# include <fstream>
 # include <iostream>
 # include <list>
 # include <map>
@@ -139,18 +137,23 @@ public :
 		public:
 			ParsingException(std::string file, std::string msg = "Configfile error.")
 			{
-				std::string	li;	
-				std::string	ch;
 				//if (serverProps_ == methods_ && locationProps_ == methods_)
-				//	UNUSED(li);
-				std::ostringstream conv;
-				std::ostringstream conv2;
-				conv << line_;
-				li = std::string(conv.str());	
-				conv2 << char_;
-				ch = std::string(conv2.str());	
-				this->msg_ = std::string(file + std::string(":") + li + std::string(":") + ch + std::string(": error: ") + std::string(msg));
-			}		
+				//	UNUSED(li);	
+				this->msg_ = std::string(file + std::string(":") + this->to_string(line_) + std::string(":") + this->to_string(char_) + std::string(": error: ") + std::string(msg));
+			}
+
+			std::string         to_string(int convert)
+			{
+   				std::string res;
+
+			    while (convert > 9)
+   				{
+			        res += char(convert % 10 + 48);
+   			     	convert /= 10;
+    			}
+   				res += char(convert % 10 + 48);
+    			return (res);
+			}
 			~ParsingException() throw() {};
 			const char *what () const throw () { return (msg_.c_str()); }
 	};	
