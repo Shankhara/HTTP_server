@@ -3,13 +3,13 @@
 Log* Log::instance_ = 0;
 
 static std::string timeStamp() {
-	time_t		stamp;
-	struct tm		*timeinfo;
+	struct timeval	tv;
+	struct tm		timeinfo;
 	char			timestamp[20];
 
-	time(&stamp);
-	timeinfo = localtime(&stamp);
-	strftime(timestamp, 20, "%FT%TZ", timeinfo);
+	gettimeofday(&tv, NULL);
+	strptime(ft_itoa(static_cast<unsigned long>(tv.tv_sec)).c_str(), "%s", &timeinfo);
+	strftime(timestamp, 20, "%FT%TZ", &timeinfo);
 	return timestamp;
 }
 

@@ -1,6 +1,7 @@
 #ifndef WEBSERV_LOG_HPP
 #define WEBSERV_LOG_HPP
 #include <iostream>
+#include "Utils.hpp"
 
 enum TLogLevel {
 	logDEBUG, logINFO, logWARNING, logERROR, logFATAL
