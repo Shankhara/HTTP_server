@@ -24,6 +24,7 @@ void RespPut::makeResponse_()
 {
 	initHeaders();
 	writeContentType_(filePath_);
+	writeContentLength_(0);
     if (contentLangNegotiated_)
     {
         for(size_t i = 0; i < langFilePath_.size(); ++i)

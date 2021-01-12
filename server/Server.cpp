@@ -94,7 +94,7 @@ void Server::garbageCollector_()
 		{
 			if (fds_[i]->getLastEventTimer() > 0 && (getTime() - fds_[i]->getLastEventTimer()) > READ_TIMEOUT * 1000)
 			{
-				Log::get(logINFO) << "FD: " << i << " > Timeout after " << READ_TIMEOUT << " sec" << std::endl;
+				//Log::get(logDEBUG) << "FD: " << i << " > Timeout after " << READ_TIMEOUT << " sec" << std::endl;
 				deleteFileDescriptor(i);
 			}
 		}
