@@ -3,6 +3,7 @@
 Configuration::Configuration(std::string path): configPath_(path) {}
 
 Configuration::~Configuration() {
+	close(fd_);
 }
 
 void Configuration::onEvent() {

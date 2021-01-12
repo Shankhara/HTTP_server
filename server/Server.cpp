@@ -61,8 +61,6 @@ void Server::addFileDescriptor(FileDescriptor *fd) {
 
 void Server::deleteFileDescriptor(int fd) {
 	Log::get(logDEBUG) << __PRETTY_FUNCTION__  << " " << fd << std::endl;
-	if (close(fd) == -1)
-		Log::get(logERROR) << __PRETTY_FUNCTION__  << " unable to close " << strerror(errno) << std::endl;
 	FD_CLR(fd, &master_);
 	delete fds_[fd];
 }
