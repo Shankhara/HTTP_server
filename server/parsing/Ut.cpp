@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:29:45 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/04 13:30:45 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/12 23:30:37 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,4 +103,17 @@ int                 to_int(char const *s, size_t count)
             break;
      }
      return result;
+}
+
+std::string			to_string(int convert)
+{
+	std::string res;
+
+	while (convert > 9)
+	{
+		res += char(convert % 10);
+		convert /= 10;
+	}
+	res += char(convert % 10);
+	return (res);
 }
