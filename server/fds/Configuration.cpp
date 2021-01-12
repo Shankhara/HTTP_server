@@ -3,8 +3,6 @@
 Configuration::Configuration(std::string path): configPath_(path) {}
 
 Configuration::~Configuration() {
-	if (fd_ > 0)
-		close(fd_);
 }
 
 void Configuration::onEvent() {
@@ -22,6 +20,7 @@ void Configuration::onEvent() {
 	} catch (const Parsing::ParsingException &e) {
 		Log::get(logERROR) << e.what() << std::endl;
 		shutdown_();
+		exit(EXIT_FAILURE);
 	}
 	std::vector<Listener*> listeners;
 	for (size_t i = 0; i < Parsing::getInstance()->getServers().size(); i++) {
