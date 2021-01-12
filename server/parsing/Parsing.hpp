@@ -29,7 +29,7 @@
 # include <sys/stat.h>
 # include <sys/time.h>
 # include <sys/types.h>
-# define	DEFAULT_PATH "./parsing/test/nginx.conf"
+# define	DEFAULT_PATH "./parsing/test/wordpress.conf"
 # define	UNUSED(x)	((void)(x))
 
 static const char 		*serverProps_[] = { "listen",
