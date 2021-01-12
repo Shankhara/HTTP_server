@@ -19,7 +19,7 @@ void testRespGet()
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
-	std::string str = "GET /index.html HTTP/1.1\r\n\r\n";
+	std::string str = "GET /a.txt HTTP/1.1\r\n\r\n";
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 
 	unsigned int bufsize = 16 * 1024;
@@ -303,7 +303,7 @@ void testRespDelete()
 
     std::vector<Parsing::server> *vhost = createVirtualHosts();
     Request r(*vhost);
-    std::string str = "DELETE /a HTTP/1.1\r\nHost: webserv\r\ncontent-language:FR, US\r\n\r\n";
+    std::string str = "DELETE /index.html HTTP/1.1\r\nHost: webserv\r\ncontent-language:FR, US\r\n\r\n";
 
     unsigned int bufsize = 16 * 1024;
     char buf[bufsize];
@@ -320,19 +320,14 @@ void testRespDelete()
 
 void testResponse()
 {
-	testRespGet();
-	testRespPut();
-	testRespPost();
- 	testRespTrace();
-	testRespOptions();
-	testRespError();
-	testMimeType();
-//	testNegotiateContentLang();
-//	testNegotiateAcceptLang();
-//	testRespDelete();
+//	testRespPut();
+//    testRespGet();
+//	testRespPost();
+// 	testRespTrace();
 //	testRespOptions();
-	testRespError();
-	testMimeType();
-    testNegotiateAcceptLang ();
-    testNegotiateContentLang();
+//	testRespError();
+//	testMimeType();
+//  testNegotiateContentLang();
+    testNegotiateAcceptLang();
+    testRespDelete();
 }

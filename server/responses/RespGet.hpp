@@ -20,7 +20,7 @@ private:
 	const Parsing::location *location_;
 	std::string reqTarget_;
 
-	void 		reachRessource_();
+	void 		reachResource_();
 	int 		writeAutoIndex_(stds);
 	void 		writeHeaders_();
 
