@@ -15,14 +15,23 @@ int RespError::readResponse()
 		return 0;
 
 	initHeaders();
+    if (statusCode_ == 303)
+    {
+        std::string filePath;
+        if (!req_.getLocation()->root.empty())
+            filePath = req_.getLocation()->root + req_.getReqTarget();
+        else
+            filePath = req_.getServer()->root + req_.getReqTarget();
+        writeThisHeader_("Location", filePath + "/");
+    }
 	if (statusCode_ == 401)
 		writeThisHeader_("WWW-Authenticate", "Basic realm=\"simple\"");
 	if (statusCode_ == 405)
 		writeAllow_();
+    if (statusCode_ == 406)
+        writeThisHeader_("Accept-charset", "utf-8");
 	if (statusCode_ == 503)
 		writeThisHeader_("Retry-After", "10");
-	if (statusCode_ == 406)
-        writeThisHeader_("Accept-charset", "utf-8");
 
 	writeErrorBody_(statusCode_);
 	return nbytes_;

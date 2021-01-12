@@ -19,7 +19,10 @@ void RespGet::reachResource_()
 	if (isDir)
 	{
 		if (filePath_[filePath_.size() -1] != '/')
+            throw RespException(303);
 			filePath_ += '/';
+		if (location_->index.empty())
+            throw RespException(404);
 		filePath_ += location_->index;
 	}
 	openFile_(O_RDONLY, 404);

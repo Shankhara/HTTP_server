@@ -19,7 +19,7 @@ void testRespGet()
 
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	Request ra(*vhost);
-	std::string str = "GET /a.txt HTTP/1.1\r\n\r\n";
+	std::string str = "GET /test/ HTTP/1.1\r\n\r\n";
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 
 	unsigned int bufsize = 16 * 1024;
@@ -43,7 +43,7 @@ void testRespPut()
 	Request ra(*vhost);
 	std::string body = "HTTP is a generic interface protocol for information systems. \
 	It is designed to hide the details of how a service is ...";
-	std::string str = "PUT /a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
+	std::string str = "PUT /test/a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
 	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
 	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
 
@@ -287,7 +287,6 @@ void testNegotiateAcceptLang()
     delete (vhost);
 }
 
-
 void testRespDelete()
 {
     std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
@@ -313,12 +312,12 @@ void testResponse()
 {
 	testRespPut();
     testRespGet();
-	testRespPost();
- 	testRespTrace();
-	testRespOptions();
-	testRespError();
-	testMimeType();
-	testNegotiateContentLang();
-    testNegotiateAcceptLang();
-    testRespDelete();
+//	testRespPost();
+// 	testRespTrace();
+//	testRespOptions();
+//	testRespError();
+//	testMimeType();
+//	testNegotiateContentLang();
+//    testNegotiateAcceptLang();
+//    testRespDelete();
 }
