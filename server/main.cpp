@@ -1,7 +1,6 @@
 #include "Server.hpp"
 #include "Log.hpp"
-#include "fds/Listener.hpp"
-#include "parsing/Parsing.hpp"
+#include "fds/Configuration.hpp"
 #include <signal.h>
 
 void signalHandler(int) {
@@ -15,30 +14,7 @@ void signalHandler(int) {
 	exit(0);
 }
 
-void addListener(const Parsing::server &server, std::vector<Listener*> *listeners)
-{
-	for (uint64_t i = 0; i < listeners->size(); i++)
-	{
-		if (listeners->at(i)->addServer(server) == 0) {
-			return;
-		}
-	}
-	Listener *l = new Listener();
-	l->addServer(server);
-	listeners->push_back(l);
-}
-
-void startListeners(const std::vector<Listener*> *listeners)
-{
-	for (uint64_t i = 0; i < listeners->size(); i++)
-	{
-		listeners->at(i)->ListenAndServe();
-		Server::getInstance()->addFileDescriptor(listeners->at(i));
-	}
-}
-
 int main(int argc, char *argv[]) {
-	std::vector<Listener*>	*listeners;
 	std::string				*confPath;
 
 	if (argc > 2)
@@ -52,23 +28,14 @@ int main(int argc, char *argv[]) {
 		confPath = new std::string("./parsing/test/wordpress.conf");
 	else	
 		confPath = new std::string(argv[1]);
-	//Log::getInstance()->setLevel(logDEBUG);
-	Parsing::getInstance()->setFile(*confPath);
+	Log::getInstance()->setLevel(logDEBUG);
+	Configuration *conf = new Configuration(*confPath);
 	delete(confPath);
-	try {
-		Parsing::getInstance()->parseConfig();
-	} catch (Parsing::ParsingException &e) {
-		Log::get(logERROR) << " Unable to parse: " << e.what() << std::endl;
-		delete Parsing::getInstance();
+	if (conf->openFile() != 0) {
 		return (EXIT_FAILURE);
 	}
 	Server *webserv = Server::getInstance();
-	listeners = new std::vector<Listener *>();
-	for (size_t i = 0; i < Parsing::getInstance()->getServers().size(); i++) {
-		addListener(Parsing::getInstance()->getServers()[i], listeners);
-	}
-	startListeners(listeners);
-	delete (listeners);
+	webserv->addFileDescriptor(conf);
 	webserv->start();
 }
 
