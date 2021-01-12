@@ -90,7 +90,7 @@ void Client::sendResponse(Response *resp) {
 			break ;
 		}
 	}
-	if (nbytes < 0 && !isSent)
+	if (nbytes < 0 && !isSent && resp->getStatusCode() < 400)
 	{
 		RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
 		return (sendResponse(&err));
@@ -130,6 +130,7 @@ void Client::responseFactory_() {
 	} catch (RespException &e) {
 		delete resp_;
 		resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
+
 	}
 }
 

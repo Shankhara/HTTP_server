@@ -1,13 +1,16 @@
 #ifndef WEBSERV_RESPERROR_HPP
 #define WEBSERV_RESPERROR_HPP
-#include "Response.hpp"
+#include "RespFile.hpp"
 
-class RespError: public Response
+class RespError: public RespFile
 {
 
 private:
-	void	writeErrorBody_(int);
-	std::string getErrorPage_(int statusCode);
+	size_t	payloadSize_;
+	void 	setFilePath_();
+	void 	writeDefaultErrorPage_(int statusCode);
+	void 	writeStatusRelatedHeaders_();
+	void 	writeHeaders_(size_t);
 
 public:
 	RespError(int, const Request &r, char [], unsigned int);

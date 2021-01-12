@@ -7,10 +7,8 @@
 
 class RespFile : public Response
 {
-	private:
-	void setFilePath_();
-
 	protected:
+	virtual void setFilePath_();
 	int fd_;
 	int payloadCursor_;
 	bool acceptLangNegotiated_;

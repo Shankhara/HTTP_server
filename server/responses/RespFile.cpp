@@ -3,7 +3,6 @@
 RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize), fd_(0)
 {
 	payloadCursor_ = 0;
-	setFilePath_();
 }
 
 RespFile::~RespFile() {

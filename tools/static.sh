@@ -3,7 +3,7 @@ WEBSERV="/tmp/webserv"
 DIR=${WEBSERV}"/static"
 
 rm -Rf ${WEBSERV}/static
-mkdir -p ${DIR}/dir
+mkdir -p ${DIR}/dir ${DIR}/errors
 
 echo "<html><head><title>Static</title></head>
 <body><h3>It works</h3>
@@ -13,11 +13,16 @@ echo "<html><head><title>Static</title></head>
 </ul>
 <body><html>" > ${DIR}/page.html
 
+echo "<html><head><title>404</title></head>
+<body><h3>Absolutely not found</h3>
+<body><html>" > ${DIR}/errors/404.html
+
 ln -s ${DIR}/page.html ${DIR}/index.html
 
 echo "server {
 	listen 127.0.0.1:8080;
 	server_name localhost;
+	error_page 404 ${DIR}/errors/404.html;
 	location / {
 		index index.html;
 		root ${DIR};

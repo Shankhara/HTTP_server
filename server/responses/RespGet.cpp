@@ -46,6 +46,7 @@ void RespGet::writeHeaders_()
 
 void RespGet::build()
 {
+	setFilePath_();
 	if (location_->autoindex == false || reqTarget_[reqTarget_.size() - 1] != '/')
 	    reachResource_ ();
 }
