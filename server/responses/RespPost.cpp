@@ -52,5 +52,7 @@ int RespPost::readResponse()
 
 void RespPost::build()
 {
+	setFilePath_();
+	negotiateContentLang_();
 	manageFile_();
 }

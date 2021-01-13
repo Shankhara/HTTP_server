@@ -2,8 +2,6 @@
 
 RespFiles::RespFiles(const Request &r, char buf[], unsigned int bufSize) : RespFile(r, buf, bufSize)
 {
-	setFilePath_();
-	negotiateContentLang_();
 }
 
 RespFiles::~RespFiles() {
@@ -79,5 +77,7 @@ void RespFiles::negotiateContentLang_()
 		contentLangNegotiated_ = true;
 	}
 }
+
+
 
 

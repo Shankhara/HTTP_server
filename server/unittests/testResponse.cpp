@@ -58,6 +58,12 @@ body)
         resp = new RespOptions(a, buf, bufsize);
     if (method == "TRACE")
         resp = new RespTrace(a, buf, bufsize);
+    try {
+    	resp->build();
+    } catch (const RespException &e) {
+    	Log::get(logINFO) << "Unable to build request: " << e.getStatusCode() << std::endl;
+    	return ;
+    }
 	size_t readSize = resp->readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';

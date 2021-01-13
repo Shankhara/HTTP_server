@@ -49,5 +49,7 @@ int RespPut::readResponse()
 }
 
 void RespPut::build() {
+	setFilePath_();
+	negotiateContentLang_();
 	reachResource_();
 }

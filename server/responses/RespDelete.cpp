@@ -98,6 +98,8 @@ int RespDelete::readResponse()
 }
 
 void RespDelete::build() {
+	setFilePath_();
+	negotiateContentLang_();
 	if (!delResource_())
 		statusCode_ = 204;
 }
