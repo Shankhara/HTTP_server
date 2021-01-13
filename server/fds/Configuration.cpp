@@ -1,6 +1,8 @@
 #include "Configuration.hpp"
 
-Configuration::Configuration(std::string path): configPath_(path) {}
+Configuration::Configuration(std::string path): configPath_(path) {
+	fd_ = 0;
+}
 
 Configuration::~Configuration() {}
 
@@ -8,7 +10,7 @@ void Configuration::onEvent() {
 	char			buf[8192];
 	int				ret;
 	std::string		config;
-	while ((ret = read(this->getFd(), buf, 8191)) > 0){
+	while ((ret = read(fd_, buf, 8191)) > 0){
 		config.append(buf, ret);
 		if (config.size() > 1024 * 1024)
 		{
@@ -52,14 +54,6 @@ int Configuration::openFile() {
 	}
 	return (0);
 }
-
-void Configuration::shutdown_() {
-	delete (Parsing::getInstance());
-	delete (Server::getInstance());
-	delete (Mime::getInstance());
-	delete (Log::getInstance());
-}
-
 
 void Configuration::addListener(const Parsing::server &server, std::vector<Listener*> *listeners)
 {
