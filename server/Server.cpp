@@ -4,12 +4,13 @@ Server* Server::instance_ = 0;
 
 Server::~Server() {
 	Log::get(logINFO) << "FD_MAX at shutdown: " << fdmax_ << std::endl;
-	stop();
+	halt_();
 }
 
 Server::Server()
 {
 	fdmax_ = 0;
+	shutdown_ = false;
 	FD_ZERO(&master_);
 	fds_.reserve(FD_SETSIZE);
 }
@@ -22,13 +23,13 @@ void Server::run_()
 	unsigned long 			cur;
 
 	FD_ZERO(&conn_fds);
-	for (;;)
+	while (!shutdown_)
 	{
 		conn_fds = master_;
 		if (select(fdmax_ + 1, &conn_fds, NULL, NULL, &tv) == -1)
 		{
-			Log::get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
-			exit(EXIT_FAILURE);
+			Log::get(logINFO) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
+			return ;
 		}
 		for (int i = 0; i <= fdmax_; i++)
 		{
@@ -73,15 +74,7 @@ Server *Server::getInstance()
 }
 
 void Server::stop() {
-	Log::get(logDEBUG) << "Server::stop()" << std::endl;
-	for (int i = 0; i <= fdmax_; i++)
-	{
-		if (FD_ISSET(i, &master_))
-		{
-			Log::get(logDEBUG) << "deleting " << i << std::endl;
-			delete fds_[i];
-		}
-	}
+	shutdown_ = true;
 }
 
 void Server::garbageCollector_()
@@ -101,5 +94,19 @@ void Server::garbageCollector_()
 
 void Server::unwatch(int fd) {
 	FD_CLR(fd, &master_);
+}
+
+void Server::halt_() {
+	for (int i = 0; i <= fdmax_; i++)
+	{
+		if (FD_ISSET(i, &master_))
+		{
+			Log::get(logDEBUG) << "Unallocating FileDescriptor: " << i << std::endl;
+			delete fds_[i];
+		}
+	}
+	std::cerr.clear();
+	std::cerr << "\b\b";
+	Log::get(logINFO) << "Webserv exiting gracefully." << std::endl;
 }
 

@@ -23,12 +23,14 @@ class Server
 {
 private:
 	static Server					*instance_;
+	bool 							shutdown_;
     std::vector<FileDescriptor*>	fds_;
 	int 							fdmax_;
 	fd_set							master_;
     void 							run_();
 	void 							garbageCollector_();
 	Server();
+	void 							halt_();
 
 public:
 	~Server();

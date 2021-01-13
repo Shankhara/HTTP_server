@@ -17,16 +17,17 @@ void Configuration::onEvent() {
 			break ;
 		}
 	}
-	if (ret == -1)
-		shutdown_();
+	if (ret == -1) {
+		Log::get(logERROR) << "Unable to read configuration file: " << strerror(errno) << std::endl;
+		return Server::getInstance()->stop();
+	}
 	Parsing::getInstance()->setFile(configPath_);
 	Parsing::getInstance()->setContent(config);
 	try {
 		Parsing::getInstance()->parseConfig();
 	} catch (const Parsing::ParsingException &e) {
 		Log::get(logERROR) << e.what() << std::endl;
-		shutdown_();
-		exit(EXIT_FAILURE);
+		Server::getInstance()->stop();
 	}
 	std::vector<Listener*> listeners;
 	for (size_t i = 0; i < Parsing::getInstance()->getServers().size(); i++) {

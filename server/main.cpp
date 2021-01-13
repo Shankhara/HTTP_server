@@ -11,29 +11,23 @@ void deleteSingletons() {
 }
 
 void signalHandler(int) {
-	std::cerr.clear();
-	std::cerr << "\b\b";
-	Log::get(logINFO) << "Webserver exiting gracefully." << std::endl;
-	exit(0);
+	Server::getInstance()->stop();
 }
 
 int main(int argc, char *argv[]) {
-	std::string				*confPath;
+	Configuration *conf;
 
 	if (argc > 2)
 	{
-		std::cerr << "To many arguments default usage : webserv [./example.conf]" << std::endl;
+		std::cerr << "Usage : webserv [./example.conf]" << std::endl;
 		return (EXIT_FAILURE);
 	}
 	signal(SIGCHLD,SIG_IGN);
 	signal(SIGINT, signalHandler);
 	if (argc == 1)
-		confPath = new std::string(DEFAULT_PATH);
+		conf = new Configuration(DEFAULT_PATH);
 	else	
-		confPath = new std::string(argv[1]);
-	//Log::getInstance()->setLevel(logDEBUG);
-	Configuration *conf = new Configuration(*confPath);
-	delete(confPath);
+		conf = new Configuration(argv[1]);
 	if (conf->openFile() != 0) {
 		delete conf;
 		deleteSingletons();
@@ -44,5 +38,6 @@ int main(int argc, char *argv[]) {
 		webserv->addFileDescriptor(Mime::getInstance());
 	webserv->addFileDescriptor(conf);
 	webserv->start();
+	deleteSingletons();
 }
 

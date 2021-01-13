@@ -34,8 +34,7 @@ void Listener::ListenAndServe() {
 	if (fd_ == -1)
 	{
 		Log::get(logERROR) << "server:start -> error in socket()\n" << std::endl;
-		delete Server::getInstance();
-		exit(EXIT_FAILURE);
+		return Server::getInstance()->stop();
 	}
 	int enable = 1;
 	if (setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
@@ -47,14 +46,12 @@ void Listener::ListenAndServe() {
 	if ((bind(fd_, (struct sockaddr *)&server, sizeof(struct sockaddr))) == -1)
 	{
 		Log::get(logERROR) << "server:start -> error in bind() " << strerror(errno) << std::endl;
-		delete Server::getInstance();
-		exit(EXIT_FAILURE) ;
+		return Server::getInstance()->stop();
 	}
 	if (listen(fd_, FD_SETSIZE) == -1)
 	{
 		Log::get(logERROR) << "server:start -> error in listen() " << strerror(errno) << std::endl;
-		delete Server::getInstance();
-		exit(EXIT_FAILURE) ;
+		return Server::getInstance()->stop();
 	}
 	Log::get(logINFO) << "listening on port " << port_ << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
 }
