@@ -53,7 +53,7 @@ int RespFile::read_()
 	if (currentRead < 0)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
-		return nbytes_;
+		return currentRead;
 	}
 	return nbytes_ + currentRead;
 }
@@ -64,7 +64,7 @@ void RespFile::prefixFilePathWithAcceptLang_()
 	if (!req_.getHeaderAcceptLanguage().empty())
 	{
 		std::string tmp;
-		size_t pos = filePath_.rfind('/'); // garantie de toujours trouver un "/" ?
+		size_t pos = filePath_.rfind('/');
 		for(size_t i = 0; i < req_.getHeaderAcceptLanguage().size(); ++i)
 		{
 			if (req_.getHeaderAcceptLanguage()[i].find('*') != std::string::npos)

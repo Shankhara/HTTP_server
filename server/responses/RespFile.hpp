@@ -17,7 +17,6 @@ class RespFile : public Response
     std::vector<std::string> langFilePath_;
     int createDirectories_ (const std::string & str);
 	void openFile_(int exceptionStatus, int flags);
-    void write_();
 	int	read_();
 	void prefixFilePathWithAcceptLang_();
 

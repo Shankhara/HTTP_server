@@ -29,7 +29,7 @@ void Mime::parseMimeFile()
 		return;
 
 	while ((nbytes = read(fd, buf, BUFFER_SIZE)) > 0)
-		str.append(buf, nbytes);
+        str.append(buf, nbytes);
 
 	while (getNextLine(str, line) > 0)
 	{
@@ -69,6 +69,10 @@ std::string Mime::getContentType(std::string & param)
 {
 	std::string ext = getExtension(getFilename(param));
     if(!ext.empty())
+    {
+        if (mimeTypes_[ext].empty())
+            return "application/octet-stream";
         return mimeTypes_[ext];
+    }
     return "application/octet-stream";
 }
