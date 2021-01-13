@@ -32,10 +32,8 @@ Request::~Request() { }
 
 std::string Request::decode_authorization()
 {
-	std::vector<std::string> tmp;
-	std::string res;
-
-	tmp = explode(headersRaw_[AUTHORIZATION], ' ');
+    std::string res;
+	std::vector<std::string> tmp = explode(headersRaw_[AUTHORIZATION], ' ');
 	removeSpaces(tmp[0]);
 	if (tmp[0] == "Basic")
 		res = decode64(removeSpaces(tmp[1]));
@@ -45,9 +43,7 @@ std::string Request::decode_authorization()
 std::vector<std::string> Request::workLine(std::string & line, const char & c)
 {
 	std::vector<std::string> res;
-	size_t i;
-
-	i = line.find(c);
+	size_t i = line.find(c);
 	if (i == std::string::npos)
 		return (res);
 	
@@ -56,7 +52,6 @@ std::vector<std::string> Request::workLine(std::string & line, const char & c)
 		i = line.find('\r');
 		if (i == std::string::npos)
 			return (res);
-
 		line.erase(line.begin() + i);
 		if (c == ':')
 			res = explode(line, c, 1);
@@ -150,9 +145,7 @@ int Request::parseBody()
 
 void Request::parseQueryString()
 {
-    size_t i;
-
-	i = requestLine_[REQTARGET].find('?');
+    size_t i = requestLine_[REQTARGET].find('?');
 	if (i != std::string::npos)
 	{
 		queryString_ = requestLine_[REQTARGET].substr(i + 1);
@@ -176,7 +169,6 @@ int Request::parseHeaders()
 		ret = line.find(':', 0);
 		if (ret != std::string::npos && (line[ret - 1] < 33 || line[ret + 1] == ':'))
 			return 400;
-
 		headerLine = workLine(line, ':');
 		if (headerLine.empty())
 		{
@@ -184,10 +176,8 @@ int Request::parseHeaders()
 				return parseHeadersContent();
 			return 400;
 		}
-
   		std::string::iterator st = headerLine[HEADERTITLE].begin();
   		std::string::iterator ste = headerLine[HEADERTITLE].end();
-
   		std::transform(st, ste, st, ft_tolower);
 		itx = std::find(it, ite, headerLine[HEADERTITLE]);
 		if (itx != ite)
@@ -208,10 +198,6 @@ int Request::parseHeaders()
 
 int Request::parseHeadersContent()
 {
-	//GENERAL HEADERS
-	if (!headersRaw_[DATE].empty())
-		headerDate_ = removeSpaces(headersRaw_[DATE]);
-
 	//REQUEST HEADERS
 	if (!headersRaw_[ACCEPT_CHARSET].empty())
 	{
@@ -237,7 +223,6 @@ int Request::parseHeadersContent()
 		    if (ret != std::string::npos)
 		        headerAcceptLanguage_[i].erase(ret);
 		}
-
     }
 	if (!headersRaw_[AUTHORIZATION].empty())
 	{
@@ -249,15 +234,11 @@ int Request::parseHeadersContent()
 		headerHost_ = removeSpaces(headersRaw_[HOST]);
 	else
 		return 400;
-
 	if (!headersRaw_[REFERER].empty())
 		headerReferer_ = removeSpaces(headersRaw_[REFERER]);
 	if (!headersRaw_[USER_AGENT].empty())
 		headerUserAgent_ = removeSpaces(headersRaw_[USER_AGENT]);
-
 	//ENTITY HEADERS
-	if (!headersRaw_[ALLOW].empty())
-		headerAllow_ = removeSpaces(headersRaw_[ALLOW]);
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
         headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
@@ -266,28 +247,18 @@ int Request::parseHeadersContent()
 		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = removeSpaces(headersRaw_[CONTENT_TYPE]);
-
-	//RESPONSE HEADERS
-	if (!headersRaw_[LAST_MODIFIED].empty())
-		headerTransferEncoding_ = removeSpaces(headersRaw_[LAST_MODIFIED]);
-	if (!headersRaw_[LOCATION].empty())
-		headerTransferEncoding_ = removeSpaces(headersRaw_[LOCATION]);
-
+    //RESPONSE HEADER
 	if (!headersRaw_[TRANSFER_ENCODING].empty())
 	{
 		if (!headersRaw_[CONTENT_LENGTH].empty())
 			return 400;
 		headerTransferEncoding_ = removeSpaces(headersRaw_[TRANSFER_ENCODING]);
 	}
-
 	headers_parsed = true;
-
 	if ((statusCode_ = accessControl_()) >= 400)
 		return statusCode_;
-
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
-
 	return 100;
 }
 
@@ -320,7 +291,6 @@ int Request::accessControl_()
 int Request::parseRequestLine()
 {
 	std::string line;
-
 	getNextLine(request_, line);
 	requestLine_ = workLine(line, ' ');
 
@@ -332,19 +302,14 @@ int Request::parseRequestLine()
 		return 414;
 	if (checkVersion())
 		return 505;
-
 	if (getMethod() == "TRACE")
 	{
 		traceDebug_ = true;
 		tracePayload_.assign(line + "\r\n" + request_);
 	}
-
 	parseQueryString();
-
-
 	if (request_ == "\r\n")
 		return (200);
-
 	return (100);
 }
 
@@ -358,13 +323,10 @@ int Request::parse()
 		if (statusCode_ == 100)
 			statusCode_ = parseHeaders();
 	}
-
 	if (traceDebug_)
 		tracePayload_.append(request_);
-
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
-
 	return (statusCode_);
 }
 
@@ -372,7 +334,6 @@ int Request::doRequest(char buf[], size_t nbytes)
 {
 	request_.append(buf, nbytes);
 	parse();
-
 	return (statusCode_);
 }
 
@@ -418,7 +379,6 @@ bool Request::isAuthenticated_(const Parsing::location *location) const
 {
 	if (location->auth_basic.empty() || location->auth_basic == "off")
 		return true;
-
 	if (headerAuth_ == SERVER_CREDS)
 		return true;
 	return false;
@@ -453,7 +413,8 @@ const std::string &Request::getBody() const
 std::string Request::getTracePayload() const
 { return (tracePayload_); }
 
-std::string Request::getMethod() const {
+std::string Request::getMethod() const
+{
 	if (!requestLine_.empty())
 		return (requestLine_[METHOD]);
 	return "";
@@ -473,9 +434,6 @@ std::string Request::getQueryStr() const
 	return "";
 }
 
-std::string Request::getVersion() const
-{ return (requestLine_[VERSION]); }
-
 std::string Request::getHeaderDate() const
 { return (headerDate_); }
 
@@ -494,14 +452,8 @@ int Request::getHeaderContentLength() const
 std::string Request::getHeaderContentLocation() const
 { return (headerContentLocation_); }
 
-std::string Request::getHeaderAcceptCharset() const
-{ return (headerAcceptCharset_); }
-
 std::vector<std::string> Request::getHeaderAcceptLanguage() const
 { return (headerAcceptLanguage_); }
-
-std::string Request::getHeaderAllow() const
-{ return (headerAllow_); }
 
 std::vector<std::string> Request::getHeaderContentLanguage() const
 { return (headerContentLanguage_); }
@@ -511,9 +463,6 @@ std::string Request::getHeaderContentType() const
 
 const std::vector<std::string> &Request::getCGIHeaders() const
 { return cgiHeaders_; }
-
-bool Request::isHeadersParsed() const
-{ return headers_parsed; }
 
 const std::string &Request::getOriginalReqTarget() const {
 	return originalReqTarget_;
