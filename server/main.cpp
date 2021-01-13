@@ -40,6 +40,8 @@ int main(int argc, char *argv[]) {
 		return (EXIT_FAILURE);
 	}
 	Server *webserv = Server::getInstance();
+	if (Mime::getInstance()->getFd() > 0)
+		webserv->addFileDescriptor(Mime::getInstance());
 	webserv->addFileDescriptor(conf);
 	webserv->start();
 }

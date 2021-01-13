@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Request.hpp"
-#include "../Mime.hpp"
+#include "../fds/Mime.hpp"
 #include <errno.h>
 
 class Response

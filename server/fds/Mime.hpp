@@ -6,12 +6,15 @@
 #include <unistd.h>
 #include <vector>
 #include <map>
-
-#include "Utils.hpp"
+#include "FileDescriptor.hpp"
+#include "../Server.hpp"
+#include "../Utils.hpp"
+#include "../Log.hpp"
 
 #define BUFFER_SIZE 32768
+#define  MIME_FILE "/etc/mime.types"
 
-class Mime
+class Mime: public FileDescriptor
 {
 	private:
 	std::map<std::string, std::string> mimeTypes_;
@@ -25,4 +28,6 @@ class Mime
 	std::string getExtension(const std::string &);
 	std::string getFilename(std::string &) const;
 	static Mime * getInstance();
+	void onEvent();
+	void openFile_();
 };

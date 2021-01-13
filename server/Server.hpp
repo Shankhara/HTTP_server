@@ -37,6 +37,7 @@ public:
     void 				addFileDescriptor(FileDescriptor *);
     void 				stop();
 	void 				deleteFileDescriptor(int);
+	void 				unwatch(int);
 };
 
 #endif

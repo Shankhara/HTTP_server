@@ -34,7 +34,7 @@ CGIExec.o : ../CGIExec.hpp
 CGISocket.o : ../fds/CGISocket.hpp
 Parsing.o : ../parsing/Parsing.hpp
 Ut.o: ../parsing/Ut.hpp
-Mime.o : ../Mime.hpp
+Mime.o : ../fds/Mime.hpp
 RespGet.o: ../responses/RespGet.hpp
 RespCGI.o: ../responses/RespCGI.hpp
 RespPut.o: ../responses/RespPut.hpp

@@ -56,7 +56,7 @@ void Listener::ListenAndServe() {
 		delete Server::getInstance();
 		exit(EXIT_FAILURE) ;
 	}
-	Log::get(logINFO) << " listening on port " << port_ << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
+	Log::get(logINFO) << "listening on port " << port_ << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
 }
 
 uint16_t Listener::htons_(uint16_t hostshort)

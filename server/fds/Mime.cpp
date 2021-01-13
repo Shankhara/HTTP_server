@@ -1,5 +1,4 @@
 #include "Mime.hpp"
-#include "Log.hpp"
 
 Mime * Mime::instance_ = 0;
 
@@ -12,7 +11,7 @@ Mime * Mime::getInstance()
 
 Mime::Mime()
 {
-	parseMimeFile();
+	openFile_();
 	instance_ = this;
 }
 
@@ -24,12 +23,16 @@ void Mime::parseMimeFile()
 	std::string str, line;
 	size_t nbytes, endType, startExt;
 
-	int fd = open("/etc/mime.types", O_RDONLY);
-	if (fd == -1)
-		return;
+	if (fd_ < 0)
+		return ;
 
-	while ((nbytes = read(fd, buf, BUFFER_SIZE)) > 0)
+	while ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
 		str.append(buf, nbytes);
+	if (nbytes < 0)
+	{
+		Log::get(logERROR) << "Unable to read: " << MIME_FILE << " " << strerror(errno) << std::endl;
+		return ;
+	}
 
 	while (getNextLine(str, line) > 0)
 	{
@@ -40,10 +43,11 @@ void Mime::parseMimeFile()
 		if (startExt == std::string::npos)
 			continue;
         std::vector<std::string> tmp = explode(line.substr(startExt), ' ');
+        std::string type = line.substr(0, endType);
         for(size_t i = 0; i < tmp.size(); ++i)
-            mimeTypes_[tmp[i]] = line.substr(0, endType);
+			mimeTypes_[tmp[i]] = type;
 	}
-	close(fd);
+	Server::getInstance()->unwatch(fd_);
 }
 
 std::string Mime::getExtension(const std::string & filename)
@@ -68,7 +72,25 @@ std::string Mime::getFilename(std::string & param) const
 std::string Mime::getContentType(std::string & param)
 {
 	std::string ext = getExtension(getFilename(param));
+	std::map<std::string, std::string>::iterator it;
     if(!ext.empty())
-        return mimeTypes_[ext];
+	{
+			it = mimeTypes_.find(ext);
+			if (it != mimeTypes_.end())
+				return (it->second);
+			return "application/octet-stream";
+	}
     return "application/octet-stream";
+}
+
+void Mime::onEvent() {
+	parseMimeFile();
+}
+
+void Mime::openFile_() {
+	fd_ = open(MIME_FILE, O_RDONLY);
+	if (fd_ < 0)
+	{
+		Log::get(logERROR) << " Unable to open: " << MIME_FILE << " : " << strerror(errno) << std::endl;
+	}
 }
