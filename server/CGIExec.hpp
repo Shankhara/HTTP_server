@@ -22,6 +22,8 @@ class CGIExec {
 private:
 	const Request				&request_;
 	Client	 					&client_;
+	int							stdoutFD_;
+	int							stdinFD_;
 	static const std::string	vars_[];
 	std::vector<std::string>			envs_;
 	enum e_envs {
