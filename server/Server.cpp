@@ -28,7 +28,8 @@ void Server::run_()
 		conn_fds = master_;
 		if (select(fdmax_ + 1, &conn_fds, NULL, NULL, &tv) == -1)
 		{
-			Log::get(logINFO) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
+			if (errno != EINTR)
+				Log::get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
 			return ;
 		}
 		for (int i = 0; i <= fdmax_; i++)
