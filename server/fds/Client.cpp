@@ -178,7 +178,9 @@ void Client::clear_() {
 	}
 	if (CGISocket_ != 0) {
 		if (Server::getInstance()->isRunning())
+		{
 			Server::getInstance()->deleteFileDescriptor(CGISocket_->getFd());
+		}
 		CGISocket_ = 0;
 	}
 }

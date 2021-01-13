@@ -16,16 +16,15 @@ Server::Server()
 
 void Server::run_()
 {
-	fd_set					conn_fds;
 	struct timeval tv 		= {5, 0};
 	unsigned long 			lastGC = getTime();
 	unsigned long 			cur;
 
-	FD_ZERO(&conn_fds);
+	FD_ZERO(&conn_fds_);
 	while (!shutdown_)
 	{
-		conn_fds = master_;
-		if (select(fdmax_ + 1, &conn_fds, NULL, NULL, &tv) == -1)
+		conn_fds_ = master_;
+		if (select(fdmax_ + 1, &conn_fds_, NULL, NULL, &tv) == -1)
 		{
 			if (errno != EINTR)
 				Log::get(logERROR) << "server::run -> select " << strerror(errno) << " maxfd: " << fdmax_ << std::endl;
@@ -33,7 +32,7 @@ void Server::run_()
 		}
 		for (int i = 0; i <= fdmax_; i++)
 		{
-			if (FD_ISSET(i, &conn_fds))
+			if (FD_ISSET(i, &conn_fds_))
 			{
 				Log::get(logDEBUG) << "server::run -> select got an event on fd " <<  i << std::endl;
 				fds_[i]->onEvent();
@@ -94,6 +93,7 @@ void Server::garbageCollector_()
 
 void Server::unwatch(int fd) {
 	FD_CLR(fd, &master_);
+	FD_CLR(fd, &conn_fds_);
 }
 
 

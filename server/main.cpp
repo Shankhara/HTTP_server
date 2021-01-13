@@ -39,5 +39,6 @@ int main(int argc, char *argv[]) {
 	webserv->addFileDescriptor(conf);
 	webserv->start();
 	deleteSingletons();
+	return (0);
 }
 

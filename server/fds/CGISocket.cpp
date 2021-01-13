@@ -34,7 +34,6 @@ void CGISocket::onEvent()
 	}
 }
 
-
 void CGISocket::setPid(pid_t pid) {
 	pid_ = pid;
 }

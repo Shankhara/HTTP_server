@@ -27,6 +27,7 @@ private:
     std::vector<FileDescriptor*>	fds_;
 	int 							fdmax_;
 	fd_set							master_;
+	fd_set							conn_fds_;
     void 							run_();
 	void 							garbageCollector_();
 	Server();
