@@ -61,19 +61,19 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 	Parsing::server		server = this->getDefaultServer();
 	std::vector<stds>	line;
 	std::vector<int>	prop = this->getTableDef();
-	stds				*tmp;
+	stds				tmp;
 	iterator			next;
 
 	while (first != end)
 	{
 		this->skipWhite(&first, end, true);
-		tmp = new stds(getNextLine(&first, end));
+		tmp = getNextLine(&first, end);
 		this->skipWhite(&first, end, true);
-		if (this->parseSemi(tmp) == false && tmp->find("location") == stds::npos)
+		if (this->parseSemi(&tmp) == false && tmp.find("location") == stds::npos)
 			throw (PpE(this->file_, stds("Expected token ;")));
-		if (tmp->find("location") != stds::npos)
+		if (tmp.find("location") != stds::npos)
 		{
-			line = splitWhitespace(stds(*tmp, 0, tmp->size()));
+			line = splitWhitespace(stds(tmp, 0, tmp.size()));
 			if (line.size() < 2)
 				throw (PpE(this->file_, stds("Expected at least 1 argument")));
 			if (line[line.size() - 1] != "{" && *first != '{')
@@ -93,12 +93,10 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 					throw (PpE(this->file_, stds(" duplicated locations ")));
 			first = next + 1;
 			this->skipWhite(&first, end, true);
-			delete tmp;
 			continue;
 		}	
 		else	
-			line = splitWhitespace(stds(*tmp, 0, tmp->size() - 1));
-		delete tmp;
+			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		server = this->returnProps(server, line, &prop);
 	}
 	if (server.names.empty())
