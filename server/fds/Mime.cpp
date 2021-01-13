@@ -27,7 +27,14 @@ void Mime::parseMimeFile()
 		return ;
 
 	while ((nbytes = read(fd_, buf, BUFFER_SIZE)) > 0)
+	{
 		str.append(buf, nbytes);
+		if (str.size() > 512 * 1024)
+		{
+			Log::get(logERROR) << "Unable to read: " << MIME_FILE << " Unexpected size: " << str.size() << std::endl;
+			return ;
+		}
+	}
 	if (nbytes < 0)
 	{
 		Log::get(logERROR) << "Unable to read: " << MIME_FILE << " " << strerror(errno) << std::endl;
@@ -47,6 +54,7 @@ void Mime::parseMimeFile()
         for(size_t i = 0; i < tmp.size(); ++i)
 			mimeTypes_[tmp[i]] = type;
 	}
+	Log::get(logINFO) << MIME_FILE << " loaded: " << mimeTypes_.size() << " entries." << std::endl;
 	Server::getInstance()->unwatch(fd_);
 }
 

@@ -12,7 +12,7 @@
 #include "../Log.hpp"
 
 #define BUFFER_SIZE 32768
-#define  MIME_FILE "/etc/mime.types2"
+#define  MIME_FILE "/etc/mime.types"
 
 class Mime: public FileDescriptor
 {
