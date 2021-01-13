@@ -13,7 +13,7 @@ RespFile::~RespFile() {
 void RespFile::setFilePath_()
 {
 	if (req_.getLocation() == 0)
-		throw 500;
+		throw RespException(500);
 	if (!req_.getLocation()->root.empty())
 		filePath_ = req_.getLocation()->root + req_.getReqTarget();
 	else

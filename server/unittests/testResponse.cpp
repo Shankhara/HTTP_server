@@ -35,30 +35,63 @@ void testRespGet()
 	delete (vhost);
 }
 
-void testRespPut()
+static void requestGenerator(std::string method, std::string reqTarget, std::string headers, std::string
+body)
 {
-	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+    std::vector<Parsing::server> *vhost = createVirtualHosts();
+    Request a(*vhost);
+    unsigned int bufsize = 16 * 1024;
+    char buf[bufsize];
+    Response *resp;
 
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
-	Request ra(*vhost);
-	std::string body = "HTTP is a generic interface protocol for information systems. \
-	It is designed to hide the details of how a service is ...";
-	std::string str = "PUT /test/a.txt HTTP/1.1\r\nHost: webserv\r\nContent-length: " \
-	+ ft_itoa(body.size()) + "\r\n\r\n" + body;
-	ra.doRequest(const_cast<char*>(str.c_str()), str.size());
-
-	unsigned int bufsize = 16 * 1024;
-	char buf[bufsize];
-
-	RespPut respPut(ra, buf, bufsize);
-	assertBuildWithoutException(&respPut, __FUNCTION__ );
-
-	int readSize = respPut.readResponse();
+    std::string str = method +" "+ reqTarget +" HTTP/1.1\r\n"+ headers +"\r\n\r\n" + body;
+    a.doRequest(const_cast<char*>(str.c_str()), str.size());
+    if (method == "GET")
+        resp = new RespGet(a, buf, bufsize);
+    if (method == "POST")
+        resp = new RespPost(a, buf, bufsize);
+    if (method == "PUT")
+        resp = new RespPut(a, buf, bufsize);
+    if (method == "DELETE")
+        resp = new RespDelete(a, buf, bufsize);
+    if (method == "OPTIONS")
+        resp = new RespOptions(a, buf, bufsize);
+    if (method == "TRACE")
+        resp = new RespTrace(a, buf, bufsize);
+	size_t readSize = resp->readResponse();
 	Log::get(logDEBUG) << "READ " << readSize << std::endl;
 	buf[readSize] = '\0';
 	std::cout << "|" << buf << "|" << std::endl;
-	delete (vhost);
+//    if (!assertBuildWithoutException(resp, __FUNCTION__ ))
+  //      return;
+    delete (vhost);
 }
+
+//void testRespPut()
+//{
+//	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
+//
+//	std::string body = "HTTP is a generic interface protocol for information systems. \
+//	It is designed to hide the details of how a service is ...";
+//    std::string method = "PUT";
+//	std::string reqTarget = "/test/a.txt";
+//    std::string headers = "HTTP/1.1\r\nHost: webserv\r\nContent-length: " + ft_itoa(body.size());
+//	std::string str = method + reqTarget + headers + "\r\n\r\n" + body;
+//	requestGenerator("PUT", "test/a.txt",\
+//	"HTTP/1.1\r\nHost: webserv\r\nContent-length: " + ft_itoa(body.size()), body);
+//
+//	unsigned int bufsize = 16 * 1024;
+//	char buf[bufsize];
+//
+//	RespPut respPut(ra, buf, bufsize);
+//	assertBuildWithoutException(&respPut, __FUNCTION__ );
+//
+//	size_t readSize = respPut.readResponse();
+//	Log::get(logDEBUG) << "READ " << readSize << std::endl;
+//	buf[readSize] = '\0';
+//	std::cout << "|" << buf << "|" << std::endl;
+//	delete (vhost);
+//}
 
 void testRespPost()
 {
@@ -308,16 +341,23 @@ void testRespDelete()
     std::cout << "|" << buf << "|" << std::endl;
 }
 
+void tester()
+{
+    requestGenerator("GET", "index.html", "host: localhost:8080", "");
+
+}
+
 void testResponse()
 {
-	testRespPut();
-    testRespGet();
-	testRespPost();
- 	testRespTrace();
-	testRespOptions();
-	testRespError();
-	testMimeType();
-	testNegotiateContentLang();
-    testNegotiateAcceptLang();
-    testRespDelete();
+    tester();
+//	testRespPut();
+//    testRespGet();
+//	testRespPost();
+// 	testRespTrace();
+//	testRespOptions();
+//	testRespError();
+//	testMimeType();
+//	testNegotiateContentLang();
+//    testNegotiateAcceptLang();
+//    testRespDelete();
 }
