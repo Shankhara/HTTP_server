@@ -40,6 +40,7 @@ public:
     void 				stop();
 	void 				deleteFileDescriptor(int);
 	void 				unwatch(int);
+	bool 				isRunning();
 };
 
 #endif

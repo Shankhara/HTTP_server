@@ -31,7 +31,7 @@ class Listener;
 class Client: public FileDescriptor {
 
 private:
-	FileDescriptor						*CGIResponse_;
+	FileDescriptor						*CGISocket_;
 	Response							*resp_;
 	Request								*request_;
 	const Listener						&listener_;

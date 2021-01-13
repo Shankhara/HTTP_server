@@ -90,6 +90,7 @@ FileDescriptor *CGIExec::run()
 	}
 	if (cpid == 0)
 	{
+		signal(SIGINT, SIG_IGN);
 		pipeSTDOUT_(pipeOUT);
 		pipeSTDIN_(pipeIN);
 		if (chdir(location->root.c_str()) == -1)
@@ -110,7 +111,6 @@ FileDescriptor *CGIExec::run()
 			Log::get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size() << std::endl;
 			write(pipeIN[1], body.c_str(), body.size());
 		}
-		//client_.flushRequest();
 		pSocket->setPid(cpid);
 		close(pipeOUT[1]);
 		close(pipeIN[1]);

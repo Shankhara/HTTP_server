@@ -3,7 +3,7 @@
 char Client::buf_[CLIENT_BUFFER_SIZE];
 
 Client::Client(int fd, const Listener &l): listener_(l) {
-	CGIResponse_ = 0;
+	CGISocket_ = 0;
 	resp_ = 0;
 	request_ = 0;
 	fd_ = fd;
@@ -140,7 +140,7 @@ void Client::doStaticFile_() {
 }
 
 void Client::doCGI_() {
-	if (CGIResponse_ != 0)
+	if (CGISocket_ != 0)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " CGIResponse is already set for client " << fd_ << std::endl;
 		return ;
@@ -151,12 +151,12 @@ void Client::doCGI_() {
 		return sendResponse(&resp);
 	}
 	CGIExec exec = CGIExec(*this);
-	CGIResponse_ = exec.run();
-	Server::getInstance()->addFileDescriptor(CGIResponse_);
-	if (CGIResponse_ == 0) {
+	CGISocket_ = exec.run();
+	if (CGISocket_ == 0) {
 		RespError resp(500, *request_, buf_, CLIENT_BUFFER_SIZE);
-		sendResponse(&resp);
+		return sendResponse(&resp);
 	}
+	Server::getInstance()->addFileDescriptor(CGISocket_);
 }
 
 Request &Client::getRequest() {
@@ -176,8 +176,9 @@ void Client::clear_() {
 		delete(resp_);
 		resp_ = 0;
 	}
-	if (CGIResponse_ != 0) {
-		Server::getInstance()->deleteFileDescriptor(CGIResponse_->getFd());
-		CGIResponse_ = 0;
+	if (CGISocket_ != 0) {
+		if (Server::getInstance()->isRunning())
+			Server::getInstance()->deleteFileDescriptor(CGISocket_->getFd());
+		CGISocket_ = 0;
 	}
 }

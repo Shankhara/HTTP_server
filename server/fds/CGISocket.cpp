@@ -6,18 +6,17 @@ CGISocket::CGISocket(int fd, Client &client): client_(client)
 {
 	fd_ = fd;
 	lastEventTimer_ = 0;
-	Log::get(logDEBUG) << "Creating CGIResponse: " << fd_ << " From Client " << client_.getFd() << std::endl;
+	Log::get(logDEBUG) << "Creating CGISocket: " << fd_ << " From Client " << client_.getFd() << std::endl;
 	instances++;
 }
 
 CGISocket::~CGISocket()
 {
 	int status;
-
 	pid_t result = waitpid(pid_, &status, WNOHANG);
 	if (result == 0)
 		kill(pid_, 9);
-	Log::get(logDEBUG) << "CGIResponse deleted " << fd_ << std::endl;
+	Log::get(logDEBUG) << "CGISocket deleted " << fd_ << std::endl;
 	instances--;
 }
 

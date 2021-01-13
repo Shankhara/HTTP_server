@@ -28,5 +28,5 @@ std::string ft_itoa(unsigned long);
 size_t strHexToInt(std::string str);
 std::vector<std::string> explode(const std::string &, const char &);
 std::vector<std::string> explode(const std::string &, const char &, size_t);
-
+void signalHandler(int);
 #endif

@@ -96,6 +96,7 @@ void Server::unwatch(int fd) {
 	FD_CLR(fd, &master_);
 }
 
+
 void Server::halt_() {
 	for (int i = 0; i <= fdmax_; i++)
 	{
@@ -108,5 +109,9 @@ void Server::halt_() {
 	std::cerr.clear();
 	std::cerr << "\b\b";
 	Log::get(logINFO) << "Webserv exiting gracefully (FD_MAX: " << fdmax_ << ")" << std::endl;
+}
+
+bool Server::isRunning() {
+	return !shutdown_;
 }
 

@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		std::cerr << "Usage : webserv [./example.conf]" << std::endl;
 		return (EXIT_FAILURE);
 	}
-	signal(SIGCHLD,SIG_IGN);
+	signal(SIGCHLD, SIG_IGN);
 	signal(SIGINT, signalHandler);
 	if (argc == 1)
 		conf = new Configuration(DEFAULT_PATH);
