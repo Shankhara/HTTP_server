@@ -61,7 +61,7 @@ void Server::addFileDescriptor(FileDescriptor *fd) {
 
 void Server::deleteFileDescriptor(int fd) {
 	Log::get(logDEBUG) << __PRETTY_FUNCTION__  << " " << fd << std::endl;
-	FD_CLR(fd, &master_);
+	unwatch(fd);
 	delete fds_[fd];
 }
 
@@ -97,5 +97,9 @@ void Server::garbageCollector_()
 			}
 		}
 	}
+}
+
+void Server::unwatch(int fd) {
+	FD_CLR(fd, &master_);
 }
 

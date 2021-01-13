@@ -5,11 +5,18 @@ Configuration::Configuration(std::string path): configPath_(path) {}
 Configuration::~Configuration() {}
 
 void Configuration::onEvent() {
-	char buf[8192];
-	int		ret;
-	std::string config;
-	while ((ret = read(this->getFd(), buf, 8191)) > 0)
+	char			buf[8192];
+	int				ret;
+	std::string		config;
+	while ((ret = read(this->getFd(), buf, 8191)) > 0){
 		config.append(buf, ret);
+		if (config.size() > 1024 * 1024)
+		{
+			Log::get(logERROR) << "Unexpected config file size: " << config.size() << std::endl;
+			ret = -1;
+			break ;
+		}
+	}
 	if (ret == -1)
 		shutdown_();
 	Parsing::getInstance()->setFile(configPath_);
@@ -42,7 +49,6 @@ int Configuration::openFile() {
 		Log::get(logERROR) << " Unable to open: " << configPath_ << " : " << strerror(errno) << std::endl;
 		return (fd_);
 	}
-
 	return (0);
 }
 

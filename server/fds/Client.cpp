@@ -108,7 +108,6 @@ void Client::sendResponse(Response *resp) {
 }
 
 void Client::responseFactory_() {
-	// TODO: factory just like CPPdays to avoid if else branching?
 	if (request_->getMethod() == "GET")
 		resp_ = new RespGet(*request_, buf_, CLIENT_BUFFER_SIZE);
 	else if (request_->getMethod() == "POST")
