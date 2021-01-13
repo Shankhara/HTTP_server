@@ -11,7 +11,6 @@ public:
 	Configuration(std::string configPath);
 	void onEvent();
 	int openFile();
-	void shutdown_();
 
 private:
 	std::string configPath_;

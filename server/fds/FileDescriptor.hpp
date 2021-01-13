@@ -19,9 +19,6 @@ public:
 	int getFd() const {
 		return fd_;
 	}
-	void setFd(int fd) {
-		fd_ = fd;
-	}
 	unsigned long getLastEventTimer() const {
 		return (lastEventTimer_);
 	}

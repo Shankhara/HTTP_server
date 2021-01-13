@@ -146,10 +146,9 @@ void Client::doCGI_() {
 		return ;
 	}
 	if (CGISocket::instances > MAX_CGI_FORKS) {
-		Log::get(logERROR) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
+		Log::get(logINFO) << __FUNCTION__ << "Too many CGIRunning, bounce this client: " << fd_ << std::endl;
 		RespError resp(503, *request_, buf_, CLIENT_BUFFER_SIZE);
-		sendResponse(&resp);
-		return Server::getInstance()->deleteFileDescriptor(fd_);
+		return sendResponse(&resp);
 	}
 	CGIExec exec = CGIExec(*this);
 	CGIResponse_ = exec.run();

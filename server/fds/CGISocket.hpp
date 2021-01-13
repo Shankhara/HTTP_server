@@ -12,8 +12,6 @@
 #include "../responses/Response.hpp"
 #include "../responses/RespCGI.hpp"
 
-#define BUFFER_SIZE 32768
-
 class Client;
 
 class CGISocket: public FileDescriptor {

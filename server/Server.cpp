@@ -3,7 +3,6 @@
 Server* Server::instance_ = 0;
 
 Server::~Server() {
-	Log::get(logINFO) << "FD_MAX at shutdown: " << fdmax_ << std::endl;
 	halt_();
 }
 
@@ -108,6 +107,6 @@ void Server::halt_() {
 	}
 	std::cerr.clear();
 	std::cerr << "\b\b";
-	Log::get(logINFO) << "Webserv exiting gracefully." << std::endl;
+	Log::get(logINFO) << "Webserv exiting gracefully (FD_MAX: " << fdmax_ << ")" << std::endl;
 }
 
