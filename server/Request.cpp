@@ -210,7 +210,6 @@ int Request::parseHeadersContent()
 			if (ret == std::string::npos)
 				return 406;
 		}
-		headerAcceptCharset_ = tmp;
 	}
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
     {
@@ -243,8 +242,6 @@ int Request::parseHeadersContent()
         headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
-	if (!headersRaw_[CONTENT_LOCATION].empty())
-		headerContentLocation_ = removeSpaces(headersRaw_[CONTENT_LOCATION]);
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = removeSpaces(headersRaw_[CONTENT_TYPE]);
     //RESPONSE HEADER
@@ -449,9 +446,6 @@ std::string Request::getHeaderReferer() const
 int Request::getHeaderContentLength() const
 { return (headerContentLength_); }
 
-std::string Request::getHeaderContentLocation() const
-{ return (headerContentLocation_); }
-
 std::vector<std::string> Request::getHeaderAcceptLanguage() const
 { return (headerAcceptLanguage_); }
 
@@ -464,10 +458,8 @@ std::string Request::getHeaderContentType() const
 const std::vector<std::string> &Request::getCGIHeaders() const
 { return cgiHeaders_; }
 
-const std::string &Request::getOriginalReqTarget() const {
-	return originalReqTarget_;
-}
+const std::string &Request::getOriginalReqTarget() const
+{ return originalReqTarget_; }
 
-const std::string &Request::getHeaderUserAgent() const {
-	return headerUserAgent_;
-}
+const std::string &Request::getHeaderUserAgent() const
+{ return headerUserAgent_; }
