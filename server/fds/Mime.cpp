@@ -72,13 +72,11 @@ std::string Mime::getFilename(std::string & param) const
 std::string Mime::getContentType(std::string & param)
 {
 	std::string ext = getExtension(getFilename(param));
-	std::map<std::string, std::string>::iterator it;
     if(!ext.empty())
 	{
-			it = mimeTypes_.find(ext);
-			if (it != mimeTypes_.end())
-				return (it->second);
+		if (mimeTypes_[ext].empty())
 			return "application/octet-stream";
+		return mimeTypes_[ext];
 	}
     return "application/octet-stream";
 }
