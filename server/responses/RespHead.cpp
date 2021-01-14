@@ -18,7 +18,16 @@ void RespHead::append_(const char str[], unsigned int size) {
 }
 
 int RespHead::readResponse() {
-	return RespGet::readResponse();
+	nbytes_ = 0;
+
+	if (fd_ == 0)
+		return (writeAutoIndex_(location_->root + reqTarget_));
+	else
+	{
+		if (!headersBuilt_)
+			writeHeaders_();
+	}
+	return nbytes_;
 }
 
 void RespHead::build() {

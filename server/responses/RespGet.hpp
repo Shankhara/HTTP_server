@@ -14,7 +14,7 @@
 
 class RespGet: public RespFile
 {
-private:
+protected:
 	size_t payLoadSize_;
 	std::string autoIndexBody_;
 	const Parsing::location *location_;
