@@ -192,14 +192,7 @@ void CGIExec::setEnv_(int name, const std::string &c)
 }
 
 void CGIExec::write500() {
-	static char buf[2048];
-	int nbytes;
-
-	RespError err(500, request_, buf, 2048);
-	while ((nbytes = err.readResponse()) > 0)
-	{
-		write(STDOUT_FILENO, buf, nbytes);
-	}
+	write(STDOUT_FILENO, "Status: ", 8);
 	exit(EXIT_FAILURE);
 }
 
