@@ -108,19 +108,18 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 	Parsing::location	location = this->getDefaultLocation();
 	std::vector<stds>	line;
 	std::vector<int>	prop = this->getTableDef();
-	stds				*tmp;
+	stds				tmp;
 	
 	location.name = name;
 	while (first != end)
 	{
 		this->skipWhite(&first, end, true);
-		tmp = new stds(getNextLine(&first, end));
+		tmp = getNextLine(&first, end);
 		this->skipWhite(&first, end, true);
-		if (this->parseSemi(tmp) == false)
+		if (this->parseSemi(&tmp) == false)
 			throw (PpE(this->file_, stds("Expected token ;")));
-		line = splitWhitespace(stds(*tmp, 0, tmp->size() - 1));
+		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line, &prop);
-		delete tmp;
 	}
 	return location;
 }
