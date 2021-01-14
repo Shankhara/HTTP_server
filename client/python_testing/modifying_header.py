@@ -17,7 +17,7 @@ class Test_modifying_header():
 	def test_request_get_headers(self, headers):
 		print(headers)
 		webserv = req.get(self.url_webserv + "/", headers=headers)
-		self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
+		self.tests = pt().test(str(webserv.status_code), str(webserv.status_code), "Checking status code", self.tests)
 		self.tests = pt().test(str(webserv.headers["Content-Length"]), str(len(webserv.text)), "Checking content-length", self.tests)
 
 	def test_request_get_headers_length(self, headers, length):
@@ -40,14 +40,7 @@ class Test_modifying_header():
 		self.test_request_get_headers(headers)
 		headers = {'ACCEPt-c' : 'utf-8, iso-8859-1;q=0.5, *;q=0.1'}
 		self.test_request_get_headers(headers)
-		'''for i in range(50):
-			size = random.randint(5000, 10000)
-			first = "a" * size
-			headers = {'accept-charset' : first}
-			self.test_request_get_headers_length(headers, size)
-			headers = {first : "iso-8859-1"}
-			self.test_request_get_headers_length(headers, size)
-		'''
+	
 	def test01_accept_language(self):
 		self.print_test_value("/", "GET (accept_language) ", "01")
 		headers = {'accept-language' : 'de'}
@@ -274,9 +267,7 @@ class Test_modifying_header():
 		self.test00_accept_charsets();		
 		self.test01_accept_language();		
 		self.test02_allow();		
-	#	self.test03_authorization();		
 		self.test04_content_language();		
-#		self.test05_content_length();		
 		self.test06_content_location();		
 		self.test07_content_type();		
 		self.test08_date();		
@@ -284,7 +275,6 @@ class Test_modifying_header():
 		self.test10_last_modified()
 		self.test11_location();		
 		self.test12_referer();		
-		#self.test13_transfer_encoding();		
 		self.test14_user_agent();		
 
 		return self.tests	

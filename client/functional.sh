@@ -7,6 +7,8 @@ clear
 
 echo "Building new image for nginx and webserv"
 
+#sudo apt-get install pip3
+pip3 install requests
 cd ../server/ && make
 cp webserv ../client/build/webserv
 cd ../client/build/ft_ubuntu
@@ -31,4 +33,6 @@ echo "Running test"
 cd ../../python_testing
 #cd python_testing
 python3 -W ignore main.py #> file.log
+docker stop ft_nginx > /dev/null 2>&1
+docker stop ft_webserv > /dev/null 2>&1
 #cat file.log

@@ -19,14 +19,14 @@ class Test_other_request():
 
 	def test01_head(self):
 		self.print_test_value("/", "HEAD", "01")
-		for i in range(100):
+		for i in range(200):
 			webserv = req.head(self.url_webserv + "/")
 			self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
 			self.tests = pt().test(webserv.text, "", "Checking for empty content", self.tests)
 
 	def test02_put(self):
 		self.print_test_value("/{number}", "PUT (creating file)", "02")
-		for i in range (100):
+		for i in range (200):
 			webserv = req.put(self.url_webserv + "/" + str(i), data="put content unchanged")	
 			self.tests = pt().test(str(webserv.status_code), "201", "Checking status code", self.tests)
 			webserv = req.get(self.url_webserv + "/" + str(i))
@@ -35,7 +35,7 @@ class Test_other_request():
 
 	def test03_put(self):
 		self.print_test_value("/{number}", "PUT (modifying file)", "03")
-		for i in range (100):
+		for i in range (200):
 			webserv = req.put(self.url_webserv + "/" + str(i), data="put content")	
 			self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
 			webserv = req.get(self.url_webserv + "/" + str(i))
@@ -45,7 +45,7 @@ class Test_other_request():
 
 	def test04_put(self):
 		self.print_test_value("/post/{number}", "PUT (modifying file)", "04")
-		for i in range (100):
+		for i in range (200):
 			webserv = req.put(self.url_webserv + "/post/" + str(i), data="put content")	
 			self.tests = pt().test(str(webserv.status_code), "201", "Checking status code", self.tests)
 			webserv = req.get(self.url_webserv + "/post/" + str(i))
@@ -55,7 +55,7 @@ class Test_other_request():
 	def test05_delete(self):
 		self.print_test_value("/{number}", "DELETE", "05")
 	
-		for i in range (50):	
+		for i in range (200):	
 			test_url_webserv = self.url_webserv + "/" + str(i);	
 			res = req.get(test_url_webserv)
 			self.tests = pt().test(str(res.status_code), "200", "Checking status code of get /" + str(i), self.tests)
@@ -68,7 +68,7 @@ class Test_other_request():
 	def test06_delete(self):
 		self.print_test_value("/post/{number}", "DELETE", "06")
 	
-		for i in range (50):	
+		for i in range (200):	
 			test_url_webserv = self.url_webserv + "/post/" + str(i);	
 			res = req.get(test_url_webserv)
 			self.tests = pt().test(str(res.status_code), "200", "Checking status code of get /" + str(i), self.tests)
@@ -78,27 +78,12 @@ class Test_other_request():
 			res = req.get(test_url_webserv)
 			self.tests = pt().test(str(res.status_code), "404", "Checking status code of get after deleting file", self.tests)
 
-
-	def test07_options(self):
-		self.print_test_value("/", "OPTIONS", "07")
-		#for i in range (50):
-#		webserv = req.options(self.url_webserv + "/")
-		nginx = req.options(self.url_nginx + "/")
-		print(nginx.headers)	
-#		print(webserv.headers)	
-		print(nginx.text)
-#		print(webserv.text)	
-		print(nginx.status_code)	
-#		print(webserv.status_code)	
-		
-
 	def test_simple_other_request(self):
-	#	self.test00_trace()
+		self.test00_trace()
 		self.test01_head()
 		self.test02_put()
 		self.test03_put()
 		self.test04_put()
 		self.test05_delete()
 		self.test06_delete()
-#		self.test07_options()
 		return self.tests	

@@ -1,5 +1,5 @@
 import requests as req
-import grequests as greq
+#import grequests as greq
 import random
 
 from printing_test import Printing_test as pt
@@ -42,6 +42,6 @@ class Test_advanced_get():
 	
 	def test_advanced_get(self):
 		self.test00_get()
-		self.test01_get()
+#		self.test01_get()
 		self.test02_get()
 		return self.tests	
