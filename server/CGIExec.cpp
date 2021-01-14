@@ -105,13 +105,18 @@ FileDescriptor *CGIExec::run()
 	else
 	{
 		close(pipeIN[0]);
+		pSocket->setPid(cpid);
 		const std::string &body = client_.getRequest().getBody();
 		if (!body.empty())
 		{
-			Log::get(logDEBUG) << __FUNCTION__  << " BODY SIZE:" << body.size() << std::endl;
-			write(pipeIN[1], body.c_str(), body.size());
+			int ret = write(pipeIN[1], body.c_str(), body.size());
+			if (ret < 0 || (ret == 0 && body.size() != 0))
+			{
+				Log::get(logERROR) << "Unable to write to CGISocket " << strerror(errno) << std::endl;
+				delete (pSocket);
+				pSocket = 0;
+			}
 		}
-		pSocket->setPid(cpid);
 		close(pipeOUT[1]);
 		close(pipeIN[1]);
 	}
