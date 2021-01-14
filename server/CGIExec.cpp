@@ -197,7 +197,10 @@ void CGIExec::setEnv_(int name, const std::string &c)
 }
 
 void CGIExec::write500() {
-	write(STDOUT_FILENO, "Status: ", 8);
+	int ret;
+	ret = write(STDOUT_FILENO, "Status: ", 8);
+	if (ret == -1||ret == 0)
+		Log::get(logERROR) << "Unable to notify parent process " << strerror(errno) << std::endl;
 	exit(EXIT_FAILURE);
 }
 
