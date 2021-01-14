@@ -125,7 +125,7 @@ FileDescriptor *CGIExec::run()
 
 void CGIExec::exec_(const std::string &bin, const std::string &filename)
 {
-	static char * cmd[3];
+	static char *cmd[3];
 
 	cmd[0] = const_cast<char *>(bin.c_str());
 	cmd[1] = const_cast<char *>(filename.c_str());
