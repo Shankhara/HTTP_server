@@ -12,7 +12,6 @@ void RespOptions::makeResponse_()
         writeAllow_ ();
         writeContentLength_ (0);
         writeHeadersEnd_ ();
-        writeHeadersEnd_ ();
     }
 }
 
