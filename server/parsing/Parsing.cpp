@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/14 05:16:59 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/14 05:30:04 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,7 +374,6 @@ Parsing::server		Parsing::getDefaultServer()
 {
 	Parsing::server server;
 
-	server.names.push_back(stds("default"));
 	server.port = 80;
 	server.host = "127.0.0.1";
 	server.root = "";
