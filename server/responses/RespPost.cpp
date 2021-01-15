@@ -8,20 +8,6 @@ RespPost::RespPost(const Request &r, char buf[], unsigned int bufSize) : RespFil
 
 RespPost::~RespPost() { }
 
-void RespPost::manageFile_()
-{
-	struct stat	st;
-
-	if (createDirectories_(filePath_) == -1)
-		throw RespException(500);
-
-	int ret = stat(filePath_.c_str(), &st);
-	if (ret == -1)
-		statusCode_ = 201;
-
-	openFiles_(O_CREAT | O_APPEND | O_WRONLY, 404);
-}
-
 void RespPost::makeResponse_()
 {
 	initHeaders();
@@ -54,5 +40,5 @@ void RespPost::build()
 {
 	setFilePath_();
 	negotiateContentLang_();
-	manageFile_();
+	reachResource_();
 }

@@ -15,10 +15,11 @@ protected:
 	void negotiateContentLang_();
 	void writeFiles_();
 	void openFiles_(int, int);
+    void reachResource_();
 
 private:
 	std::vector<int> fds_;
-};
 
+};
 
 #endif //WEBSERV_RESPFILES_HPP
