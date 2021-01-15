@@ -203,13 +203,14 @@ int Request::parseHeadersContent()
 	{
 		std::string tmp = removeSpaces(headersRaw_[ACCEPT_CHARSET]);
   		std::transform(tmp.begin(), tmp.end(), tmp.begin(), ft_tolower);
-        size_t ret = tmp.find("utf-8");
-		if (ret == std::string::npos)
-		{
-            ret = tmp.find("*");
-			if (ret == std::string::npos)
-				return 406;
-		}
+  		std::vector<std::string> vec_tmp = explode(tmp, ',');
+        for(size_t i = 0; i < vec_tmp.size(); ++i)
+        {
+            if (!vec_tmp[i].compare("utf-8") || !vec_tmp[i].compare("*"))
+                break;
+            if (i == vec_tmp.size() - 1)
+                return 406;
+        }
 	}
 	if (!headersRaw_[ACCEPT_LANGUAGE].empty())
     {
