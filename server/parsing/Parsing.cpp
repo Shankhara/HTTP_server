@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/14 05:30:04 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 03:23:07 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		pos = line[1].find(stds(":"));
 		if (pos != stds::npos)
 		{
-			listen = line[1].substr(pos + 1, line[1].size());		
+			listen = line[1].substr(pos + 1, line[1].size());
 			if (to_int(listen.c_str(), listen.size()) < 0 || to_int(listen.c_str(), listen.size()) > 65535)
 				throw (PpE(this->file_, stds("Port can't be 0")));
 			server.port = to_int(listen.c_str(), listen.size());
@@ -153,6 +153,8 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			server.host = line[1];
 		if (server.host == stds("*"))
 			server.host = stds("0.0.0.0");
+		if (server.host == stds("localhost"))
+			server.host = stds("127.0.0.1");
 		if (server.host.size() < 6)	
 			throw (PpE(this->file_, stds("invalid host")));
 	}
