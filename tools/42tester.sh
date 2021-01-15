@@ -30,7 +30,7 @@ echo "server {
 		method POST;
 		client_max_body_size 100;
 	}
-	location /directory {
+	location /directory/ {
 		method GET POST;
 		cgi_extension .bla;
 		cgi_path ${WEBSERV}/ubuntu_cgi_tester;

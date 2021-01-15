@@ -10,22 +10,7 @@ RespGet::~RespGet(){}
 
 void RespGet::reachResource_()
 {
-	struct stat st;
-	if (stat(filePath_.c_str(), &st) == -1)
-		throw RespException(404);
-	int isDir = S_ISDIR(st.st_mode);
-	if (isDir)
-	{
-		if (filePath_[filePath_.size() -1] != '/')
-			filePath_ += '/';
-		if (location_->index.empty())
-            throw RespException(404);
-		filePath_ += location_->index;
-	}
 	openFile_(O_RDONLY, 404);
-	if (isDir)
-		fstat(fd_, &st);
-	payLoadSize_ = st.st_size;
 }
 
 
@@ -34,7 +19,7 @@ void RespGet::writeHeaders_()
 {
 	initHeaders();
 	writeContentType_(filePath_);
-	writeContentLength_(payLoadSize_);
+	writeContentLength_(fileSize_);
     if (acceptLangNegotiated_)
     {
         writeThisHeader_("Content-Location", filePath_);

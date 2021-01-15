@@ -82,7 +82,7 @@ int Listener::addServer(const Parsing::server &s) {
 		Log::get(logDEBUG) << __FUNCTION__  << " this host:port doesnt belong to this listener: " << s.host << ":" << s.port << std::endl;
 		return (1);
 	}
-	Log::get(logINFO) << __FUNCTION__  << " > " << s.host << ":" << s.port << " add virtualhost: " << s.names[0] << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
+	Log::get(logINFO) << __FUNCTION__  << " > " << s.host << ":" << s.port << " add virtualhost: " << s.names[0] << std::endl;
 	servers_.push_back(s);
 	return (0);
 }

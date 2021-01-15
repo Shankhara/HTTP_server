@@ -10,11 +10,13 @@ class RespFile : public Response
 	protected:
 	virtual void setFilePath_();
 	int fd_;
+	size_t fileSize_;
 	int payloadCursor_;
 	bool acceptLangNegotiated_;
 	std::string payload_;
 	std::string filePath_;
-    std::vector<std::string> langFilePath_;
+protected:
+	std::vector<std::string> langFilePath_;
     int createDirectories_ (const std::string & str);
 	void openFile_(int exceptionStatus, int flags);
 	int	read_();

@@ -23,13 +23,17 @@ echo "server {
 	listen 127.0.0.1:8080;
 	server_name localhost;
 	error_page 404 ${DIR}/errors/404.html;
+	root /tmp;
 	location / {
 		index index.html;
 		root ${DIR};
 	}
 	location /autoindex {
 		autoindex on;
-		root /tmp;
+	}
+	location /auth {
+		auth_basic on;
+		autoindex on;
 	}
 }" > ${WEBSERV}/static.conf
 echo "Building Webserv"

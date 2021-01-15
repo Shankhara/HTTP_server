@@ -27,8 +27,7 @@ void Client::onEvent()
 			Log::get(logERROR) << __FUNCTION__ << "Client " << fd_ << " recv error" << strerror(errno) << std::endl;
 		else
 			Log::get(logDEBUG) << __FUNCTION__ << "Client " << fd_ << " client closed connection" << std::endl;
-		Server::getInstance()->deleteFileDescriptor(fd_);
-		return ;
+		return Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 	constructRequest(buf_, nbytes);
 }
@@ -131,7 +130,10 @@ void Client::responseFactory_() {
 		resp_->build();
 	} catch (RespException &e) {
 		delete resp_;
-		resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
+		if (e.getStatusCode() == 301)
+			resp_ = new RespError(e.getStatusCode(), e.getLocation(), *request_, buf_, CLIENT_BUFFER_SIZE);
+		else
+			resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
 
 	}
 }

@@ -8,11 +8,14 @@ class RespException: public std::exception {
 
 private:
 	int statusCode_;
+	std::string location_;
 
 public:
 	RespException(int);
+	RespException(int, std::string);
 	virtual const char *what() const throw();
 	int getStatusCode() const;
+	const std::string &getLocation() const;
 	virtual ~RespException() throw();
 };
 

@@ -3,6 +3,7 @@
 RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize), fd_(0)
 {
 	payloadCursor_ = 0;
+	fileSize_ = 0;
 }
 
 RespFile::~RespFile() {
@@ -19,6 +20,14 @@ void RespFile::setFilePath_()
 	else
 		filePath_ = req_.getServer()->root + req_.getReqTarget();
 	prefixFilePathWithAcceptLang_();
+	struct stat st;
+	int ret = stat(filePath_.c_str(), &st);
+	if (ret == -1)
+		return ;
+	int isDir = S_ISDIR(st.st_mode);
+	if (isDir)
+		throw RespException(301, filePath_ + "/");
+	fileSize_ = st.st_size;
 }
 
 void RespFile::openFile_(int flags, int exceptionCode)
@@ -83,3 +92,4 @@ void RespFile::prefixFilePathWithAcceptLang_()
 		return;
 	}
 }
+
