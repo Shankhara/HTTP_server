@@ -27,6 +27,10 @@ echo "server {
 		index index.html;
 		root ${DIR};
 	}
+	location /autoindex {
+		autoindex on;
+		root /tmp;
+	}
 }" > ${WEBSERV}/static.conf
 echo "Building Webserv"
 

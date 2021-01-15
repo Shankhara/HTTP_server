@@ -105,7 +105,7 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		server = this->returnProps(server, line, &prop);
 	}
-	for (size_t i = 0; i < server.locations.size() - 1; i++)
+	for (size_t i = 0; i < server.locations.size(); i++)
 		if (server.locations[i].client_max_body_size == 536870912)
 			server.locations[i].client_max_body_size = server.client_max_body_size;	
 	if (server.names.empty())

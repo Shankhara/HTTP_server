@@ -1,6 +1,6 @@
 #include "RespGet.hpp"
 
-std::string	RespGet::returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat t_stat)
+std::string	RespGet::returnLineTemplate_(stds body, std::list<stds>::iterator first, struct stat)
 {
 	size_t						size;
 	std::string					space;
@@ -23,7 +23,7 @@ std::string	RespGet::returnLineTemplate_(stds body, std::list<stds>::iterator fi
 	body += tmp;
 	body += "</a>";
 	body += space;
-	tmp = stds(asctime(localtime(&t_stat.st_ctime)));
+	tmp = "-";
 	tmp = tmp.substr(0, tmp.size() - 1);
 	body += tmp;
 	space.resize(19, ' ');	
