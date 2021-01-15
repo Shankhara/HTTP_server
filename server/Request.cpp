@@ -264,7 +264,7 @@ int Request::parseHeadersContent()
 		headerTransferEncoding_ = removeSpaces(headersRaw_[TRANSFER_ENCODING]);
 	}
 	headers_parsed = true;
-	if ((statusCode_ = accessControl_()) >= 400)
+	if ((statusCode_ = accessControl_()) >= 300)
 		return statusCode_;
 	if (headersRaw_[CONTENT_LENGTH].empty() && headersRaw_[TRANSFER_ENCODING].empty())
 		return 200;
@@ -273,18 +273,20 @@ int Request::parseHeadersContent()
 
 int Request::accessControl_()
 {
+	originalReqTarget_ = requestLine_[REQTARGET];
+
 	if (server_ == 0)
 		server_ = matchServer_();
 	location_ = matchLocation_(server_);
 	if (location_ == 0)
 		return 403;
+	if (location_->name == requestLine_[REQTARGET] + "/")
+		return 301;
 	if (!isMethodAuthorized_(location_))
 		return 405;
 	if (!isAuthenticated_(location_))
 		return 401;
 
-	// TODO: this code doesnt really belong here
-	originalReqTarget_ = requestLine_[REQTARGET];
 	if (!location_->root.empty())
 	{
 		requestLine_[REQTARGET] = std::string(requestLine_[REQTARGET], \
@@ -372,7 +374,9 @@ const Parsing::location *Request::matchLocation_(const Parsing::server *server) 
 
 	for (unsigned long j = 0; j < server->locations.size(); j++)
 	{
-		if (getReqTarget().rfind(server->locations[j].name, 0) == 0) 
+		if (std::string(getReqTarget() + "/") == server->locations[j].name)
+			return (&server->locations[j]);
+		if (getReqTarget().rfind(server->locations[j].name, 0) == 0)
 		{
 			if (server->locations[j].name.size() > minSize)
 			{

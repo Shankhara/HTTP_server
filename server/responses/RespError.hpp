@@ -7,7 +7,6 @@ class RespError: public RespFile
 
 private:
 	size_t	payloadSize_;
-	std::string location_;
 	void 	setFilePath_();
 	void 	writeDefaultErrorPage_(int statusCode);
 	void 	writeStatusRelatedHeaders_();
@@ -15,7 +14,6 @@ private:
 
 public:
 	RespError(int, const Request &r, char [], unsigned int);
-	RespError(int, std::string,  const Request &r, char [], unsigned int);
 	~RespError();
 	int readResponse();
 	void build();

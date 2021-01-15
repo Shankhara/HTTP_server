@@ -2,7 +2,6 @@
 
 RespException::RespException(int status): statusCode_(status) {}
 
-RespException::RespException(int status, std::string loc): statusCode_(status), location_(loc) {}
 
 RespException::~RespException() throw() {}
 

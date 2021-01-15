@@ -12,7 +12,6 @@ private:
 
 public:
 	RespException(int);
-	RespException(int, std::string);
 	virtual const char *what() const throw();
 	int getStatusCode() const;
 	const std::string &getLocation() const;

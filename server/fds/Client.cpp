@@ -36,7 +36,7 @@ void Client::constructRequest(char buf[], int nbytes) {
 	int statusCode;
 
 	statusCode = request_->doRequest(buf, nbytes);
-	if (statusCode >= 400)
+	if (statusCode >= 300)
 	{
 		RespError resp(statusCode, *request_, buf_, CLIENT_BUFFER_SIZE);
 		sendResponse(&resp);
@@ -130,11 +130,7 @@ void Client::responseFactory_() {
 		resp_->build();
 	} catch (RespException &e) {
 		delete resp_;
-		if (e.getStatusCode() == 301)
-			resp_ = new RespError(e.getStatusCode(), e.getLocation(), *request_, buf_, CLIENT_BUFFER_SIZE);
-		else
-			resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
-
+		resp_ = new RespError(e.getStatusCode(), *request_, buf_, CLIENT_BUFFER_SIZE);
 	}
 }
 

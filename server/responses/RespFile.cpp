@@ -26,7 +26,7 @@ void RespFile::setFilePath_()
 		return ;
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
-		throw RespException(301, filePath_ + "/");
+		throw RespException(301);
 	fileSize_ = st.st_size;
 }
 

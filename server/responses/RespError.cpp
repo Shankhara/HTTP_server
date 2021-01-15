@@ -7,14 +7,6 @@ RespError::RespError(int statusCode, const Request &r, char *buf, unsigned int b
 	build();
 }
 
-RespError::RespError(int statusCode, std::string location, const Request &r, char *buf, unsigned int bufSize): RespFile(r, buf, bufSize)
-{
-	statusCode_ = statusCode;
-	location_ = location;
-	setFilePath_();
-	build();
-}
-
 RespError::~RespError() {}
 
 int RespError::readResponse()
@@ -24,7 +16,10 @@ int RespError::readResponse()
 	if (fd_ == 0)
 	{
 		if (!headersBuilt_) {
-			writeDefaultErrorPage_(statusCode_);
+			if (statusCode_ == 301)
+				writeHeaders_(0);
+			else
+				writeDefaultErrorPage_(statusCode_);
 			return nbytes_;
 		}
 		return 0;
@@ -46,14 +41,14 @@ void RespError::writeDefaultErrorPage_(int statusCode)
 																																																	   "</body>"
 																																																	   "</html>";
 	writeHeaders_(body.size());
-	if (req_.getMethod() == "HEAD" || statusCode == 301)
+	if (req_.getMethod() == "HEAD")
 		return ;
 	append_(body);
 }
 
 void RespError::writeStatusRelatedHeaders_() {
 	if (statusCode_ == 301)
-		writeThisHeader_("Location", location_);
+		writeThisHeader_("Location", req_.getOriginalReqTarget() + "/");
 	if (statusCode_ == 401)
 		writeThisHeader_("WWW-Authenticate", "Basic realm=\"simple\"");
 	if (statusCode_ == 405)
@@ -93,8 +88,6 @@ void RespError::writeHeaders_(size_t s)
 	initHeaders();
 	writeThisHeader_("Content-Type", "text/html");
 	writeStatusRelatedHeaders_();
-	if (statusCode_ == 301)
-		s = 0;
 	writeContentLength_(s);
 	writeHeadersEnd_();
 }
