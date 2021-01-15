@@ -242,7 +242,16 @@ int Request::parseHeadersContent()
 		headerUserAgent_ = removeSpaces(headersRaw_[USER_AGENT]);
 	//ENTITY HEADERS
 	if (!headersRaw_[CONTENT_LANGUAGE].empty())
+    {
         headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
+        for(size_t i = 0; i < headerContentLanguage_.size(); ++i)
+        {
+            if (!isAlpha(headerContentLanguage_[i][0]))
+                return 400;
+            if (!isAlpha(headerContentLanguage_[i][headerContentLanguage_[i].size() - 1]))
+                return 400;
+        }
+    }
 	if (!headersRaw_[CONTENT_LENGTH].empty())
 		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
 	if (!headersRaw_[CONTENT_TYPE].empty())

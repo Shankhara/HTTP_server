@@ -11,10 +11,8 @@ RespGet::~RespGet(){}
 void RespGet::reachResource_()
 {
 	struct stat st;
-
 	if (stat(filePath_.c_str(), &st) == -1)
 		throw RespException(404);
-
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
 	{

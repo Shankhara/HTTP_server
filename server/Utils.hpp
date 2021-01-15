@@ -20,6 +20,7 @@ char *ft_strncpy(char *dest, const char *src, size_t n);
 size_t ft_strlen(char *str);
 bool ft_strcmp(char *s1, char *s2);
 bool isSpace(char);
+bool isAlpha(char c);
 bool boolFind(std::string const & haystack, std::string const & needle);
 std::string removeSpaces(std::string &);
 std::string decode64(std::string const &str);

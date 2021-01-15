@@ -28,7 +28,7 @@ void RespPut::reachLangResources_()
         if (stat(langFilePath_[i].c_str(), &buffer) == -1)
             statusCode_ = 201;
     }
-    openFiles_(O_CREAT | O_TRUNC | O_RDWR, 500);
+    openFiles_(O_CREAT | O_TRUNC | O_RDWR, 404);
 }
 
 void RespPut::makeResponse_()

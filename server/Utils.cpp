@@ -22,6 +22,13 @@ bool isSpace(char c)
 	return 0;
 }
 
+bool isAlpha(char c)
+{
+    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        return true;
+    return false;
+}
+
 std::string removeSpaces(std::string & str)
 {
 	str.erase(std::remove_if(str.begin(), str.end(), isSpace), str.end());

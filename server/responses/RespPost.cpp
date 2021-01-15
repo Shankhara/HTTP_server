@@ -19,7 +19,7 @@ void RespPost::manageFile_()
 	if (ret == -1)
 		statusCode_ = 201;
 
-	openFiles_(O_CREAT | O_APPEND | O_WRONLY, 500);
+	openFiles_(O_CREAT | O_APPEND | O_WRONLY, 404);
 }
 
 void RespPost::makeResponse_()
