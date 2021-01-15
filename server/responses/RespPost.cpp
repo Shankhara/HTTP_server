@@ -18,6 +18,8 @@ void RespPost::makeResponse_()
         for(size_t i = 0; i < langFilePath_.size(); ++i)
             writeThisHeader_ ("Content-location", langFilePath_[i]);
     }
+    else if (statusCode_ == 201)
+        writeThisHeader_("Location", filePath_);
 	else
     	writeThisHeader_ ("Content-location", filePath_);
 	writeThisHeader_ ("Last-Modified", getStrDate ());
