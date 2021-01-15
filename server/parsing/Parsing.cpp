@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/15 06:50:33 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 07:21:04 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 		else
 			throw (PpE(this->file_, stds(" listen duplicated ")));
 		if (check_line(line[1]) == false)
-			throw (PpE(this->file_, stds(" unexecpted token in listen ")));
+			throw (PpE(this->file_, stds(" unexpected token in listen ")));
 		pos = line[1].find(stds(":"));
 		if (pos != stds::npos)
 		{
