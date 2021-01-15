@@ -185,6 +185,8 @@ int Request::parseHeaders()
 			dist = std::distance(it, itx);
 			if (headerLine[HEADERCONTENT].size() > CHUNK_MAX_SIZE)
 				return 414;
+			if (!headersRaw_[dist].empty())
+			    return 400;
 			headersRaw_[dist] = headerLine[HEADERCONTENT];
 		}
 		size_t notSpace = headerLine[HEADERCONTENT].find_first_not_of(' ', 0);
