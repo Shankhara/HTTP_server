@@ -8,3 +8,4 @@ server/.objs/
 ubuntu_cgi_tester
 ubuntu_tester
 webserv
+./unittests
