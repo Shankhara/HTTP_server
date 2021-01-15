@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:29:45 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/12 23:30:37 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 04:25:36 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,4 +116,49 @@ std::string			to_string(int convert)
 	}
 	res += char(convert % 10);
 	return (res);
+}
+
+bool	check_port(stds line)
+{
+	stds::iterator first;
+
+
+	for (first = line.begin(); first < line.end(); first++)
+		if(*first < '0' || *first > '9')
+			return (false);
+	return (true);
+}
+
+bool	check_ip(stds line)
+{
+	stds::iterator first;
+	size_t dot = 0;
+
+	if (line == stds("localhost"))
+		return (true);
+	for (first = line.begin(); first < line.end();)
+	{
+		if (*first == '.' && dot < 3)
+			dot++;
+		else if((*first < '0' || *first > '9'))
+			return (false);
+		first++;
+	}
+	return (true);
+}
+
+bool	check_line(stds line)
+{
+	size_t	pos;
+	stds	ip;
+	stds	port;
+	pos	= line.find(stds(":"));
+	
+	if (pos == line.size() - 1)
+		return (check_ip(line));	
+	ip = line.substr(0, pos);
+	port = line.substr(pos + 1, line.size());
+	if (check_ip(ip) == false || check_port(port) == false)
+		return (false);
+	return (true);
 }

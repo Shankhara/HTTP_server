@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/15 03:23:07 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 04:26:27 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			line = splitWhitespace(stds(tmp, 0, tmp.size()));
 			if (line.size() < 2)
 				throw (PpE(this->file_, stds("Expected at least 1 argument")));
+			if (line[1][0] != '/')
+				throw (PpE(this->file_, stds("Locations name is invalid")));
 			if (line[line.size() - 1] != "{" && *first != '{')
 				this->skipWhite(&first, end, true);
 			if (line[line.size() - 1] != "{" && *first != '{')
@@ -139,6 +141,8 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			(*prop)[0] = 1;
 		else
 			throw (PpE(this->file_, stds(" listen duplicated ")));
+		if (check_line(line[1]) == false)
+			throw (PpE(this->file_, stds(" unexecpted token in listen ")));
 		pos = line[1].find(stds(":"));
 		if (pos != stds::npos)
 		{
@@ -185,9 +189,9 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			(*prop)[3] = 1;
 		else
 			throw (PpE(this->file_, stds(" root duplicated ")));
-		for (size_t i = 0; i < this->getServers().size(); i++)
-			if (this->getServers()[i].root == line[1])
-				throw (PpE(this->file_, stds(" duplicated root in server")));	
+//		for (size_t i = 0; i < this->getServers().size(); i++)
+//			if (this->getServers()[i].root == line[1])
+//				throw (PpE(this->file_, stds(" duplicated root in server")));	
 		if (line[1][0] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		server.root = line[1];
@@ -255,7 +259,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		if ((*prop)[3] == 0)
 			(*prop)[3] = 1;
 		else
-			throw (PpE(this->file_, stds(" root duplicated ")));	
+			throw (PpE(this->file_, stds(" index duplicated ")));	
 		location.index = line[1];
 	}
 	else if (line[0] == "cgi_extension")
@@ -301,7 +305,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		if ((*prop)[8] == 0)
 			(*prop)[8] = 1;
 		else
-			throw (PpE(this->file_, stds(" root duplicated ")));
+			throw (PpE(this->file_, stds(" client_max_body_size duplicated ")));
 		location.client_max_body_size = getMcbs(line[1]);
 	}
 	else if (line[0] == "auth_basic")
