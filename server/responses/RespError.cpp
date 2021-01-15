@@ -79,12 +79,12 @@ void RespError::build() {
 	}
 }
 
-void RespError::writeHeaders_(size_t s) {
+void RespError::writeHeaders_(size_t s)
+{
 	initHeaders();
 	writeThisHeader_("Content-Type", "text/html");
 	writeStatusRelatedHeaders_();
 	writeContentLength_(s);
 	writeHeadersEnd_();
-
 }
 

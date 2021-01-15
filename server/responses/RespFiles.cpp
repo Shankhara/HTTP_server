@@ -96,5 +96,4 @@ void RespFiles::reachResource_()
     else if (stat(filePath_.c_str(), &buffer) == -1)
         statusCode_ = 201;
 
-    openFiles_(O_CREAT | O_TRUNC | O_RDWR, 404);
 }

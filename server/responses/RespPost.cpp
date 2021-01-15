@@ -41,4 +41,5 @@ void RespPost::build()
 	setFilePath_();
 	negotiateContentLang_();
 	reachResource_();
+    openFiles_(O_CREAT | O_APPEND | O_RDWR, 404);
 }
