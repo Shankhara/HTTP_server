@@ -5,7 +5,7 @@ server {
 	location / {
 		index index.html;
 		method GET POST HEAD TRACE PUT OPTIONS DELETE;
-		root /tmp;
+    	root /tmp;
 		autoindex on;
 	}
 }
