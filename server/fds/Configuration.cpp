@@ -29,7 +29,7 @@ void Configuration::onEvent() {
 		Parsing::getInstance()->parseConfig();
 	} catch (const Parsing::ParsingException &e) {
 		Log::get(logERROR) << e.what() << std::endl;
-		Server::getInstance()->stop();
+		return Server::getInstance()->stop();
 	}
 	std::vector<Listener*> listeners;
 	for (size_t i = 0; i < Parsing::getInstance()->getServers().size(); i++) {

@@ -79,7 +79,7 @@ int Listener::addServer(const Parsing::server &s) {
 	}
 	else if (host != ip_ || port_ != s.port)
 	{
-		Log::get(logERROR) << __FUNCTION__  << " this host:port doesnt belong to this listener: " << s.host << ":" << s.port << std::endl;
+		Log::get(logDEBUG) << __FUNCTION__  << " this host:port doesnt belong to this listener: " << s.host << ":" << s.port << std::endl;
 		return (1);
 	}
 	Log::get(logINFO) << __FUNCTION__  << " > " << s.host << ":" << s.port << " add virtualhost: " << s.names[0] << " (maxconn: " << FD_SETSIZE << ")" << std::endl;
