@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/15 04:26:27 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 04:30:41 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,9 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		server = this->returnProps(server, line, &prop);
 	}
+	for (size_t i = 0; i < server.locations.size() - 1; i++)
+		if (server.locations[i].client_max_body_size == 536870912)
+			server.locations[i].client_max_body_size = server.client_max_body_size;	
 	if (server.names.empty())
 		server.names.push_back(stds("default"));
 	return server;
