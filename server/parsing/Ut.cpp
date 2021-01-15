@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 02:29:45 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/15 04:25:36 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/15 07:13:48 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,6 @@ bool	check_port(stds line)
 {
 	stds::iterator first;
 
-
 	for (first = line.begin(); first < line.end(); first++)
 		if(*first < '0' || *first > '9')
 			return (false);
@@ -134,7 +133,7 @@ bool	check_ip(stds line)
 	stds::iterator first;
 	size_t dot = 0;
 
-	if (line == stds("localhost"))
+	if (line == stds("localhost") || line == stds("*"))
 		return (true);
 	for (first = line.begin(); first < line.end();)
 	{
