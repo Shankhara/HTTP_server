@@ -20,6 +20,17 @@ void RespPut::reachResource_()
 	openFiles_(O_CREAT | O_TRUNC | O_RDWR, 500);
 }
 
+void RespPut::reachLangResources_()
+{
+    struct stat buffer = {};
+    for(size_t i = 0; i < langFilePath_.size(); ++i)
+    {
+        if (stat(langFilePath_[i].c_str(), &buffer) == -1)
+            statusCode_ = 201;
+    }
+    openFiles_(O_CREAT | O_TRUNC | O_RDWR, 500);
+}
+
 void RespPut::makeResponse_()
 {
 	initHeaders();
@@ -51,5 +62,8 @@ int RespPut::readResponse()
 void RespPut::build() {
 	setFilePath_();
 	negotiateContentLang_();
-	reachResource_();
+	if (contentLangNegotiated_)
+	    reachLangResources_();
+	else
+    	reachResource_();
 }
