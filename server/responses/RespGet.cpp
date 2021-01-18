@@ -19,8 +19,11 @@ void RespGet::writeHeaders_()
     writeContentType_(filePath_);
     writeContentLength_(fileSize_);
     if (acceptLangNegotiated_)
-        writeThisHeader_("Content-Location", location_->name + req_.getHeaderAcceptLanguage()[0] + req_
-        .getOriginalReqTarget());
+    {
+        std::string tmp = req_.getOriginalReqTarget();
+        size_t pos = req_.getOriginalReqTarget().rfind('/');
+        writeThisHeader_ ("Content-Location", tmp.insert(pos, "/" + req_.getHeaderAcceptLanguage()[0]));
+    }
     if (req_.requestIndexed)
         writeThisHeader_("Content-Location", location_->name + location_->index);
     writeHeadersEnd_();
