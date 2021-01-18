@@ -29,7 +29,7 @@ void RespFile::setFilePath_()
 	{
 		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] != '/')
 			throw RespException(301);
-		else
+		else if (req_.getMethod() != "DELETE")
 			throw RespException(404);
 	}
 	fileSize_ = st.st_size;
