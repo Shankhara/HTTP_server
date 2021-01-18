@@ -22,8 +22,8 @@ void RespFile::setFilePath_()
 	prefixFilePathWithAcceptLang_();
 	struct stat st;
 	int ret = stat(filePath_.c_str(), &st);
-	if (ret == -1)
-		return ;
+	if (ret == -1 && req_.getMethod() != "POST" && req_.getMethod() != "PUT")
+        throw RespException(404);
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
 	{

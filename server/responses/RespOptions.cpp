@@ -1,6 +1,6 @@
 #include "RespOptions.hpp"
 
-RespOptions::RespOptions(const Request &r, char buf[], unsigned int bufSize) : Response(r, buf, bufSize) { }
+RespOptions::RespOptions(const Request &r, char buf[], unsigned int bufSize) : RespFiles(r, buf, bufSize) { }
 
 RespOptions::~RespOptions() { }
 
@@ -22,4 +22,7 @@ int RespOptions::readResponse()
 		makeResponse_();
 	return nbytes_;
 }
-void RespOptions::build() {}
+void RespOptions::build()
+{
+    setFilePath_();
+}
