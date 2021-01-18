@@ -313,6 +313,8 @@ int Request::parseRequestLine()
 
 	if (requestLine_.size() != 3)
 		return 400;
+	if (checkMethodCase_())
+		return 400;
 	if (checkMethod())
 		return 501;
 	if (requestLine_.size() > CHUNK_MAX_SIZE)
@@ -485,3 +487,11 @@ const std::string &Request::getOriginalReqTarget() const
 
 const std::string &Request::getHeaderUserAgent() const
 { return headerUserAgent_; }
+
+bool Request::checkMethodCase_() {
+	for (size_t i = 0; i < requestLine_[METHOD].size(); i++){
+		if (requestLine_[METHOD][i] < 'A' || requestLine_[METHOD][i] > 'Z')
+			return 1;
+	}
+	return 0;
+}
