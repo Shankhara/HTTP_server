@@ -5,6 +5,7 @@ Request::Request(const std::vector<Parsing::server> &servers): servers_(servers)
 	headersRaw_.resize(15);
 	cgiHeaders_.reserve(30);
 	headers_parsed = false;
+	requestIndexed = false;
 	statusCode_ = 100;
 	location_ = 0;
 	if (servers.size() == 1)
@@ -295,7 +296,10 @@ int Request::accessControl_()
 			requestLine_[REQTARGET] = '/' + requestLine_[REQTARGET];
 	}
 	if (!location_->index.empty() && !location_->autoindex && requestLine_[REQTARGET][requestLine_[REQTARGET].size() -1] == '/')
+    {
 		requestLine_[REQTARGET] += location_->index;
+		requestIndexed = true;
+    }
 	return statusCode_;
 }
 

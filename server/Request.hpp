@@ -52,6 +52,7 @@ class Request
 	Request(const std::vector<Parsing::server> &);
 	~Request();
 	bool headers_parsed;
+    bool requestIndexed;
 	std::vector<std::string> methods;
     std::vector<std::string> headersName;
     enum e_headerLine { HEADERTITLE, HEADERCONTENT };
