@@ -33,7 +33,7 @@ int RespError::readResponse()
 
 void RespError::writeDefaultErrorPage_(int statusCode)
 {
-	static const std::string body = 		"<html>"
+	const std::string body = 		"<html>"
 				  "<head><title>" + ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</title></head>"
 																						 "<body bgcolor=\"white\">"
 																						 "<center><h1>"+ ft_itoa(statusCode) + " " + statusMap_[statusCode] + "</h1></center>"

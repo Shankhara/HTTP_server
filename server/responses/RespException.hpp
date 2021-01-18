@@ -7,7 +7,7 @@
 class RespException: public std::exception {
 
 private:
-	int statusCode_;
+	const int statusCode_;
 	std::string location_;
 
 public:
