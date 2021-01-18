@@ -114,4 +114,3 @@ void Server::halt_() {
 bool Server::isRunning() {
 	return !shutdown_;
 }
-

@@ -18,8 +18,11 @@ void RespGet::writeHeaders_()
     initHeaders();
     writeContentType_(filePath_);
     writeContentLength_(fileSize_);
-    if (acceptLangNegotiated_ || req_.requestIndexed)
-        writeThisHeader_("Content-Location", filePath_);
+    if (acceptLangNegotiated_)
+        writeThisHeader_("Content-Location", location_->name + req_.getHeaderAcceptLanguage()[0] + req_
+        .getOriginalReqTarget());
+    if (req_.requestIndexed)
+        writeThisHeader_("Content-Location", location_->name + location_->index);
     writeHeadersEnd_();
 }
 

@@ -247,6 +247,8 @@ int Request::parseHeadersContent()
         headerContentLanguage_ = explode(removeSpaces(headersRaw_[CONTENT_LANGUAGE]), ',');
         for(size_t i = 0; i < headerContentLanguage_.size(); ++i)
         {
+            std::transform(headerContentLanguage_[i].begin(), headerContentLanguage_[i].end(),
+            headerContentLanguage_[i].begin(), ft_toupper);
             if (!isAlpha(headerContentLanguage_[i][0]))
                 return 400;
             if (!isAlpha(headerContentLanguage_[i][headerContentLanguage_[i].size() - 1]))

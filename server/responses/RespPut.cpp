@@ -13,12 +13,15 @@ void RespPut::makeResponse_()
     if (contentLangNegotiated_)
     {
         for(size_t i = 0; i < langFilePath_.size(); ++i)
-            writeThisHeader_ ("Content-location", langFilePath_[i]);
+            writeThisHeader_ ("Content-location", req_.getLocation()->name + \
+            req_.getHeaderContentLanguage()[i] + req_.getOriginalReqTarget());
     }
     else if (statusCode_ == 201)
-        writeThisHeader_("Location", filePath_);
+        writeThisHeader_("Location", req_.getOriginalReqTarget());
+    else if (req_.requestIndexed)
+        writeThisHeader_("Content-Location", req_.getLocation()->name + req_.getLocation()->index);
     else
-        writeThisHeader_ ("Content-location", filePath_);
+        writeThisHeader_ ("Content-location", req_.getOriginalReqTarget());
     writeThisHeader_("Last-Modified", getStrDate());
     writeHeadersEnd_();
 }
