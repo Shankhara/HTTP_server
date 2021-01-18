@@ -22,14 +22,21 @@ void RespFile::setFilePath_()
 	prefixFilePathWithAcceptLang_();
 	struct stat st;
 	int ret = stat(filePath_.c_str(), &st);
-	if (ret == -1 && req_.getMethod() != "POST" && req_.getMethod() != "PUT")
-        throw RespException(404);
+	if (ret == -1)
+	{
+		if (req_.getMethod() == "OPTIONS")
+			throw RespException(404);
+		return ;
+	}
+
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
 	{
 		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] != '/')
 			throw RespException(301);
-		else if (req_.getMethod() != "DELETE")
+		else if (req_.getMethod() == "DELETE")
+			return ;
+		else if (!(req_.getLocation()->autoindex && req_.getMethod() == "GET"))
 			throw RespException(404);
 	}
 	fileSize_ = st.st_size;

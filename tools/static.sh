@@ -30,6 +30,7 @@ echo "server {
 	}
 	location /autoindex {
 		autoindex on;
+		root ${DIR};
 	}
 	location /auth {
 		auth_basic on;
