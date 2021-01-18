@@ -313,7 +313,7 @@ int Request::parseRequestLine()
 
 	if (requestLine_.size() != 3)
 		return 400;
-	if (checkMethodCase_())
+	if (checkMethodCase_()||checkReqTarget_())
 		return 400;
 	if (checkMethod())
 		return 501;
@@ -491,7 +491,14 @@ const std::string &Request::getHeaderUserAgent() const
 bool Request::checkMethodCase_() {
 	for (size_t i = 0; i < requestLine_[METHOD].size(); i++){
 		if (requestLine_[METHOD][i] < 'A' || requestLine_[METHOD][i] > 'Z')
-			return 1;
+			return true;
 	}
-	return 0;
+	return false;
+}
+
+bool Request::checkReqTarget_() {
+	size_t pos = requestLine_[REQTARGET].find("..");
+	if (pos == std::string::npos)
+		return false;
+	return true;
 }

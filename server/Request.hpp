@@ -48,6 +48,7 @@ class Request
 	const Parsing::location	*matchLocation_(const Parsing::server *) const;
 	const Parsing::server *matchServer_() const;
 	bool checkMethodCase_();
+	bool checkReqTarget_();
 
 	public:
 	Request(const std::vector<Parsing::server> &);
