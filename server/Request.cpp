@@ -127,6 +127,8 @@ int Request::getChunkedBody()
 
 int Request::parseBody()
 {
+	if (traceDebug_)
+		return 400;
 	if (headerTransferEncoding_ == "chunked")
 		return getChunkedBody();
 	else {
@@ -342,8 +344,6 @@ int Request::parse()
 		if (statusCode_ == 100)
 			statusCode_ = parseHeaders();
 	}
-	if (traceDebug_)
-		tracePayload_.append(request_);
 	if (headers_parsed && statusCode_ == 100)
 		statusCode_ = parseBody();
 	return (statusCode_);
