@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/15 07:21:04 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/18 15:08:19 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,6 @@ void				Parsing::parseConfig(void)
 		first = next + 1;		
 		this->skipWhite(&first, content_.end(), true);
 	}
-	for (size_t i = 0; i + 1 < servers_.size(); i++)
-		for (size_t j = i + 1; j < servers_.size(); j++)
-			if (servers_[i].host == servers_[j].host && servers_[i].port == servers_[j].port)
-				throw (PpE(this->file_, stds(" Can't add the same host:port in server")));
 	if (this->servers_.empty())
 		throw (PpE(this->file_, stds("No server defined")));
 	return;
