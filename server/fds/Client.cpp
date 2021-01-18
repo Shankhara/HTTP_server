@@ -93,6 +93,8 @@ void Client::sendResponse(Response *resp) {
 	{
 		RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
 		return (sendResponse(&err));
+	} else if (nbytes < 0) {
+		Server::getInstance()->deleteFileDescriptor(fd_);
 	}
 	if (isSent)
 	{
