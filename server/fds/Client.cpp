@@ -83,18 +83,19 @@ void Client::sendResponse(Response *resp) {
 		if ((nbytes = send(fd_, buf_, nbytes, 0)) < 0)
 		{
 			Log::get(logERROR) << " unable to send to client " << strerror(errno) << " nbytes: " << nbytes << std::endl;
-			break ;
+			return Server::getInstance()->deleteFileDescriptor(fd_);
 		}else if (nbytes == 0) {
 			Log::get(logERROR) << " send returned 0" << std::endl;
-			break ;
+			return Server::getInstance()->deleteFileDescriptor(fd_);
 		}
 	}
-	if (nbytes < 0 && !isSent && resp->getStatusCode() < 400)
-	{
-		RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
-		return (sendResponse(&err));
-	} else if (nbytes < 0) {
-		Server::getInstance()->deleteFileDescriptor(fd_);
+	if (nbytes < 0) {
+		if (!isSent && resp->getStatusCode() < 400){
+			RespError err(500, getRequest(), buf_, CLIENT_BUFFER_SIZE);
+			return (sendResponse(&err));
+		} else {
+			return Server::getInstance()->deleteFileDescriptor(fd_);
+		}
 	}
 	if (isSent)
 	{
