@@ -26,7 +26,12 @@ void RespFile::setFilePath_()
 		return ;
 	int isDir = S_ISDIR(st.st_mode);
 	if (isDir)
-		throw RespException(301);
+	{
+		if (req_.getReqTarget()[req_.getReqTarget().size() - 1] != '/')
+			throw RespException(301);
+		else
+			throw RespException(404);
+	}
 	fileSize_ = st.st_size;
 }
 
@@ -62,7 +67,7 @@ int RespFile::read_()
 	if (currentRead < 0)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
-		return currentRead;
+ 		return currentRead;
 	}
 	return nbytes_ + currentRead;
 }
