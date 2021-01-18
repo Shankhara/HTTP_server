@@ -12,9 +12,12 @@ void RespPut::makeResponse_()
     writeContentLength_(0);
     if (contentLangNegotiated_)
     {
+        size_t pos = req_.getOriginalReqTarget().rfind('/');
         for(size_t i = 0; i < langFilePath_.size(); ++i)
-            writeThisHeader_ ("Content-location", req_.getLocation()->name + \
-            req_.getHeaderContentLanguage()[i] + req_.getOriginalReqTarget());
+        {
+            std::string tmp = req_.getOriginalReqTarget();
+            writeThisHeader_("Content-location", tmp.insert(pos, "/" + req_.getHeaderContentLanguage()[i]));
+        }
     }
     else if (statusCode_ == 201)
         writeThisHeader_("Location", req_.getOriginalReqTarget());
