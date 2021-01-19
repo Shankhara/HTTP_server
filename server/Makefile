@@ -27,7 +27,7 @@ SRCS	+= responses/RespCGI.cpp
 SRCS	+= fds/Configuration.cpp
 SRCS	+= fds/Mime.cpp
 
-CFLAGS	= -Wall -Wextra -Werror -g3 -std=c++98
+CFLAGS	= -Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
 OBJDIR	= .objs
