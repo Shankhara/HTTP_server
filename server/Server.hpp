@@ -30,8 +30,8 @@ private:
 	fd_set							conn_fds_;
     void 							run_();
 	void 							garbageCollector_();
-	Server();
 	void 							halt_();
+	Server();
 
 public:
 	~Server();

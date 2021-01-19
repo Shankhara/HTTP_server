@@ -22,6 +22,7 @@ public:
 	uint16_t 			htons_(uint16_t hostshort);
 	void				onNewClient();
 	const				std::vector<Parsing::server> &getServers() const;
+	void				onTimeout(){};
 };
 
 

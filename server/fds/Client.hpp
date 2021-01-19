@@ -46,8 +46,9 @@ private:
 public:
 	Client(int, const Listener &);
 	virtual 						~Client();
-	void 							constructRequest(char [], int);
 	void 							onEvent();
+	void 							onTimeout();
+	void 							constructRequest(char [], int);
 	Request							&getRequest();
 	static char						*getBuf();
 	void							sendResponse(Response *);

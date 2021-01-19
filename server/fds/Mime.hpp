@@ -30,4 +30,5 @@ class Mime: public FileDescriptor
 	static Mime * getInstance();
 	void onEvent();
 	void openFile_();
+	void onTimeout(){};
 };
