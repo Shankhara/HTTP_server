@@ -54,11 +54,17 @@ void Response::writeContentLength_(long value)
 
 void Response::writeAllow_()
 {
+	static std::string methodsList[] = { "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "TRACE" };
+	std::vector<std::string> methods;
+	if (req_.getLocation()->methods.empty())
+		methods = std::vector<std::string>(methodsList, methodsList + 7);
+	else
+		methods = req_.getLocation()->methods;
 	append_("Allow: ");
-	for (size_t i = 0; i < req_.getLocation()->methods.size(); i++)
+	for (size_t i = 0; i < methods.size(); i++)
     {
-	    append_(req_.getLocation()->methods[i]);
-	    if (i < req_.getLocation()->methods.size() - 1)
+	    append_(methods[i]);
+	    if (i < methods.size() - 1)
     	    append_(", ");
     }
 	append_("\r\n");
