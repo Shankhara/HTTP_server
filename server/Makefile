@@ -27,6 +27,32 @@ SRCS	+= responses/RespCGI.cpp
 SRCS	+= fds/Configuration.cpp
 SRCS	+= fds/Mime.cpp
 
+HEADERS	= Utils.hpp
+HEADERS	+= Server.hpp
+HEADERS	+= Log.hpp
+HEADERS	+= CGIExec.hpp
+HEADERS	+= Request.hpp
+HEADERS	+= fds/Listener.hpp
+HEADERS	+= fds/Client.hpp
+HEADERS	+= fds/CGISocket.hpp
+HEADERS	+= parsing/Parsing.hpp
+HEADERS	+= parsing/Ut.hpp
+HEADERS	+= responses/RespGet.hpp
+HEADERS	+= responses/RespHead.hpp
+HEADERS	+= responses/RespPut.hpp
+HEADERS	+= responses/RespPost.hpp
+HEADERS	+= responses/RespDelete.hpp
+HEADERS	+= responses/RespOptions.hpp
+HEADERS	+= responses/RespTrace.hpp
+HEADERS	+= responses/RespError.hpp
+HEADERS	+= responses/RespException.hpp
+HEADERS	+= responses/RespFile.hpp
+HEADERS	+= responses/RespFiles.hpp
+HEADERS	+= responses/Response.hpp
+HEADERS	+= responses/RespCGI.hpp
+HEADERS	+= fds/Configuration.hpp
+HEADERS	+= fds/Mime.hpp
+
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 CC		= clang++
 
@@ -36,7 +62,7 @@ OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 $(NAME): $(OBJS)
 		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
 
-all:		$(NAME)
+all:		$(NAME) $(HEADERS) 
 
 $(OBJS): | $(OBJDIR)
 
@@ -72,7 +98,5 @@ tests:
 verbose: re
 	@ ./webserv -v
 	@rm -f ./webserv
-	
-
 
 .PHONY: all clean fclean re run tests
