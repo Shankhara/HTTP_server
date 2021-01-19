@@ -36,7 +36,8 @@ std::string Request::decode_authorization()
     std::string res;
 	std::vector<std::string> tmp = explode(headersRaw_[AUTHORIZATION], ' ');
 	removeSpaces(tmp[0]);
-	if (tmp[0] == "Basic")
+	std::transform(tmp[0].begin(), tmp[0].end(), tmp[0].begin(), ft_tolower);
+	if (tmp[0] == "basic")
 		res = decode64(removeSpaces(tmp[1]));
 	return (res);
 }
