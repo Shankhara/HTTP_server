@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/19 15:45:32 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:48:42 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,8 +127,6 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line, &prop);
 	}
-	if ((location.upload_enable == true && location.upload_path == "") || (location.upload_enable == false && location.upload_path != ""))
-		throw (PpE(this->file_, stds("Upload_enable and upload_path bad configurated")));
 	return location;
 }
 
@@ -282,29 +280,6 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			throw (PpE(this->file_, stds(" cgi_path duplicated ")));	
 		location.cgi_path = line[1];
 	}
-	else if (line[0] == "upload_enable")
-	{
-		if ((*prop)[6] == 0)
-			(*prop)[6] = 1;
-		else
-			throw (PpE(this->file_, stds(" upload_enable duplicated ")));
-		if (compString(&first, line[1].end(), stds("off")))
-			location.upload_enable = false;
-		else if (compString(&second, line[1].end(), stds("on")))
-			location.upload_enable = true;
-		else
-			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
-	}	
-	else if (line[0] == "upload_path")
-	{	
-		if ((*prop)[7] == 0)
-			(*prop)[7] = 1;
-		else
-			throw (PpE(this->file_, stds(" upload_path duplicated ")));	
-		if (line[1][0] != '/' || line[1][line[1].size() - 1] != '/')
-			throw (PpE(this->file_, stds(" upload_path need to end with / ")));	
-		location.upload_path = line[1];
-	}
 	else if (line[0] == "client_max_body_size")
 	{
 		if ((*prop)[8] == 0)
@@ -402,8 +377,6 @@ Parsing::location	Parsing::getDefaultLocation()
 	location.cgi_path = "";
 	location.auth_basic = "";
 	location.auth_basic_user_file = "";
-	location.upload_enable = false;
-	location.upload_path = "";
 	location.client_max_body_size = 536870912;
 	return (location);
 }

@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 16:17:34 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/12 23:39:18 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:47:33 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ static const char		*locationProps_[] = {	"method",
 												"index",
 												"cgi_extension",
 												"cgi_path",
-												"upload_enable",
-												"upload_path",
 												"client_max_body_size",
 												"auth_basic",
 												"auth_basic_user_file",

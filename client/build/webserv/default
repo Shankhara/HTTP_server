@@ -7,7 +7,5 @@ server {
 		method GET POST HEAD TRACE PUT OPTIONS DELETE;
     	root /tmp/;
 		autoindex on;
-		upload_path /tmp/;
-		upload_enable on;
 	}
 }
