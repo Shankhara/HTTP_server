@@ -36,7 +36,9 @@ void RespFile::setFilePath_()
 			throw RespException(301);
 		else if (req_.getMethod() == "DELETE")
 			return ;
-		else if (!(req_.getLocation()->autoindex && (req_.getMethod() == "GET" || req_.getMethod() == "HEAD")))
+		else if (!req_.getLocation()->autoindex && req_.getMethod() == "GET")
+			throw RespException(404);
+		else if (!req_.getLocation()->autoindex && req_.getMethod() == "HEAD")
 			throw RespException(404);
 	}
 	fileSize_ = st.st_size;
@@ -74,7 +76,7 @@ int RespFile::read_()
 	if (currentRead < 0)
 	{
 		Log::get(logERROR) << __FUNCTION__  << " read error " << strerror(errno) << std::endl;
- 		return currentRead;
+		return currentRead;
 	}
 	return nbytes_ + currentRead;
 }
@@ -104,4 +106,3 @@ void RespFile::prefixFilePathWithAcceptLang_()
 		return;
 	}
 }
-
