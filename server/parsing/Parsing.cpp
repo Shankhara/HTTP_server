@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/18 15:08:19 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:22:31 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ typedef std::istreambuf_iterator<char>	ist;
 typedef Parsing::ParsingException		PpE;
 
 Parsing::Parsing(void):  servers_() {}
-
 
 Parsing::~Parsing(void) {}
 
@@ -126,6 +125,9 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line, &prop);
 	}
+	if ((location.upload_enable == true && location.upload_path == "") ||
+		(location.upload_enable == false && location.upload_path != "")
+		throw (PpE(this->file_, stds("Upload_enble and upload_path bad configurated")));
 	return location;
 }
 
