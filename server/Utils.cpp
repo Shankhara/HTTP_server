@@ -29,14 +29,32 @@ bool isAlpha(char c)
     return false;
 }
 
+bool isDigit(char c)
+{
+    if (c >= '0' && c <= '9')
+        return true;
+    return false;
+}
+
 std::string removeSpaces(std::string & str)
 {
 	str.erase(std::remove_if(str.begin(), str.end(), isSpace), str.end());
 	return str;
 }
 
-char ft_tolower(char i) { return std::tolower(i); }
-char ft_toupper(char i) { return std::toupper(i); }
+char ft_tolower(char i)
+{
+    if (i >= 'A' && i <= 'Z')
+        return i + 32;
+    return i;
+}
+
+char ft_toupper(char i)
+{
+    if (i >= 'a' && i <= 'z')
+        return i - 32;
+    return i;
+}
 
 bool boolFind(std::string const & haystack, std::string const & needle)
 {
@@ -85,12 +103,14 @@ std::string decode64(std::string const &str)
 	return (dest);
 }
 
-int ft_atoi(std::string const &str)
+unsigned int ft_atoi(std::string const &str)
 {
-	int res = 0;
+	unsigned int res = 0;
 
 	for (int i = 0; str[i] != '\0'; i++)
-		res = res * 10 + str[i] - '0';
+    {
+        res = res * 10 + str[i] - '0';
+    }
 	return res;
 }
 

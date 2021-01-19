@@ -10,7 +10,7 @@
 
 #define WEBSERV_ID "webserv/1.0.0"
 
-int ft_atoi(std::string const &str);
+unsigned int ft_atoi(std::string const &str);
 int getNextLine(std::string & buf, std::string & line);
 unsigned long getTime();
 char ft_tolower(char);
@@ -21,6 +21,7 @@ size_t ft_strlen(char *str);
 bool ft_strcmp(char *s1, char *s2);
 bool isSpace(char);
 bool isAlpha(char c);
+bool isDigit(char c);
 bool boolFind(std::string const & haystack, std::string const & needle);
 std::string removeSpaces(std::string &);
 std::string decode64(std::string const &str);
