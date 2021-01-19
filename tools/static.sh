@@ -44,6 +44,7 @@ echo "server {
 	error_page 405 ${DIR}/errors/404.html;
 	root /tmp/;
 	location / {
+		method GET;
 		index index.html;
 		root ${DIR}/;
 	}
