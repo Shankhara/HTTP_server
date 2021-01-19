@@ -24,7 +24,7 @@ void RespFile::setFilePath_()
 	int ret = stat(filePath_.c_str(), &st);
 	if (ret == -1)
 	{
-		if (req_.getMethod() == "OPTIONS")
+		if (req_.getMethod() == "OPTIONS" || req_.getMethod() == "GET")
 			throw RespException(404);
 		return ;
 	}

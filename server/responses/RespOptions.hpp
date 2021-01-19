@@ -6,7 +6,7 @@ class RespOptions: public RespFiles
 {
 	private:
 	void makeResponse_();
-	
+
 	public:
 	RespOptions(const Request &r, char[], unsigned int);
 	~RespOptions();
