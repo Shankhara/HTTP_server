@@ -62,7 +62,7 @@ OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 $(NAME): $(OBJS)
 		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
 
-all:		$(NAME) $(HEADERS) 
+all:		$(NAME) 
 
 $(OBJS): | $(OBJDIR)
 
