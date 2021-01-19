@@ -22,9 +22,12 @@ void RespGet::writeHeaders_()
     {
         std::string tmp = req_.getOriginalReqTarget();
         size_t pos = req_.getOriginalReqTarget().rfind('/');
-        writeThisHeader_ ("Content-Location", tmp.insert(pos, "/" + req_.getHeaderAcceptLanguage()[0]));
+        tmp.insert(pos, "/" + req_.getHeaderAcceptLanguage()[0]);
+        if (req_.requestIndexed)
+            tmp += req_.getLocation()->index;
+        writeThisHeader_("Content-location", tmp);
     }
-    if (req_.requestIndexed)
+    else if (req_.requestIndexed)
         writeThisHeader_("Content-Location", location_->name + location_->index);
     writeHeadersEnd_();
 }
