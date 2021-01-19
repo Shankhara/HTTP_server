@@ -17,7 +17,7 @@ echo "server {
 		cgi_extension .php;
 		cgi_path /usr/bin/php-cgi;
 		index index.php;
-		root ${DIR};
+		root ${DIR}/;
 	}
 }" > ${WEBSERV}/wordpress.conf
 

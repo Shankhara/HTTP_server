@@ -23,14 +23,14 @@ echo "server {
 	listen 127.0.0.1:8080;
 	server_name localhost;
 	error_page 404 ${DIR}/errors/404.html;
-	root /tmp;
+	root /tmp/;
 	location / {
 		index index.html;
-		root ${DIR};
+		root ${DIR}/;
 	}
 	location /autoindex {
 		autoindex on;
-		root ${DIR};
+		root ${DIR}/;
 	}
 	location /auth {
 		auth_basic on;

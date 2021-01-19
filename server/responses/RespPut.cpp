@@ -46,8 +46,6 @@ int RespPut::readResponse()
 
 void RespPut::build()
 {
-	if (!req_.getLocation()->upload_enable)
-		throw RespException(405);
     setFilePath_();
     negotiateContentLang_();
     reachResource_();

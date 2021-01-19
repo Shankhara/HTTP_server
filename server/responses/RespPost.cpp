@@ -49,8 +49,6 @@ int RespPost::readResponse()
 
 void RespPost::build()
 {
-	if (!req_.getLocation()->upload_enable)
-		throw RespException(405);
     setFilePath_();
     negotiateContentLang_();
     reachResource_();
