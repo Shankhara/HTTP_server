@@ -5,7 +5,7 @@ DIR=${WEBSERV}"/YoupiBanane"
 echo "Bootstrapping in ${WEBSERV}"
 
 rm -rf ${WEBSERV}/YoupiBanane/
-mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test/
+mkdir -p ${DIR}/nop ${DIR}/Yeah ${DIR}/put_test_of_your_choice/
 wget -q -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2467/ubuntu_tester 
 wget -q -P ${WEBSERV} -nc https://projects.intra.42.fr/uploads/document/document/2465/ubuntu_cgi_tester
 chmod +x ${WEBSERV}/ubuntu_*
@@ -25,12 +25,11 @@ echo "server {
 	}
 	location /put_test/ {
 		method PUT;
-		root ${DIR}/;
+		root ${DIR}/put_test_of_your_choice/;
 	}
 	location /post_body {
 		method POST;
 		client_max_body_size 100;
-		root ${DIR}/;
 	}
 	location /directory/ {
 		method GET POST;
