@@ -49,7 +49,6 @@ class Request
 	const Parsing::server *matchServer_() const;
 	bool checkMethodCase_();
 	bool checkReqTarget_();
-	bool checkUpload_();
 
 	public:
 	Request(const std::vector<Parsing::server> &);

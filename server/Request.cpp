@@ -294,8 +294,6 @@ int Request::accessControl_()
 	location_ = matchLocation_(server_);
 	if (location_ == 0)
 		return 403;
-	if (checkUpload_())
-		return 405;
 	if (!isMethodAuthorized_(location_))
 		return 405;
 	if (!isAuthenticated_(location_))
@@ -514,8 +512,3 @@ bool Request::checkReqTarget_() {
 	return true;
 }
 
-bool Request::checkUpload_() {
-	if ((getMethod() == "POST"|| getMethod() == "PUT") && !location_->upload_enable)
-		return true;
-	return false;
-}

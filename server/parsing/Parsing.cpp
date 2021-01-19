@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/19 15:22:31 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:12:46 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,9 +125,8 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line, &prop);
 	}
-	if ((location.upload_enable == true && location.upload_path == "") ||
-		(location.upload_enable == false && location.upload_path != "")
-		throw (PpE(this->file_, stds("Upload_enble and upload_path bad configurated")));
+	if ((location.upload_enable == true && location.upload_path == "") || (location.upload_enable == false && location.upload_path != ""))
+		throw (PpE(this->file_, stds("Upload_enable and upload_path bad configurated")));
 	return location;
 }
 
@@ -194,9 +193,6 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			(*prop)[3] = 1;
 		else
 			throw (PpE(this->file_, stds(" root duplicated ")));
-//		for (size_t i = 0; i < this->getServers().size(); i++)
-//			if (this->getServers()[i].root == line[1])
-//				throw (PpE(this->file_, stds(" duplicated root in server")));	
 		if (line[1][0] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		server.root = line[1];
