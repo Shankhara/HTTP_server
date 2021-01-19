@@ -24,7 +24,7 @@ void RespFile::setFilePath_()
 	int ret = stat(filePath_.c_str(), &st);
 	if (ret == -1)
 	{
-		if (req_.getMethod() == "OPTIONS" || req_.getMethod() == "GET")
+		if (req_.getMethod() == "OPTIONS" || req_.getMethod() == "GET" || req_.getMethod() == "HEAD")
 			throw RespException(404);
 		return ;
 	}
@@ -36,7 +36,7 @@ void RespFile::setFilePath_()
 			throw RespException(301);
 		else if (req_.getMethod() == "DELETE")
 			return ;
-		else if (!(req_.getLocation()->autoindex && req_.getMethod() == "GET"))
+		else if (!(req_.getLocation()->autoindex && (req_.getMethod() == "GET" || req_.getMethod() == "HEAD")))
 			throw RespException(404);
 	}
 	fileSize_ = st.st_size;
