@@ -1,7 +1,7 @@
 import os
 import requests as req
 from simple_get import Test_get as sg
-from simple_post import Test_post as sp
+#from simple_post import Test_post as sp
 from advanced_get import Test_advanced_get as ag
 from simple_other_request import Test_other_request as other
 from modifying_header import Test_modifying_header as mh
