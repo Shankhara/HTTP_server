@@ -41,7 +41,7 @@ echo "server {
 echo "server {
 	listen 127.0.0.1:8080;
 	server_name 42.com;
-	error_page 400 ${DIR}/errors/404.html;
+	error_page 405 ${DIR}/errors/404.html;
 	root /tmp/;
 	location / {
 		index index.html;
