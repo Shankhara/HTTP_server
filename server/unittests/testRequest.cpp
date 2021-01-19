@@ -176,8 +176,6 @@ void testCGIHeaders()
 	assertEqual(ret, 200, "test getter");
 	const std::vector<std::string> &tmp = a.getCGIHeaders();
 	assertEqual(tmp.size(), (size_t)5, "testCGI Getter");
-//	for (std::map<std::string, std::string>::iterator it = tmp.begin(); it != tmp.end(); it++)
-//		std::cout << it->first << " => " << it->second << std::endl;
 }
 
 void correctChunkedBody()
@@ -228,8 +226,7 @@ static void testBodyWithGet()
 	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 1 but no body", 100);
 
 	str = "GET /qwe HTTP/1.1\r\nHost: webserv\r\nContent-length: 0\r\n\r\nqweqwe";
-	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 0 with a body", 200);
-	//Could work if I add more tests to parseHeadersContent for Content-len & TE
+	assertRequest(str, "GET", "/qwe", vhost, "testing GET with content-len = 0 with a body", 400);
 
 	delete (vhost);
 }
