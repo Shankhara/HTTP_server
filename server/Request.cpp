@@ -262,8 +262,9 @@ int Request::parseHeadersContent()
     {
         for(size_t i = 0; i < headersRaw_[CONTENT_LENGTH].size(); ++i)
         {
-            if (!isDigit(headersRaw_[CONTENT_LENGTH][i]))
-                return 400;
+            if (headersRaw_[CONTENT_LENGTH][i] != ' ')
+                if (!isDigit(headersRaw_[CONTENT_LENGTH][i]))
+                    return 400;
         }
         headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
     }

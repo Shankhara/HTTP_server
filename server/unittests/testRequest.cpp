@@ -150,34 +150,12 @@ void testDoRequest()
 	delete (vhost);
 }
 
-void correctHeaders()
-{
-	std::vector<Parsing::server> *vhost = createVirtualHosts();
-	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
-
-	std::string str = "GET /qwe HTTP/1.1\r\naccept-charsets: utf-8, iso-8859-1;q=0.5\r\n\r\n";
-
-	Request o(*vhost);
-	str = "GET /qwe HTTP/1.1\r\nDate: \t2\r\n\r\n";
-	o.doRequest(const_cast<char *>(str.c_str()), str.size());
-	assertStringEqual(o.getHeaderDate(), "2", "replace whitespace in header value");
-
-	Request p(*vhost);
-	str = "GET /qwe HTTP/1.1\r\nDate: \t2\r\nHost: mo\fmo \r\n\r\n";
-	p.doRequest(const_cast<char *>(str.c_str()), str.size());
-	assertStringEqual(p.getHeaderDate(), "2", "replace whitespace in header value");
-	assertStringEqual(p.getHeaderHost(), "momo", "replace whitespace in header value");
-	delete (vhost);
-}
-
 void badHeaders()
 {
 	std::vector<Parsing::server> *vhost = createVirtualHosts();
 	std::cout << std::endl << "\033[1;33m" <<  __FUNCTION__ << "\033[0m" << std::endl;
 	Request a(*vhost);
-	std::string str = "GET /qwe HTTP/1.1\r\nHost: 2\r\nContent-length: 3\r\n\r\n";
-	assertRequest(str, "GET", "/qwe", vhost, "no body despite content-length header", 100);
-	str = "GET /qwe HTTP/1.1\r\nHost : 2\r\nDate: today\r\n\r\n";
+	std::string str = "GET /qwe HTTP/1.1\r\nHost : 2\r\nDate: today\r\n\r\n";
 	assertRequest(str, "GET", "/qwe", vhost, "whitespace between header name and colon", 400);
 	str = "GET /qwe HTTP/1.1\r\nHost:: 2\r\nDate: today\r\n\r\n";
 	assertRequest(str, "GET", "/qwe", vhost, "two ':'", 400);
@@ -363,7 +341,6 @@ void testRequest()
 	testDoRequest();
   	correctRequestLine();
 	badRequestLine();
-	correctHeaders();
  	badHeaders();
 	testCGIHeaders();
 	correctSequencialReceive(5);
@@ -379,5 +356,4 @@ void testRequest()
 	testExplode();
 	testDecode64();
 	testAcceptLanguage();
-//	testContentLanguage();
 }
