@@ -16,7 +16,7 @@ class Test_get():
 
 	def print_test_content(self, path, test_number):
 		self.print_test_value(path, test_number)	
-		for i in range (10):
+		for i in range (200):
 			nginx = req.get(self.url_nginx + path)
 			webserv = req.get(self.url_webserv + path)
 			self.tests = pt().test(str(webserv.status_code), str(nginx.status_code), "Checking status code", self.tests)
@@ -25,7 +25,7 @@ class Test_get():
 
 	def print_test_throw(self, path, test_name, test_number):	
 		self.print_test_value(path, test_number)	
-		for i in range (10):
+		for i in range (200):
 			throw_webserv = False;	
 			throw_nginx = False;
 			try:

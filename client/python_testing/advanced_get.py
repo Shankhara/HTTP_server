@@ -17,7 +17,7 @@ class Test_advanced_get():
 
 	def test00_get(self):
 		self.print_test_value("/", "GET / (Multiple Requests Synchronously)", "00")
-		for i in range(10):
+		for i in range(200):
 			webserv = req.get(self.url_webserv + "/")
 			self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
 			self.tests = pt().test(str(webserv.headers["Content-Length"]), str(len(webserv.text)), "Checking content-length", self.tests)
@@ -34,7 +34,7 @@ class Test_advanced_get():
 
 	def test02_get(self):
 		self.print_test_value("/", "GET / (Huge payload)", "02")
-		for i in range(10):
+		for i in range(50):
 			rand = random.randint(1000, 100000000)
 			data = "r" * rand
 			webserv = req.get(self.url_webserv + "/", data=data)
