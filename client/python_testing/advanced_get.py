@@ -17,7 +17,7 @@ class Test_advanced_get():
 
 	def test00_get(self):
 		self.print_test_value("/", "GET / (Multiple Requests Synchronously)", "00")
-		for i in range(200):
+		for i in range(10):
 			webserv = req.get(self.url_webserv + "/")
 			self.tests = pt().test(str(webserv.status_code), "200", "Checking status code", self.tests)
 			self.tests = pt().test(str(webserv.headers["Content-Length"]), str(len(webserv.text)), "Checking content-length", self.tests)
@@ -25,7 +25,7 @@ class Test_advanced_get():
 	def test01_get(self):
 		reqs = []
 		self.print_test_value("/", "GET / (Multiple Requests Asynchronously)", "01")
-		for i in range(50):
+		for i in range(10):
 			reqs.append(greq.get(self.url_webserv + "/"))
 		responses = greq.map(reqs, size=50)
 		for webserv in responses:
@@ -34,11 +34,11 @@ class Test_advanced_get():
 
 	def test02_get(self):
 		self.print_test_value("/", "GET / (Huge payload)", "02")
-		for i in range(50):
+		for i in range(10):
 			rand = random.randint(1000, 100000000)
 			data = "r" * rand
 			webserv = req.get(self.url_webserv + "/", data=data)
-			self.tests = pt().test(str(webserv.status_code), "200", "Header size : " + str(rand), self.tests)
+			self.tests = pt().test(str(webserv.status_code), "200", "Body size : " + str(rand), self.tests)
 	
 	def test_advanced_get(self):
 		self.test00_get()
