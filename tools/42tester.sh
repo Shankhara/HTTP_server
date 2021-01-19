@@ -18,29 +18,25 @@ touch ${DIR}/Yeah/not_happy.bad_extension
 echo "server {
 	listen 127.0.0.1:8080;
 	server_name localhost;
-	root ${DIR};
+	root ${DIR}/;
 	location / {
 		method GET;
 		index youpi.bad_extension;
 	}
 	location /put_test/ {
 		method PUT;
-		upload_enable on;
-		upload_path ${DIR};
+		root ${DIR}/;
 	}
 	location /post_body {
 		method POST;
 		client_max_body_size 100;
-		upload_enable on;
-		upload_path ${DIR};
+		root ${DIR}/;
 	}
 	location /directory/ {
 		method GET POST;
 		cgi_extension .bla;
-		upload_enable on;
-		upload_path ${DIR};
 		cgi_path ${WEBSERV}/ubuntu_cgi_tester;
-		root ${DIR};
+		root ${DIR}/;
 		index youpi.bad_extension;
 	}
 }" > ${WEBSERV}/servers.conf
