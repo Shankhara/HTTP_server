@@ -59,7 +59,7 @@ CC		= clang++
 OBJDIR	= .objs
 OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(HEADERS)
 		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
 
 all:		$(NAME) 
