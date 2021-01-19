@@ -11,6 +11,7 @@ public:
 	Configuration(std::string configPath);
 	void onEvent();
 	int openFile();
+	void onTimeout(){};
 
 private:
 	std::string configPath_;

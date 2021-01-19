@@ -25,6 +25,8 @@ public:
 	void setLastEventTimer() {
 		lastEventTimer_ = getTime();
 	}
+
+	virtual void onTimeout() = 0;
 };
 
 #endif

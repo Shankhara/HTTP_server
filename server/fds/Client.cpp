@@ -99,8 +99,8 @@ void Client::sendResponse(Response *resp) {
 	}
 	if (isSent)
 	{
-		if (resp->getStatusCode() == 400)
-			Log::get(logINFO) << " - 400 [" << sentSize << "]" << std::endl;
+		if (resp->getStatusCode() == 400 || resp->getStatusCode() == 408)
+			Log::get(logINFO) << resp->getStatusCode() << " [" << sentSize << "]" << std::endl;
 		else
 			Log::get(logINFO) << request_->getHeaderUserAgent() << " - referrer [" << request_->getHeaderReferer() << "] " << resp->getStatusCode() << " - " << request_->getMethod() << " http://" << request_->getHeaderHost() << request_->getOriginalReqTarget() << " [" << sentSize << "]" << std::endl;
 		if (resp->getStatusCode() >= 400)
@@ -187,4 +187,10 @@ void Client::clear_() {
 		}
 		CGISocket_ = 0;
 	}
+}
+
+void Client::onTimeout() {
+	RespError timeout(408, *request_, buf_, CLIENT_BUFFER_SIZE);
+	timeout.build();
+	sendResponse(&timeout);
 }

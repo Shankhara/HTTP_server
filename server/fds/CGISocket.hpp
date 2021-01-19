@@ -24,6 +24,7 @@ public:
 	CGISocket(int, Client &);
 	virtual		~CGISocket();
 	void		onEvent();
+	void 		onTimeout(){};
 	void		setPid(pid_t pid);
 };
 
