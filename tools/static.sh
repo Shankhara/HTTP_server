@@ -37,6 +37,25 @@ echo "server {
 		autoindex on;
 	}
 }" > ${WEBSERV}/static.conf
+
+echo "server {
+	listen 127.0.0.1:8080;
+	server_name 42.com;
+	error_page 400 ${DIR}/errors/404.html;
+	root /tmp/;
+	location / {
+		index index.html;
+		root ${DIR}/;
+	}
+	location /autoindex {
+		autoindex on;
+		root ${DIR}/;
+	}
+	location /auth {
+		auth_basic on;
+		autoindex on;
+	}
+}" >> ${WEBSERV}/static.conf
 echo "Building Webserv"
 
 cd ../server && make > /dev/null && cd ../tools
