@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/18 15:08:19 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:12:46 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,9 @@ Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator en
 		line = splitWhitespace(stds(tmp, 0, tmp.size() - 1));
 		location = this->returnLocation(location, line, &prop);
 	}
+	if ((location.upload_path == "" && location.upload_enable == true) ||
+		(location.upload_path != "" && location.upload_enable == false))
+		throw (PpE(this->file_, stds("Upload path/enable configured wrong")));
 	return location;
 }
 
