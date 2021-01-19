@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 		testParsing();
 		testRequest();
 		//testCGI();
-		testResponse();
+		//testResponse();
 	}
 	return 0;
 }
