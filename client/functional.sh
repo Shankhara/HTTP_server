@@ -32,7 +32,7 @@ clear
 echo "Running test"
 cd ../../python_testing
 #cd python_testing
-python3 -W ignore main.py #> file.log
-docker stop ft_nginx > /dev/null 2>&1
-docker stop ft_webserv > /dev/null 2>&1
-#cat file.log
+python3 -W ignore main.py > file.log
+#docker stop ft_nginx > /dev/null 2>&1
+#docker stop ft_webserv > /dev/null 2>&1
+cat file.log
