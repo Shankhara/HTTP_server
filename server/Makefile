@@ -59,7 +59,7 @@ CC		= clang++
 OBJDIR	= .objs
 OBJS	=	$(addprefix $(OBJDIR)/, $(SRCS:.cpp=.o))
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) $(HEADERS)
 		${CC} ${CFLAGS} $(OBJS) -o $(NAME)
 
 all:		$(NAME) 
@@ -88,15 +88,11 @@ run: re
 	@rm -f ./webserv
 
 leaks: re
-	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserv -v
+	@valgrind --track-fds=yes --leak-check=full --show-leak-kinds=all ./webserv
 	@rm -f ./webserv
 
 tests:
 	@make -C ./unittests/
 	@./unittests/unittests
-
-verbose: re
-	@ ./webserv -v
-	@rm -f ./webserv
 
 .PHONY: all clean fclean re run tests
