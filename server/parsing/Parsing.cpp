@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/19 15:12:46 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:34:46 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ Parsing::server		Parsing::returnProps(Parsing::server server, std::vector<stds> 
 			(*prop)[3] = 1;
 		else
 			throw (PpE(this->file_, stds(" root duplicated ")));
-		if (line[1][0] != '/')
+		if (line[1][0] != '/' || line[1][line[1].size() - 1] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		server.root = line[1];
 	}
@@ -225,7 +225,7 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 			(*prop)[0] = 1;
 		else
 			throw (PpE(this->file_, stds(" root duplicated ")));	
-		if (line[1][0] != '/')
+		if (line[1][0] != '/' || line[1][line[1].size() - 1] != '/')
 			throw (PpE(this->file_, stds("root need absolute path")));
 		location.root = line[1];
 	}
@@ -293,12 +293,14 @@ Parsing::location		Parsing::returnLocation(Parsing::location location, std::vect
 		else
 			throw (PpE(this->file_, stds("Value can be set with \"on\" or \"off\" only")));
 	}	
-	else if (line [0] == "upload_path")
+	else if (line[0] == "upload_path")
 	{	
 		if ((*prop)[7] == 0)
 			(*prop)[7] = 1;
 		else
 			throw (PpE(this->file_, stds(" upload_path duplicated ")));	
+		if (line[1][0] != '/' || line[1][line[1].size() - 1] != '/')
+			throw (PpE(this->file_, stds(" upload_path need to end with / ")));	
 		location.upload_path = line[1];
 	}
 	else if (line[0] == "client_max_body_size")
