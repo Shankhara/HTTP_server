@@ -16,7 +16,10 @@ void RespPut::makeResponse_()
         for(size_t i = 0; i < langFilePath_.size(); ++i)
         {
             std::string tmp = req_.getOriginalReqTarget();
-            writeThisHeader_("Content-location", tmp.insert(pos, "/" + req_.getHeaderContentLanguage()[i]));
+            tmp.insert(pos, "/" + req_.getHeaderContentLanguage()[i]);
+            if (req_.requestIndexed)
+                tmp += req_.getLocation()->index;
+            writeThisHeader_("Content-location", tmp);
         }
     }
     else if (statusCode_ == 201)

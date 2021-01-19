@@ -19,7 +19,7 @@ class Request
 	private:
 	int statusCode_;
     int totalHeaderSize_;
-    int headerContentLength_;
+    unsigned int headerContentLength_;
 	bool traceDebug_;
     std::string request_;
 	std::string tracePayload_;

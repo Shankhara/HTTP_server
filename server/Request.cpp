@@ -259,7 +259,14 @@ int Request::parseHeadersContent()
         }
     }
 	if (!headersRaw_[CONTENT_LENGTH].empty())
-		headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
+    {
+        for(size_t i = 0; i < headersRaw_[CONTENT_LENGTH].size(); ++i)
+        {
+            if (!isDigit(headersRaw_[CONTENT_LENGTH][i]))
+                return 400;
+        }
+        headerContentLength_ = ft_atoi(removeSpaces(headersRaw_[CONTENT_LENGTH]));
+    }
 	if (!headersRaw_[CONTENT_TYPE].empty())
 		headerContentType_ = removeSpaces(headersRaw_[CONTENT_TYPE]);
     //RESPONSE HEADER
