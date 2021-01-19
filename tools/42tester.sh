@@ -25,10 +25,14 @@ echo "server {
 	}
 	location /put_test/ {
 		method PUT;
+		upload_enable on;
+		upload_path ${DIR};
 	}
 	location /post_body {
 		method POST;
 		client_max_body_size 100;
+		upload_enable on;
+		upload_path ${DIR};
 	}
 	location /directory/ {
 		method GET POST;

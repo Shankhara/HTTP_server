@@ -294,12 +294,14 @@ int Request::accessControl_()
 	location_ = matchLocation_(server_);
 	if (location_ == 0)
 		return 403;
-	if (location_->name == requestLine_[REQTARGET] + "/")
-		return 301;
+	if (checkUpload_())
+		return 405;
 	if (!isMethodAuthorized_(location_))
 		return 405;
 	if (!isAuthenticated_(location_))
 		return 401;
+	if (location_->name == requestLine_[REQTARGET] + "/")
+		return 301;
 
 	if (!location_->root.empty())
 	{
@@ -508,6 +510,12 @@ bool Request::checkMethodCase_() {
 bool Request::checkReqTarget_() {
 	size_t pos = requestLine_[REQTARGET].find("..");
 	if (pos == std::string::npos)
+		return false;
+	return true;
+}
+
+bool Request::checkUpload_() {
+	if ((getMethod() == "POST"|| getMethod() == "PUT") && !location_->upload_enable)
 		return false;
 	return true;
 }
