@@ -516,6 +516,6 @@ bool Request::checkReqTarget_() {
 
 bool Request::checkUpload_() {
 	if ((getMethod() == "POST"|| getMethod() == "PUT") && !location_->upload_enable)
-		return false;
-	return true;
+		return true;
+	return false;
 }

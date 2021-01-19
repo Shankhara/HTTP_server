@@ -37,6 +37,8 @@ echo "server {
 	location /directory/ {
 		method GET POST;
 		cgi_extension .bla;
+		upload_enable on;
+		upload_path ${DIR};
 		cgi_path ${WEBSERV}/ubuntu_cgi_tester;
 		root ${DIR};
 		index youpi.bad_extension;
