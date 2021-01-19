@@ -6,7 +6,7 @@
 /*   By: racohen <racohen@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:15:17 by racohen           #+#    #+#             */
-/*   Updated: 2021/01/19 15:34:46 by racohen          ###   ########.fr       */
+/*   Updated: 2021/01/19 15:45:32 by racohen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,8 @@ Parsing::server	Parsing::parseProps(iterator first, iterator end)
 			server.locations[i].client_max_body_size = server.client_max_body_size;	
 	if (server.names.empty())
 		server.names.push_back(stds("default"));
+	if (server.root == "")
+		throw (PpE(this->file_, stds(" no root server configurated ")));
 	return server;
 }
 Parsing::location		Parsing::parseLocation(stds name, iterator first, iterator end)
