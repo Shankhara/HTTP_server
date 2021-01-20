@@ -8,7 +8,7 @@ RespFile::RespFile(const Request &r, char buf[], unsigned int bufSize) : Respons
 }
 
 RespFile::~RespFile() {
-    if (fd_ > 0)
+    if (fd_ >= 0)
         close(fd_);
 }
 
