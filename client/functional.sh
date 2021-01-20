@@ -9,7 +9,7 @@ echo "Building new image for nginx and webserv"
 
 #sudo apt-get install pip3
 pip3 install requests
-cd ../server/ && make
+cd ../server/ && make re
 cp webserv ../client/build/webserv
 cd ../client/build/ft_ubuntu
 docker build -t ft_ubuntu .
