@@ -28,7 +28,7 @@ void RespGet::writeHeaders_()
         writeThisHeader_("Content-location", tmp);
     }
     else if (req_.requestIndexed)
-        writeThisHeader_("Content-Location", location_->name + location_->index);
+        writeThisHeader_("Content-Location", req_.getOriginalReqTarget() + location_->index);
     writeHeadersEnd_();
 }
 
