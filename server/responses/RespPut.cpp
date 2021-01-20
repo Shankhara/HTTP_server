@@ -22,10 +22,12 @@ void RespPut::makeResponse_()
             writeThisHeader_("Content-location", tmp);
         }
     }
+    else if (statusCode_ == 201 && req_.requestIndexed)
+        writeThisHeader_("Location", req_.getOriginalReqTarget() + req_.getLocation()->index);
     else if (statusCode_ == 201)
         writeThisHeader_("Location", req_.getOriginalReqTarget());
     else if (req_.requestIndexed)
-        writeThisHeader_("Content-Location", req_.getLocation()->name + req_.getLocation()->index);
+        writeThisHeader_("Content-Location", req_.getOriginalReqTarget() + req_.getLocation()->index);
     else
         writeThisHeader_ ("Content-location", req_.getOriginalReqTarget());
     writeThisHeader_("Last-Modified", getStrDate());
